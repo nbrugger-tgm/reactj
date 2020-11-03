@@ -220,3 +220,5 @@ gradle-app.setting
 .classpath
 
 .project
+
+artifactory_auth

@@ -8,6 +8,29 @@
 
 plugins {
     id 'java-library'
+    id 'maven-publish'
+}
+
+publishing{
+    publications {
+        lib(MavenPublication) {
+            groupId = 'com.niton'
+            artifactId = 'reactj'
+            version = '1.0.0'
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = "Artifactory"
+            credentials {
+                username = "nbrugger@student.tgm.ac.at"
+                password = System.getenv().containsKey("ARTIFACTORY_API_KEY") ? System.getenv("ARTIFACTORY_API_KEY") : new File("artifactory_auth").getText();
+            }
+            url = "https://niton.jfrog.io/artifactory/java-libs"
+        }
+    }
 }
 /**
  * This are the settings you can and should modify
