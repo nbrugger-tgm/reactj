@@ -26,7 +26,11 @@ publishing{
             name = "Artifactory"
             credentials {
                 username = "nbrugger@student.tgm.ac.at"
-                password = System.getenv().containsKey("ARTIFACTORY_API_KEY") ? System.getenv("ARTIFACTORY_API_KEY") : new File("artifactory_auth").getText();
+                def pwdFile = new File("TOKENS")
+                if(pwdFile.exists())
+                    password = pwdFile.readLines().get(0)
+                else
+                    password = System.getenv("ARTIFACTORY_API_KEY")
             }
             url = "https://niton.jfrog.io/artifactory/java-libs"
         }
