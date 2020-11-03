@@ -216,3 +216,7 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/eclipse,intellij,java,gradle
 .idea/
+
+.classpath
+
+.project
