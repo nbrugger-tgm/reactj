@@ -7,16 +7,17 @@
  */
 
 plugins {
-    id 'java'
-    id 'application'
+    id 'java-library'
 }
 /**
  * This are the settings you can and should modify
  */
 def useMavenRepos = true
-def isApplication = true
-def mainClass = 'com.project.App'
-def _dependencies = {
+def isApplication = false
+dependencies {
+
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+
     // Use JUnit Jupiter API for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
     // Use JUnit Jupiter Engine for testing.
@@ -31,9 +32,6 @@ repositories {
     jcenter()
 }
 
-dependencies {
-   _dependencies
-}
 if(isApplication) {
     application {
         mainClassName = mainClass
@@ -43,4 +41,9 @@ if(isApplication) {
 test {
     // Use junit platform for unit tests
     useJUnitPlatform()
+}
+tasks.jar {
+    manifest {
+        attributes('Automatic-Module-Name': 'niton.react')
+    }
 }
