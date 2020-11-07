@@ -48,7 +48,7 @@ public final class ReactiveController<C> {
 			}
 			valueCache.putAll(changed);
 			if (changed.size() > 0)
-				modelChanged(changed);
+				model.react();
 		}
 	}
 
