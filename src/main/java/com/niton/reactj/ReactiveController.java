@@ -1,7 +1,7 @@
 package com.niton.reactj;
 
 import com.niton.reactj.annotation.ReactivResolution;
-import com.niton.reactj.annotation.Reactive;
+import com.niton.reactj.annotation.*;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
@@ -32,6 +32,8 @@ public final class ReactiveController<C> {
 			for (Field field : fields) {
 				field.setAccessible(true);
 				if (Modifier.isStatic(field.getModifiers()))
+					continue;
+				if(field.isAnnotationPresent(Unreactive.class))
 					continue;
 				String name = getReactiveName(field);
 				if (!valueReceivers.containsKey(name))
@@ -90,6 +92,9 @@ public final class ReactiveController<C> {
 
 		for (Field f : fields) {
 			if (Modifier.isStatic(f.getModifiers()))
+				continue;
+
+			if(f.isAnnotationPresent(Unreactive.class))
 				continue;
 			detectChange(changed, f);
 		}
