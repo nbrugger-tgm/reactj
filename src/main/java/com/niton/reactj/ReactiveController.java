@@ -46,9 +46,9 @@ public final class ReactiveController<C> {
 			for (Map.Entry<String, Object> change : changed.entrySet()) {
 				changeModelValue(namedFields.get(change.getKey()), change.getValue());
 			}
-			valueCache.putAll(changed);
 			if (changed.size() > 0)
 				model.react();
+			valueCache.putAll(changed);
 		}
 	}
 
