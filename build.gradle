@@ -16,7 +16,7 @@ publishing{
         lib(MavenPublication) {
             groupId = 'com.niton'
             artifactId = 'reactj'
-            version = '1.0.0'
+            version = '1.1.0-SNAPSHOT'
             from components.java
         }
     }

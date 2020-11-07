@@ -2,7 +2,6 @@ package com.niton.reactj;
 
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
-import javafx.beans.binding.MapExpression;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
