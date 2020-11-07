@@ -115,7 +115,8 @@ public final class ReactiveController<C> {
 
 	private void updateView(String key, Object value) {
 		List<ReactiveBinder.Binding<?>> bindings = displayFunctions.get(key);
-		bindings.forEach(e -> e.display(value));
+		if(bindings != null && bindings.size() > 0)
+			bindings.forEach(e -> e.display(value));
 	}
 
 	public void bind(ReactiveObject model) {
