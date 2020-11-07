@@ -53,7 +53,7 @@ public class ReactiveBinder {
 		toModelConverter.put(view,convertToReal);
 	}
 
-	public void updateModel(EventObject actionEvent) {
+	public void react(EventObject actionEvent) {
 		update.update(actionEvent);
 	}
 

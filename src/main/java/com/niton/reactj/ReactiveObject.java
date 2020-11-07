@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReactiveObject {
-	private final List<ReactiveController> listeners = new ArrayList<>();
+	protected final List<ReactiveController> listeners = new ArrayList<>();
 
 	void bind(ReactiveController c){
 		listeners.add(c);

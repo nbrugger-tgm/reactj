@@ -2,12 +2,12 @@ package com.niton.reactj;
 
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
+import javafx.beans.binding.MapExpression;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.function.Function;
 
 public final class ReactiveController<C> {
 
@@ -26,30 +26,31 @@ public final class ReactiveController<C> {
 		view.registerListeners(customController);
 	}
 	private void updateModel(EventObject actionEvent) {
-		Field[] fields = getRelevantFields(model.getClass());
-		Map<String,Object> changed = new HashMap<>();
-		Map<String,Field> namedFields = new HashMap<>();
-		for (Field field : fields) {
-			field.setAccessible(true);
-			if (Modifier.isStatic(field.getModifiers()))
-				continue;
-			String name = getReactiveName(field);
-			if(!valueReceivers.containsKey(name))
-				continue;
-			Object oldValue = valueCache.get(name);
-			Object newValue = toModelConverter.get(name).convert(valueReceivers.get(name).get());
-			if(!Objects.equals(newValue,oldValue)){
-				namedFields.put(name,field);
-				changed.put(name,newValue);
+		Map<String, Object> changed = new HashMap<>();
+		synchronized (model) {
+			Field[] fields = getRelevantFields(model.getClass());
+			Map<String, Field> namedFields = new HashMap<>();
+			for (Field field : fields) {
+				field.setAccessible(true);
+				if (Modifier.isStatic(field.getModifiers()))
+					continue;
+				String name = getReactiveName(field);
+				if (!valueReceivers.containsKey(name))
+					continue;
+				Object oldValue = valueCache.get(name);
+				Object newValue = toModelConverter.get(name).convert(valueReceivers.get(name).get());
+				if (!Objects.equals(newValue, oldValue)) {
+					namedFields.put(name, field);
+					changed.put(name, newValue);
+				}
 			}
+			for (Map.Entry<String, Object> change : changed.entrySet()) {
+				changeModelValue(namedFields.get(change.getKey()), change.getValue());
+			}
+			valueCache.putAll(changed);
+			if (changed.size() > 0)
+				modelChanged(changed);
 		}
-		for (Map.Entry<String, Object> change : changed.entrySet()) {
-			changeModelValue(namedFields.get(change.getKey()),change.getValue());
-		}
-		if(changed.size() > 0)
-			model.react();
-		valueCache.putAll(changed);
-
 	}
 
 	private void changeModelValue(Field field, Object newValue) {
@@ -75,9 +76,12 @@ public final class ReactiveController<C> {
 
 			getChanges(changed);
 
-			for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
-				updateView(stringObjectEntry.getKey(),stringObjectEntry.getValue());
-			}
+			modelChanged(changed);
+		}
+	}
+	void modelChanged(Map<String, Object> changed){
+		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
+			updateView(stringObjectEntry.getKey(),stringObjectEntry.getValue());
 		}
 	}
 
@@ -112,7 +116,6 @@ public final class ReactiveController<C> {
 
 	private void updateView(String key, Object value) {
 		List<ReactiveBinder.Binding<?>> bindings = displayFunctions.get(key);
-		System.out.println("UPDATE VIEW "+key+","+value);
 		bindings.forEach(e -> e.display(value));
 	}
 

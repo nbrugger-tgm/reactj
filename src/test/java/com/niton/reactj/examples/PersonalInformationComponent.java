@@ -21,7 +21,6 @@ public class PersonalInformationComponent extends JPanel implements ReactiveComp
 
 
 	public PersonalInformationComponent() {
-
 		surnameInput = new JTextField();
 		add(surnameInput);
 		surnameInput.setColumns(10);
@@ -39,13 +38,14 @@ public class PersonalInformationComponent extends JPanel implements ReactiveComp
 		
 		selectButton = new JButton("Reset");
 		add(selectButton);
-		//create component
 	}
 
 	@Override
 	public void createBindings(ReactiveBinder bindings){
 		//just display values
-		bindings.bind("surename",surnameInput::setText);
+		bindings.bindEdit("surename",surnameInput::setText,surnameInput::getText);
+		//surnameInput.getDocument().addUndoableEditListener(bindings::updateModel);
+		surnameInput.addActionListener(bindings::react);
 
 		//bind with value conversion
 		bindings.bind("iq",iqField::setText,String::valueOf);
@@ -56,7 +56,7 @@ public class PersonalInformationComponent extends JPanel implements ReactiveComp
 
 		//bidirectional binding (With value conversion
 		bindings.bindEdit("age",ageInput::setText,ageInput::getText,Integer::parseInt, String::valueOf);
-		ageInput.addActionListener(bindings::updateModel);
+		ageInput.addActionListener(bindings::react);
 	}
 
 	@Override
