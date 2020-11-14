@@ -22,22 +22,12 @@ public class CustomComponent extends JPanel implements ReactiveComponent<CustomC
 	}
 
 	public void createBindings(ReactiveBinder bindings){
-	    //bind surename bidirectional
 	    bindings.bindEdit("surename",surnameInput::setText,surnameInput::getText);
             surnameInput.addActionListener(bindings::react);
 
-	    //Bind is only bound one directionals so changes in the UI wont affect the model
             bindings.bind("gender",genderJComboBox::setSelectedItem);
-	    
-            //react to changes in many and different ways
-            bindings.bind("gender",this::adaptColorToGender);
 	}
 	
-	public void adaptColorToGender(Gender g){
-		System.out.println("Adapt color for "+g);
-	}
-
-        //This adds automatic binding
 	@Reactive("surename")
 	public void setNameAsWindowTitle(String name){
 		System.out.println("Set the window title to "+name);
