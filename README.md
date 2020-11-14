@@ -10,8 +10,7 @@ Create a View
 
 ```java
 public class CustomComponent extends JPanel implements ReactiveComponent<CustomController> {
-	
-    //components that need bindings
+	//components that need bindings
 	private JTextField surnameInput = new JTextField()
 	private JComboBox<Gender> genderJComboBox = new JComboBox<>(Gender.values())
 	private JButton selectButton = new JButton("Reset");
@@ -22,29 +21,23 @@ public class CustomComponent extends JPanel implements ReactiveComponent<CustomC
 		add(selectButton);
 	}
 
-	@Override
 	public void createBindings(ReactiveBinder bindings){
-		//bind surename bidirectional
-		bindings.bindEdit("surename",surnameInput::setText,surnameInput::getText);
-		//react to change in UI
-        surnameInput.addActionListener(bindings::react);
+	    //bind surename bidirectional
+	    bindings.bindEdit("surename",surnameInput::setText,surnameInput::getText);
+            surnameInput.addActionListener(bindings::react);
 
-		
-        //Bind is only bound one directionals so changes in the UI wont affect the model
-		bindings.bind("gender",genderJComboBox::setSelectedItem);
-        //react to changes in many and different ways
-		bindings.bind("gender",this::adaptColorToGender);
+	    //Bind is only bound one directionals so changes in the UI wont affect the model
+            bindings.bind("gender",genderJComboBox::setSelectedItem);
+	    
+            //react to changes in many and different ways
+            bindings.bind("gender",this::adaptColorToGender);
 	}
-
-	@Override
-	public void registerListeners(CustomController controller){
-		selectButton.addActionListener(controller::submitInformation);
-	}
+	
 	public void adaptColorToGender(Gender g){
 		System.out.println("Adapt color for "+g);
 	}
 
-    //This adds automatic binding
+        //This adds automatic binding
 	@Reactive("surename")
 	public void setNameAsWindowTitle(String name){
 		System.out.println("Set the window title to "+name);
@@ -59,7 +52,6 @@ Then we need a Pojo/Model to sync the View with
 //FLAT = Only members of this class are reactive
 //DEEP = also members from subclasses are resolved
 @ReactivResolution(FLAT)
-//If you dont like extending you can also do it a different way
 public class Person extends ReactiveObject { 
 	//change reactive name
 	@Reactive("surename")
@@ -69,8 +61,6 @@ public class Person extends ReactiveObject {
 	//This will not be reacted to
 	@Unreactive
 	private String address;
-
-	//Getters as needed, cut out here
 
 	public void setName(String name) {
 		this.name = name;
@@ -89,8 +79,10 @@ Now we need to bind the view to a Person object
 ```java
 Person information = new Person();
 CustomComponent component = new CustomComponent();
+
 CustomController controller = new CustomController(information); //This one only custom events.
 ReactiveController<CustomController> reactor = new ReactiveController<>(component,controller);
+
 reactor.bind(information); //you can allways bind a new Object
 ```
 
