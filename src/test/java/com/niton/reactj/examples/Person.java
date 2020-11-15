@@ -1,33 +1,28 @@
 package com.niton.reactj.examples;
 
 import com.niton.reactj.annotation.ReactivResolution;
-import com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions;
 import com.niton.reactj.annotation.Reactive;
-import com.niton.reactj.ReactiveObject;
 import com.niton.reactj.annotation.Unreactive;
 
-import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.*;
+import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.FLAT;
 
 //optional
 @ReactivResolution(FLAT)
 public class Person {
+	private int age;
+	//change reactive name
+	@Reactive("surename")
+	private String name;
+	private int    iq;
+	private Gender gender;
+	//This will not be reacted to
+	@Unreactive
+	private String address;
+
 	public Person(int age, String name) {
 		this.age = age;
 		this.name = name;
 	}
-
-	private int age;
-
-	//change reactive name
-	@Reactive("surename")
-	private String name;
-
-	private int iq;
-	private Gender gender;
-
-	//This will not be reacted to
-	@Unreactive
-	private String address;
 
 	public int getAge() {
 		return age;

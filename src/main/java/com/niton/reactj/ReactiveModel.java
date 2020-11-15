@@ -2,19 +2,19 @@ package com.niton.reactj;
 
 import javassist.util.proxy.MethodHandler;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.niton.reactj.ReactiveStrategy.*;
+import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
 
-public class ReactiveModel<M> implements MethodHandler,Reactable {
-	final M model;
+public class ReactiveModel<M> implements MethodHandler, Reactable {
+	protected final List<ReactiveController<?>> listeners = new ArrayList<>();
+	final   M                model;
 	private ReactiveStrategy strategy = REACT_ON_SETTER;
-	private String[] reactTo;
+	private String[]         reactTo;
 
 	ReactiveModel(M model) {
 		this.model = model;
@@ -38,21 +38,11 @@ public class ReactiveModel<M> implements MethodHandler,Reactable {
 
 	@Override
 	public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws InvocationTargetException, IllegalAccessException {
-		Object ret = thisMethod.invoke(model,args);
-		boolean react = strategy.reactTo(thisMethod.getName(),reactTo);
-		if(react)
+		Object ret = thisMethod.invoke(model, args);
+		boolean react = strategy.reactTo(thisMethod.getName(), reactTo);
+		if (react)
 			react();
 		return ret;
-	}
-
-	protected final List<ReactiveController<?>> listeners = new ArrayList<>();
-	public void react() {
-		listeners.forEach(ReactiveController::modelChanged);
-	}
-
-	@Override
-	public void set(String property, Object value) throws Throwable {
-		ReactiveReflectorUtil.updateField(model,property,value);
 	}
 
 	@Override
@@ -68,5 +58,14 @@ public class ReactiveModel<M> implements MethodHandler,Reactable {
 	@Override
 	public void unbind(ReactiveController<?> c) {
 		listeners.remove(c);
+	}
+
+	public void react() {
+		listeners.forEach(ReactiveController::modelChanged);
+	}
+
+	@Override
+	public void set(String property, Object value) throws Throwable {
+		ReactiveReflectorUtil.updateField(model, property, value);
 	}
 }

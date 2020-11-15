@@ -3,7 +3,7 @@ package com.niton.reactj.examples;
 import java.awt.event.ActionEvent;
 
 public class PersonController {
-	private Person information;
+	private final Person information;
 
 	public PersonController(Person information) {
 		this.information = information;

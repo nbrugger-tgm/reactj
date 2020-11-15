@@ -12,9 +12,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 class ReactiveReflectorUtil {
-	public static String getReactiveName(Field f) {
-		return f.isAnnotationPresent(Reactive.class) ? f.getAnnotation(Reactive.class).value() : f.getName();
+	private static final Map<String, Field[]> fieldCache = new HashMap<>();
+
+	public static Map<String, Object> getState(Object model) {
+		HashMap<String, Object> state = new HashMap<>();
+		Class<?> type = model.getClass();
+		String typeName = type.getName();
+		Field[] fields = fieldCache.get(typeName);
+		if (fields == null)
+			fieldCache.put(typeName, fields = loadRelevantFields(type));
+		try {
+			ReactiveReflectorUtil.readState(model, fields, state);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return state;
 	}
+
 	public static Field[] loadRelevantFields(Class<?> type) {
 		Field[] fields;
 		if (type.isAnnotationPresent(ReactivResolution.class) && type.getDeclaredAnnotation(ReactivResolution.class).value() == ReactivResolution.ReactiveResolutions.FLAT)
@@ -30,24 +44,12 @@ class ReactiveReflectorUtil {
 				continue;
 			if (f.isAnnotationPresent(Unreactive.class))
 				continue;
-			state.put(getReactiveName(f),FieldUtils.readField(f,model,true));
+			state.put(getReactiveName(f), FieldUtils.readField(f, model, true));
 		}
 	}
-	private static final Map<String,Field[]> fieldCache = new HashMap<>();
 
-	public static Map<String, Object> getState(Object model) {
-		HashMap<String,Object> state = new HashMap<>();
-		Class<?> type = model.getClass();
-		String typeName = type.getName();
-		Field[] fields= fieldCache.get(typeName);
-		if(fields == null)
-			fieldCache.put(typeName,fields = loadRelevantFields(type));
-		try {
-			ReactiveReflectorUtil.readState(model,fields,state);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return state;
+	public static String getReactiveName(Field f) {
+		return f.isAnnotationPresent(Reactive.class) ? f.getAnnotation(Reactive.class).value() : f.getName();
 	}
 
 	public static void updateField(Object model, String property, Object value) throws Throwable {
@@ -56,9 +58,9 @@ class ReactiveReflectorUtil {
 		Field[] fields = fieldCache.get(typeName);
 		for (int i = 0; i < fields.length; i++) {
 			Field f = fields[i];
-			if(getReactiveName(f).equals(property)){
+			if (getReactiveName(f).equals(property)) {
 				try {
-					FieldUtils.writeField(f,model,value,true);
+					FieldUtils.writeField(f, model, value, true);
 				} catch (IllegalAccessException e) {
 					throw new ReactiveException("Updating model failed").initCause(e);
 				}

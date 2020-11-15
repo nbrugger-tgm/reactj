@@ -1,27 +1,28 @@
 package com.niton.reactj;
 
-import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.exceptions.ReactiveException;
 
 import java.util.*;
 
 public final class ReactiveController<C> {
 
-	private final ReactiveComponent<C> view;
-	private Reactable model;
-	private final Map<String,Object> valueCache = new HashMap<>();
-	private final Map<String, List<ReactiveBinder.Binding<?>>> displayBindings = new HashMap<>();
-	private final Map<String, List<ReactiveBinder.BiBinding<?,?>>> editBindings = new HashMap<>();
+	private final ReactiveComponent<C>                              view;
+	private final Map<String, Object>                               valueCache      = new HashMap<>();
+	private final Map<String, List<ReactiveBinder.Binding<?>>>      displayBindings = new HashMap<>();
+	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
+	private       Reactable                                         model;
+	private boolean blockReaction = false;
 
-	public ReactiveController(ReactiveComponent<C> view,C customController) {
+	public ReactiveController(ReactiveComponent<C> view, C customController) {
 		this.view = view;
 		ReactiveBinder binder = new ReactiveBinder(this::updateModel, displayBindings, editBindings);
 		view.createBindings(binder);
 		view.createAnnotatedBindings(binder);
 		view.registerListeners(customController);
 	}
+
 	private void updateModel(EventObject actionEvent) throws Throwable {
-		if(blockReaction){
+		if (blockReaction) {
 			return;
 		}
 		Map<String, Object> changed = new HashMap<>();
@@ -30,54 +31,60 @@ public final class ReactiveController<C> {
 			if (!editBindings.containsKey(field.getKey()))
 				continue;
 			Object oldValue = field.getValue();
-			List<ReactiveBinder.BiBinding<?,?>> editBind = editBindings.get(field.getKey());
+			List<ReactiveBinder.BiBinding<?, ?>> editBind = editBindings.get(field.getKey());
 
 			for (ReactiveBinder.BiBinding<?, ?> biBinding : editBind) {
 				Object bindingVal = biBinding.toModelConverter.convert(biBinding.reciver.get());
-				if(!Objects.equals(bindingVal,oldValue)) {
+				if (!Objects.equals(bindingVal, oldValue)) {
 					changed.put(field.getKey(), bindingVal);
 					break;
 				}
 			}
 		}
 		for (Map.Entry<String, Object> change : changed.entrySet()) {
-			model.set(change.getKey(),change.getValue());
+			model.set(change.getKey(), change.getValue());
 		}
 		if (changed.size() > 0)
 			model.react();
 		valueCache.putAll(changed);
 	}
 
-	void modelChanged(){
+	public void bind(Reactable model) {
+		model.bind(this);
+		this.model = model;
+		modelChanged();
+	}
+
+	void modelChanged() {
 		Map<String, Object> changed = new HashMap<>();
 		getChanges(changed);
 		modelChanged(changed);
-	}
-	void modelChanged(Map<String, Object> changed){
-		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
-			updateView(stringObjectEntry.getKey(),stringObjectEntry.getValue());
-		}
 	}
 
 	private void getChanges(Map<String, Object> changed) {
 		Map<String, Object> state = model.getState();
 		for (String property : state.keySet()) {
-			detectChange(changed, property,state.get(property));
+			detectChange(changed, property, state.get(property));
+		}
+	}
+
+	void modelChanged(Map<String, Object> changed) {
+		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
+			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
 		}
 	}
 
 	private void detectChange(Map<String, Object> changed, String property, Object currentValue) {
 		Object oldValue = valueCache.get(property);
-		if(!Objects.equals(currentValue,oldValue)){
-			valueCache.put(property,currentValue);
-			changed.put(property,currentValue);
+		if (!Objects.equals(currentValue, oldValue)) {
+			valueCache.put(property, currentValue);
+			changed.put(property, currentValue);
 		}
 	}
 
-	private boolean blockReaction = false;
-	private void updateView(final String key,final Object value) {
+	private void updateView(final String key, final Object value) {
 		List<ReactiveBinder.Binding<?>> bindings = displayBindings.get(key);
-		if(bindings != null && bindings.size() > 0) {
+		if (bindings != null && bindings.size() > 0) {
 			blockReaction = true;
 			bindings.forEach(e -> {
 				Object converted;
@@ -100,20 +107,14 @@ public final class ReactiveController<C> {
 					Class<?> convertedType = converted.getClass();
 					ReactiveException exception;
 					if (convertedType.equals(original))
-						exception =  new ReactiveException("Bad binding for \""+key+"\". Target function doesnt accept type " + original.getTypeName());
+						exception = new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accept type " + original.getTypeName());
 					else
-						exception = new ReactiveException("Bad binding for \""+key+"\". Target function doesnt accepts converted (from " + original.getTypeName() + " to " + convertedType.getTypeName() + ")");
+						exception = new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accepts converted (from " + original.getTypeName() + " to " + convertedType.getTypeName() + ")");
 					exception.initCause(ex);
 					throw exception;
 				}
 			});
 			blockReaction = false;
 		}
-	}
-
-	public void bind(Reactable model) {
-		model.bind(this);
-		this.model = model;
-		modelChanged();
 	}
 }

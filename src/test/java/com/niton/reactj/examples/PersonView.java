@@ -10,13 +10,13 @@ import java.awt.*;
 
 public class PersonView extends ReactiveView<PersonController, JPanel, ReactiveModel<Person>> {
 
-	private JPanel            panel;
+	private JPanel panel;
 
 	private JTextField        surnameInput;
 	private JTextField        ageInput;
-	private JTextField        iqField ;
+	private JTextField        iqField;
 	private JComboBox<Gender> genderJComboBox;
-	private JButton           selectButton ;
+	private JButton           selectButton;
 
 	public PersonView(PersonController controller) {
 		super(controller);
@@ -25,12 +25,12 @@ public class PersonView extends ReactiveView<PersonController, JPanel, ReactiveM
 
 	@Override
 	protected JPanel createView() {
-		panel           = new JPanel();
-		surnameInput    = new JTextField();
-		ageInput        = new JTextField();
-		iqField         = new JTextField();
+		panel = new JPanel();
+		surnameInput = new JTextField();
+		ageInput = new JTextField();
+		iqField = new JTextField();
 		genderJComboBox = new JComboBox<>(Gender.values());
-		selectButton    = new JButton("Reset");
+		selectButton = new JButton("Reset");
 
 
 		panel.add(surnameInput);

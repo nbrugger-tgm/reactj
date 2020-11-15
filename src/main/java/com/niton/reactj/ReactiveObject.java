@@ -2,12 +2,8 @@ package com.niton.reactj;
 
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
-import javassist.*;
-import javassist.util.HotSwapAgent;
 import javassist.util.proxy.ProxyFactory;
-import org.apache.commons.lang3.ClassUtils;
 
-import java.io.IOException;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -18,35 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ReactiveObject implements Reactable{
+public class ReactiveObject implements Reactable {
 	@Unreactive
 	protected final List<ReactiveController<?>> listeners = new ArrayList<>();
 	@Unreactive
-	private Field[] fields = null;
+	private final   Field[]                     fields    = null;
 
-	public void bind(ReactiveController<?> c){
-		listeners.add(c);
-	}
-
-	@Override
-	public Map<String, Object> getState() {
-		return ReactiveReflectorUtil.getState(this);
-	}
-
-
-	public void unbind(ReactiveController<?> c){
-		listeners.remove(c);
-	}
-	public void react(){
-		listeners.forEach(ReactiveController::modelChanged);
-	}
-
-	@Override
-	public void set(String property, Object value) throws Throwable {
-		ReactiveReflectorUtil.updateField(this,property,value);
-	}
-
-	public static <C> ReactiveProxy<C> create(Class<C> o, Object... constructorParameters) throws ReactiveException{
+	public static <C> ReactiveProxy<C> create(Class<C> o, Object... constructorParameters) throws ReactiveException {
 
 		C wrapped = null;
 		C real = null;
@@ -57,20 +31,20 @@ public class ReactiveObject implements Reactable{
 			constructor.setAccessible(true);
 			real = constructor.newInstance(constructorParameters);
 		} catch (InstantiationException | InvocationTargetException e) {
-			ReactiveException exception = new ReactiveException("Couldn't construct "+o.getSimpleName());
+			ReactiveException exception = new ReactiveException("Couldn't construct " + o.getSimpleName());
 			exception.initCause(e);
 			throw exception;
-		} catch (IllegalAccessException ignored) {}
-		catch (NoSuchMethodException e) {
-			try{
+		} catch (IllegalAccessException ignored) {
+		} catch (NoSuchMethodException e) {
+			try {
 				Constructor<C> constructor = o.getConstructor(unboxedParamTypes);
 				constructor.setAccessible(true);
 				real = constructor.newInstance(constructorParameters);
-			}catch (NoSuchMethodException ex){
-				throw new ReactiveException("No constructor("+Arrays.stream(paramTypes).map(Class::getSimpleName).collect(Collectors.joining(", "))+") found in class "+o.getSimpleName());
+			} catch (NoSuchMethodException ex) {
+				throw new ReactiveException("No constructor(" + Arrays.stream(paramTypes).map(Class::getSimpleName).collect(Collectors.joining(", ")) + ") found in class " + o.getSimpleName());
 			} catch (IllegalAccessException ignored) {
 			} catch (InstantiationException | InvocationTargetException instantiationException) {
-				ReactiveException exception = new ReactiveException("Couldn't construct "+o.getSimpleName());
+				ReactiveException exception = new ReactiveException("Couldn't construct " + o.getSimpleName());
 				exception.initCause(e);
 				throw exception;
 			}
@@ -80,16 +54,38 @@ public class ReactiveObject implements Reactable{
 		ProxyFactory factory = new ProxyFactory();
 		factory.setSuperclass(o);
 		try {
-			wrapped = (C) factory.create(paramTypes,constructorParameters,model);
+			wrapped = (C) factory.create(paramTypes, constructorParameters, model);
 		} catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			try{
-				wrapped = (C) factory.create(unboxedParamTypes,constructorParameters,model);
-			}catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException instantiationException) {
+			try {
+				wrapped = (C) factory.create(unboxedParamTypes, constructorParameters, model);
+			} catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException instantiationException) {
 				ReactiveException ex = new ReactiveException("Error on creating proxy");
 				ex.initCause(e);
-				throw  ex;
+				throw ex;
 			}
 		}
-		return new ReactiveProxy<>(wrapped,model);
+		return new ReactiveProxy<>(wrapped, model);
+	}
+
+	public void bind(ReactiveController<?> c) {
+		listeners.add(c);
+	}
+
+	@Override
+	public Map<String, Object> getState() {
+		return ReactiveReflectorUtil.getState(this);
+	}
+
+	public void unbind(ReactiveController<?> c) {
+		listeners.remove(c);
+	}
+
+	public void react() {
+		listeners.forEach(ReactiveController::modelChanged);
+	}
+
+	@Override
+	public void set(String property, Object value) throws Throwable {
+		ReactiveReflectorUtil.updateField(this, property, value);
 	}
 }

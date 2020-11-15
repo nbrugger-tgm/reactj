@@ -7,7 +7,7 @@ import javax.swing.*;
 
 public class PersonApp {
 	public static void main(String[] args) throws InterruptedException {
-		ReactiveProxy<Person> proxy = ReactiveObject.create(Person.class,12,"Niton");
+		ReactiveProxy<Person> proxy = ReactiveObject.create(Person.class, 12, "Niton");
 
 		Person information = proxy.object;
 		PersonController controller = new PersonController(information);
@@ -26,10 +26,10 @@ public class PersonApp {
 		information.setIq(120);
 		information.setName("Niton");
 
-		for (;;){
+		for (; ; ) {
 			Thread.sleep(1000);
 			System.out.println(information);
-			information.setAge(information.getAge()+1);
+			information.setAge(information.getAge() + 1);
 		}
 	}
 }
