@@ -10,7 +10,11 @@ import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.
 
 //optional
 @ReactivResolution(FLAT)
-public class PersonalInformation extends ReactiveObject {
+public class Person {
+	public Person(int age, String name) {
+		this.age = age;
+		this.name = name;
+	}
 
 	private int age;
 
@@ -31,7 +35,6 @@ public class PersonalInformation extends ReactiveObject {
 
 	public void setAge(int age) {
 		this.age = age;
-		react();
 	}
 
 	public String getName() {
@@ -40,7 +43,6 @@ public class PersonalInformation extends ReactiveObject {
 
 	public void setName(String name) {
 		this.name = name;
-		react();
 	}
 
 	public int getIq() {
@@ -49,7 +51,6 @@ public class PersonalInformation extends ReactiveObject {
 
 	public void setIq(int iq) {
 		this.iq = iq;
-		react();
 	}
 
 	public Gender getGender() {
@@ -58,7 +59,6 @@ public class PersonalInformation extends ReactiveObject {
 
 	public void setGender(Gender gender) {
 		this.gender = gender;
-		react();
 	}
 
 	@Override
