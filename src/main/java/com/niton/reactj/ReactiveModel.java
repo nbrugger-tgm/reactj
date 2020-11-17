@@ -1,6 +1,7 @@
 package com.niton.reactj;
 
 import javassist.util.proxy.MethodHandler;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,6 +25,10 @@ public class ReactiveModel<M> implements MethodHandler, Reactable {
 		return strategy;
 	}
 
+	public M getData() {
+		return model;
+	}
+
 	public void setStrategy(ReactiveStrategy strategy) {
 		this.strategy = strategy;
 	}
@@ -38,6 +43,7 @@ public class ReactiveModel<M> implements MethodHandler, Reactable {
 
 	@Override
 	public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws InvocationTargetException, IllegalAccessException {
+		thisMethod.setAccessible(true);
 		Object ret = thisMethod.invoke(model, args);
 		boolean react = strategy.reactTo(thisMethod.getName(), reactTo);
 		if (react)
