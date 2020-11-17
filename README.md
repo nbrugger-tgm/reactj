@@ -84,7 +84,7 @@ ReactiveProxy<Data> proxy = ReactiveObject.create(Data.class);
 Data model = proxy.object;
 DataController controller = new DataController(model);
 DataView view = new DataView();
-view.setData(proxy.reactive);
+view.setData(proxy);
 
 //now you just need to display the view on a JFrame
 ```
