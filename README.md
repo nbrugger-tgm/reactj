@@ -1,8 +1,9 @@
 
-<center><h1>React J</h1></center>
-<img src="media/logo.png" alt="Unbenannt" style="zoom:25%;" />
-
-This library introduces **easy** reactive Bindings in Java, very useful to create a MVC UI without back draws. 
+<center><h1 align="center">React J</h1></center>
+<p align="center">
+<img src="media/logo.png" alt="Unbenannt" height="180pt"><br/>
+	This library introduces <b>easy</b> reactive Bindings in Java, very useful to create a MVC UI without backdraws.
+</p> 
 
 ### Example
 
