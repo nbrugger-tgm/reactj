@@ -1,4 +1,4 @@
-package com.niton.reactj.examples;
+package com.niton.reactj.examples.swing;
 
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;

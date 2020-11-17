@@ -1,4 +1,4 @@
-package com.niton.reactj.examples;
+package com.niton.reactj.examples.swing;
 
 import java.awt.event.ActionEvent;
 
