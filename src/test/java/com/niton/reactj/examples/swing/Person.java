@@ -1,29 +1,28 @@
-package com.niton.reactj.examples;
+package com.niton.reactj.examples.swing;
 
 import com.niton.reactj.annotation.ReactivResolution;
-import com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions;
 import com.niton.reactj.annotation.Reactive;
-import com.niton.reactj.ReactiveObject;
 import com.niton.reactj.annotation.Unreactive;
 
-import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.*;
+import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.FLAT;
 
 //optional
 @ReactivResolution(FLAT)
-public class PersonalInformation extends ReactiveObject {
-
+public class Person {
 	private int age;
-
 	//change reactive name
 	@Reactive("surename")
 	private String name;
-
-	private int iq;
+	private int    iq;
 	private Gender gender;
-
 	//This will not be reacted to
 	@Unreactive
 	private String address;
+
+	public Person(int age, String name) {
+		this.age = age;
+		this.name = name;
+	}
 
 	public int getAge() {
 		return age;
@@ -31,7 +30,6 @@ public class PersonalInformation extends ReactiveObject {
 
 	public void setAge(int age) {
 		this.age = age;
-		react();
 	}
 
 	public String getName() {
@@ -40,7 +38,6 @@ public class PersonalInformation extends ReactiveObject {
 
 	public void setName(String name) {
 		this.name = name;
-		react();
 	}
 
 	public int getIq() {
@@ -49,7 +46,6 @@ public class PersonalInformation extends ReactiveObject {
 
 	public void setIq(int iq) {
 		this.iq = iq;
-		react();
 	}
 
 	public Gender getGender() {
@@ -58,7 +54,6 @@ public class PersonalInformation extends ReactiveObject {
 
 	public void setGender(Gender gender) {
 		this.gender = gender;
-		react();
 	}
 
 	@Override

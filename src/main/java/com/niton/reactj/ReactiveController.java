@@ -1,139 +1,120 @@
 package com.niton.reactj;
 
-import com.niton.reactj.annotation.ReactivResolution;
-import com.niton.reactj.annotation.*;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import com.niton.reactj.exceptions.ReactiveException;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 public final class ReactiveController<C> {
 
-	private final ReactiveComponent<C> view;
-	private ReactiveObject model;
-	private final Map<String,Object> valueCache = new HashMap<>();
-	private final Map<String, List<ReactiveBinder.Binding<?>>> displayFunctions = new HashMap<>();
-	private final Map<String, ReactiveBinder.ValueReceiver<?>> valueReceivers = new HashMap<>();
-	private final Map<String, ReactiveBinder.Converter<?, ?>> toModelConverter = new HashMap<>();
+	private final ReactiveComponent<C>                              view;
+	private final Map<String, Object>                               valueCache      = new HashMap<>();
+	private final Map<String, List<ReactiveBinder.Binding<?>>>      displayBindings = new HashMap<>();
+	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
+	private       Reactable                                         model;
+	private boolean blockReaction = false;
 
-	public ReactiveController(ReactiveComponent<C> view,C customController) {
+	public ReactiveController(ReactiveComponent<C> view, C customController) {
 		this.view = view;
-		ReactiveBinder binder = new ReactiveBinder(this::updateModel,displayFunctions,valueReceivers,toModelConverter);
+		ReactiveBinder binder = new ReactiveBinder(this::updateModel, displayBindings, editBindings);
 		view.createBindings(binder);
 		view.createAnnotatedBindings(binder);
 		view.registerListeners(customController);
 	}
-	private void updateModel(EventObject actionEvent) {
+
+	private void updateModel(EventObject actionEvent) throws Throwable {
+		if (blockReaction) {
+			return;
+		}
 		Map<String, Object> changed = new HashMap<>();
-		synchronized (model) {
-			Field[] fields = getRelevantFields(model.getClass());
-			Map<String, Field> namedFields = new HashMap<>();
-			for (Field field : fields) {
-				field.setAccessible(true);
-				if (Modifier.isStatic(field.getModifiers()))
-					continue;
-				if(field.isAnnotationPresent(Unreactive.class))
-					continue;
-				String name = getReactiveName(field);
-				if (!valueReceivers.containsKey(name))
-					continue;
-				Object oldValue = valueCache.get(name);
-				Object newValue = toModelConverter.get(name).convert(valueReceivers.get(name).get());
-				if (!Objects.equals(newValue, oldValue)) {
-					namedFields.put(name, field);
-					changed.put(name, newValue);
+		Map<String, Object> state = model.getState();
+		for (Map.Entry<String, Object> field : state.entrySet()) {
+			if (!editBindings.containsKey(field.getKey()))
+				continue;
+			Object oldValue = field.getValue();
+			List<ReactiveBinder.BiBinding<?, ?>> editBind = editBindings.get(field.getKey());
+
+			for (ReactiveBinder.BiBinding<?, ?> biBinding : editBind) {
+				Object bindingVal = biBinding.toModelConverter.convert(biBinding.reciver.get());
+				if (!Objects.equals(bindingVal, oldValue)) {
+					changed.put(field.getKey(), bindingVal);
+					break;
 				}
 			}
-			for (Map.Entry<String, Object> change : changed.entrySet()) {
-				changeModelValue(namedFields.get(change.getKey()), change.getValue());
-			}
-			if (changed.size() > 0)
-				model.react();
-			valueCache.putAll(changed);
 		}
+		for (Map.Entry<String, Object> change : changed.entrySet()) {
+			model.set(change.getKey(), change.getValue());
+		}
+		if (changed.size() > 0)
+			model.react();
+		valueCache.putAll(changed);
 	}
 
-	private void changeModelValue(Field field, Object newValue) {
-		try {
-			FieldUtils.writeField(field,model,newValue);
-		} catch (IllegalAccessException ignored) {
-			ignored.printStackTrace();
-		}
+	public void bind(Reactable model) {
+		model.bind(this);
+		this.model = model;
+		modelChanged();
 	}
 
-	private static Field[] getRelevantFields(Class<?> type) {
-		Field[] fields;
-		if (type.isAnnotationPresent(ReactivResolution.class) && type.getDeclaredAnnotation(ReactivResolution.class).value() == ReactivResolution.ReactiveResolutions.FLAT)
-			fields = type.getDeclaredFields();
-		else
-			fields = FieldUtils.getAllFields(type);
-		return fields;
-	}
-
-	void modelChanged(){
-		synchronized (model) {
-			Map<String, Object> changed = new HashMap<>();
-
-			getChanges(changed);
-
-			modelChanged(changed);
-		}
-	}
-	void modelChanged(Map<String, Object> changed){
-		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
-			updateView(stringObjectEntry.getKey(),stringObjectEntry.getValue());
-		}
+	void modelChanged() {
+		Map<String, Object> changed = new HashMap<>();
+		getChanges(changed);
+		modelChanged(changed);
 	}
 
 	private void getChanges(Map<String, Object> changed) {
-		Class<? extends ReactiveObject> modelClass = model.getClass();
-		Field[] fields = getRelevantFields(modelClass);
-
-		for (Field f : fields) {
-			if (Modifier.isStatic(f.getModifiers()))
-				continue;
-
-			if(f.isAnnotationPresent(Unreactive.class))
-				continue;
-			detectChange(changed, f);
+		Map<String, Object> state = model.getState();
+		for (String property : state.keySet()) {
+			detectChange(changed, property, state.get(property));
 		}
 	}
 
-	private void detectChange(Map<String, Object> changed, Field f) {
-		f.setAccessible(true);
-		String name = getReactiveName(f);
-		try {
-			Object value = FieldUtils.readField(f, model);
-			Object oldValue = valueCache.get(name);
-			if(!Objects.equals(value,oldValue)){
-				valueCache.put(name,value);
-				changed.put(name,value);
-			}
-		} catch (IllegalAccessException ignored) {
+	void modelChanged(Map<String, Object> changed) {
+		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
+			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
 		}
 	}
 
-	private String getReactiveName(Field f) {
-		return f.isAnnotationPresent(Reactive.class) ? f.getAnnotation(Reactive.class).value() : f.getName();
+	private void detectChange(Map<String, Object> changed, String property, Object currentValue) {
+		Object oldValue = valueCache.get(property);
+		if (!Objects.equals(currentValue, oldValue)) {
+			valueCache.put(property, currentValue);
+			changed.put(property, currentValue);
+		}
 	}
 
-	private void updateView(String key, Object value) {
-		List<ReactiveBinder.Binding<?>> bindings = displayFunctions.get(key);
-		if(bindings != null && bindings.size() > 0)
-			bindings.forEach(e -> e.display(value));
-	}
+	private void updateView(final String key, final Object value) {
+		List<ReactiveBinder.Binding<?>> bindings = displayBindings.get(key);
+		if (bindings != null && bindings.size() > 0) {
+			blockReaction = true;
+			bindings.forEach(e -> {
+				Object converted;
+				try {
+					converted = e.converter.convert(value);
+				} catch (ClassCastException ex) {
+					Class<?> original = value.getClass();
+					throw new ReactiveException("Bad converter. A converter for \"" + key + "\" doesnt accepts type " + original.getSimpleName());
+				}
 
-	public void bind(ReactiveObject model) {
-		model.bind(this);
-		if(this.model != null) {
-			synchronized (this.model) {
-				this.model = model;
-				modelChanged();
-			}
-		}else{
-			this.model = model;
-			modelChanged();
+				if (e instanceof ReactiveBinder.BiBinding) {
+					Object present = ((ReactiveBinder.BiBinding<?, ?>) e).reciver.get();
+					if (present.equals(value))
+						return;
+				}
+				try {
+					e.display.display(converted);
+				} catch (ClassCastException ex) {
+					Class<?> original = value.getClass();
+					Class<?> convertedType = converted.getClass();
+					ReactiveException exception;
+					if (convertedType.equals(original))
+						exception = new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accept type " + original.getTypeName());
+					else
+						exception = new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accepts converted (from " + original.getTypeName() + " to " + convertedType.getTypeName() + ")");
+					exception.initCause(ex);
+					throw exception;
+				}
+			});
+			blockReaction = false;
 		}
 	}
 }

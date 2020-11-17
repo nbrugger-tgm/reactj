@@ -8,8 +8,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ReactivResolution {
-	ReactiveResolutions value();
-	public enum ReactiveResolutions {
-		FLAT,DEEP
+	enum ReactiveResolutions {
+		FLAT, DEEP
 	}
+
+	ReactiveResolutions value();
 }

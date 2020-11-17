@@ -4,85 +4,102 @@ import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 public class ReactiveBinder {
-	private final UpdateFunction update;
-	private final Map<String, List<Binding<?>>> displayFunctions;
-	private final Map<String, ValueReceiver<?>> valueReceivers;
-	private final Map<String, Converter<?, ?>> toModelConverter;
+	private final UpdateFunction                     update;
+	private final Map<String, List<Binding<?>>>      displayBindings;
+	private final Map<String, List<BiBinding<?, ?>>> editBindings;
 
 	@FunctionalInterface
-	public interface UpdateFunction{
-		void update(EventObject obj);
+	public interface UpdateFunction {
+		void update(EventObject obj) throws Throwable;
 	}
-
-	public class Binding<D>{
-		DisplayFunction<D> displayer;
-		Converter<?,D> converter;
-
-		public Binding(DisplayFunction<D> displayFunctions, Converter<?,D> convertToDisplay) {
-			this.displayer = displayFunctions;
-			converter = convertToDisplay;
-		}
-		public void display(Object o){
-			displayer.display(converter.convert(o));
-		}
-	}
-
-	public ReactiveBinder(
-			UpdateFunction update,
-			Map<String, List<Binding<?>>> displayFunctions,
-			Map<String, ValueReceiver<?>> valueReceivers,
-			Map<String, Converter<?, ?>> toModelConverter) {
-		this.update = update;
-		this.displayFunctions = displayFunctions;
-		this.valueReceivers = valueReceivers;
-		this.toModelConverter = toModelConverter;
-	}
-	public <T> void bindEdit(String view, DisplayFunction<T> function, ValueReceiver<T> reciver){
-		Converter<T,T> notConverter = arg -> arg;
-		bindEdit(view,function,reciver, notConverter, notConverter);
-	}
-
-	public <O,T> void bindEdit(String view, DisplayFunction<O> function, ValueReceiver<O> reciver, Converter<O,T> convertToReal, Converter<T,O> convertToDisplay){
-		valueReceivers.put(view,reciver);
-		List<Binding<?>> funcs = displayFunctions.getOrDefault(view,new ArrayList<>());
-		funcs.add(new Binding<>(function,convertToDisplay));
-		displayFunctions.put(view,funcs);
-		toModelConverter.put(view,convertToReal);
-	}
-
-	public void react(EventObject actionEvent) {
-		update.update(actionEvent);
-	}
-
 
 	@FunctionalInterface
-	public interface DisplayFunction<R>{
-		default void display(Object data){
-			displayTypesave((R)data);
+	public interface DisplayFunction<R> {
+		default void display(Object data) {
+			displayTypesave((R) data);
 		}
+
 		void displayTypesave(R data);
 	}
 
 	@FunctionalInterface
-	public interface Converter<F,T>{
-		default T convert(Object o){
-			return convertTypesave((F)o);
+	public interface Converter<F, T> {
+		default T convert(Object o) {
+			return convertTypesave((F) o);
 		}
+
 		T convertTypesave(F arg);
 	}
-	public <R> void bind(String view, DisplayFunction<R> displayFunction) {
-		bind(view,displayFunction,arg->(R)arg);
-	}
-	public <R> void bind(String view, DisplayFunction<R> displayFunction,Converter<Object,R> transformer) {
-		List<Binding<?>> funcs = displayFunctions.getOrDefault(view,new ArrayList<>());
-		funcs.add(new Binding<>(displayFunction,transformer));
-		displayFunctions.put(view,funcs);
-	}
+
 	@FunctionalInterface
 	public interface ValueReceiver<R> {
 		R get();
+	}
+
+	public static class Binding<D> {
+		final DisplayFunction<D> display;
+		final Converter<?, D>    converter;
+
+
+		public Binding(DisplayFunction<D> displayFunctions, Converter<?, D> convertToDisplay) {
+			this.display = displayFunctions;
+			converter = convertToDisplay;
+		}
+	}
+
+	public static class BiBinding<M, D> extends Binding<D> {
+		final ValueReceiver<D> reciver;
+		final Converter<D, M>  toModelConverter;
+
+		public BiBinding(DisplayFunction<D> display, ValueReceiver<D> reciver, Converter<M, D> toDisplayConverter, Converter<D, M> toModelConverter) {
+			super(display, toDisplayConverter);
+			this.reciver = reciver;
+			this.toModelConverter = toModelConverter;
+		}
+	}
+
+
+	public ReactiveBinder(
+			UpdateFunction update,
+			Map<String, List<Binding<?>>> displayBindings,
+			Map<String, List<BiBinding<?, ?>>> editBindings) {
+		this.update = update;
+		this.displayBindings = displayBindings;
+		this.editBindings = editBindings;
+	}
+
+	public <T> void bindBi(String view, DisplayFunction<T> function, ValueReceiver<T> reciver) {
+		Converter<T, T> notConverter = arg -> arg;
+		bindBi(view, function, reciver, notConverter, notConverter);
+	}
+
+	public <D, M> void bindBi(String view, DisplayFunction<D> function, ValueReceiver<D> reciver, Converter<D, M> toModelConverter, Converter<M, D> toDisplayConverter) {
+		BiBinding<M, D> binding = new BiBinding<>(function, reciver, toDisplayConverter, toModelConverter);
+		List<Binding<?>> funcs = displayBindings.getOrDefault(view, new ArrayList<>());
+		funcs.add(binding);
+		displayBindings.put(view, funcs);
+		List<BiBinding<?, ?>> biBindings = editBindings.getOrDefault(view, new ArrayList<>());
+		biBindings.add(binding);
+		editBindings.put(view, biBindings);
+	}
+
+	public void react(EventObject actionEvent) {
+		try {
+			update.update(actionEvent);
+		} catch (Throwable throwable) {
+			throwable.printStackTrace();
+		}
+	}
+
+	public <R> void bind(String view, DisplayFunction<R> displayFunction) {
+		bind(view, displayFunction, arg -> (R) arg);
+	}
+
+	public <R> void bind(String view, DisplayFunction<R> displayFunction, Converter<Object, R> transformer) {
+		List<Binding<?>> funcs = displayBindings.getOrDefault(view, new ArrayList<>());
+		funcs.add(new Binding<>(displayFunction, transformer));
+		displayBindings.put(view, funcs);
 	}
 }

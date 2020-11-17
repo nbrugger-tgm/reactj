@@ -9,44 +9,59 @@ This library introduces **easy** reactive Bindings in Java, very useful to creat
 Create a View
 
 ```java
-public class CustomComponent extends JPanel implements ReactiveComponent<CustomController> {
-	//components that need bindings
-	private JTextField surnameInput = new JTextField()
-	private JComboBox<Gender> genderJComboBox = new JComboBox<>(Gender.values())
-	private JButton selectButton = new JButton("Reset");
+public class DataView extends ReactiveView<DataController, JPanel, ReactiveModel<Data>> {
+    private JPanel            panel;
     
-	public PersonalInformationComponent() {
-		add(surnameInput); //method from JPanel, nothing custom
-		add(genderJComboBox);
-		add(selectButton);
-	}
-
-	public void createBindings(ReactiveBinder bindings){
-	    bindings.bindEdit("surename",surnameInput::setText,surnameInput::getText);
-            surnameInput.addActionListener(bindings::react);
-
-            bindings.bind("gender",genderJComboBox::setSelectedItem);
-	}
-	
-	@Reactive("surename")
-	public void setNameAsWindowTitle(String name){
-		System.out.println("Set the window title to "+name);
-	}
+    private JTextField        nameInput;
+    private JComboBox<Gender> genderJComboBox;
+    private JButton           selectButton ;
+    
+    public DataView(DataController controller) {
+        super(controller);
+    }
+    
+    @Override
+    protected JPanel createView() {
+        panel           = new JPanel();
+        
+        nameInput       = new JTextField();
+        genderJComboBox = new JComboBox<>(Gender.values());
+        selectButton    = new JButton("Reset");
+        
+        nameInput.setColumns(10);
+        
+        panel.add(nameInput);
+        panel.add(genderJComboBox);
+        panel.add(selectButton);
+        
+        return panel;
+    }
+    
+    @Override
+    public void createBindings(ReactiveBinder bindings) {
+        bindings.bindBi("name", nameInput::setText, nameInput::getText);
+        bindings.bindBi("gender", genderJComboBox::setSelectedItem, genderJComboBox::getSelectedItem);
+        
+        //add actions to react to
+        nameInput.getDocument().addUndoableEditListener(bindings::react);
+        genderJComboBox.addActionListener(bindings::react);
+    }
+    
+    @Override
+    public void registerListeners(PersonController controller) {
+        selectButton.addActionListener(controller::reset);
+    }
 }
 ```
 
 Then we need a Pojo/Model to sync the View with
 
 ```java
-//optional
-//FLAT = Only members of this class are reactive
-//DEEP = also members from subclasses are resolved
-@ReactivResolution(FLAT)
-public class Person extends ReactiveObject { 
+public class Data { 
 	//change reactive name
-	@Reactive("surename")
+	@Reactive("gender")
+	private Gender personsGender;
 	private String name;
-	private Gender gender;
 
 	//This will not be reacted to
 	@Unreactive
@@ -54,12 +69,10 @@ public class Person extends ReactiveObject {
 
 	public void setName(String name) {
 		this.name = name;
-		react();
 	}
 
 	public void setGender(Gender gender) {
-		this.gender = gender;
-		react();
+		this.personsGender = gender;
 	}
 }
 ```
@@ -67,12 +80,12 @@ public class Person extends ReactiveObject {
 Now we need to bind the view to a Person object
 
 ```java
-Person information = new Person();
-CustomComponent component = new CustomComponent();
+ReactiveProxy<Data> proxy = ReactiveObject.create(Data.class);
+Data model = proxy.object;
+DataController controller = new DataController(model);
+DataView view = new DataView();
+view.setData(proxy.reactive);
 
-CustomController controller = new CustomController(information); //This one only custom events.
-ReactiveController<CustomController> reactor = new ReactiveController<>(component,controller);
-
-reactor.bind(information); //you can allways bind a new Object
+//now you just need to display the view on a JFrame
 ```
 
