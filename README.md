@@ -4,7 +4,37 @@
 <img src="media/logo.png" alt="Unbenannt" height="180pt"><br/>
 	This library introduces <b>easy</b> reactive Bindings in Java, very useful to create a MVC UI without backdraws.
 </p> 
-
+### Usage
+#### Gradle
+```groovy
+repositories {
+    maven {
+        url "https://niton.jfrog.io/artifactory/java-libs/"
+    }
+}
+```
+Adding the dependency
+```groovy
+implementation 'com.niton:reactj:2.0.1'
+```
+#### Maven
+```xml
+<repositories>
+  <repository>
+    <id>niton</id>
+    <name>niton</name>
+    <url>https://niton.jfrog.io/artifactory/java-libs/</url>
+  </repository>
+</repositories>
+```
+Adding the dependency
+```xml
+<dependency>
+  <groupId>com.niton</groupId>
+  <artifactId>reactj</artifactId>
+  <version>2.0.1</version>
+</dependency>
+```
 ### Example
 
 Create a View
