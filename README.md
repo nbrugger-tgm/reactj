@@ -4,8 +4,11 @@
 <img src="media/logo.png" alt="Unbenannt" height="180pt"><br/>
 	This library introduces <b>easy</b> reactive Bindings in Java, very useful to create a MVC UI without backdraws.
 </p> 
+
 ### Usage
+
 #### Gradle
+
 ```groovy
 repositories {
     maven {
@@ -13,11 +16,15 @@ repositories {
     }
 }
 ```
+
 Adding the dependency
+
 ```groovy
 implementation 'com.niton:reactj:2.0.1'
 ```
+
 #### Maven
+
 ```xml
 <repositories>
   <repository>
@@ -27,7 +34,9 @@ implementation 'com.niton:reactj:2.0.1'
   </repository>
 </repositories>
 ```
+
 Adding the dependency
+
 ```xml
 <dependency>
   <groupId>com.niton</groupId>
@@ -35,6 +44,7 @@ Adding the dependency
   <version>2.0.1</version>
 </dependency>
 ```
+
 ### Example
 
 Create a View
