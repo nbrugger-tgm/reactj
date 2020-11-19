@@ -7,13 +7,13 @@ import java.util.*;
 public final class ReactiveController<C> {
 
 	private final Map<String, Object>                               valueCache      = new HashMap<>();
-	private final Map<String, List<ReactiveBinder.Binding<?>>>      displayBindings = new HashMap<>();
+	private final Map<String, List<ReactiveBinder.Binding<?, ?>>>   displayBindings = new HashMap<>();
 	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
 	private       Reactable                                         model;
 	private boolean blockReaction = false;
 
 	public ReactiveController(ReactiveComponent<C> view, C customController) {
-		//this.view = view;
+		//Maybe in the future it is needed to ass the view as field
 		ReactiveBinder binder = new ReactiveBinder(this::updateModel, displayBindings, editBindings);
 		view.createBindings(binder);
 		view.createAnnotatedBindings(binder);
@@ -54,7 +54,14 @@ public final class ReactiveController<C> {
 		modelChanged();
 	}
 
-	void modelChanged() {
+
+
+	private void modelChanged(Map<String, Object> changed) {
+		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
+			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
+		}
+	}
+	public void modelChanged() {
 		Map<String, Object> changed = new HashMap<>();
 		getChanges(changed);
 		modelChanged(changed);
@@ -67,12 +74,6 @@ public final class ReactiveController<C> {
 		}
 	}
 
-	private void modelChanged(Map<String, Object> changed) {
-		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
-			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
-		}
-	}
-
 	private void detectChange(Map<String, Object> changed, String property, Object currentValue) {
 		Object oldValue = valueCache.get(property);
 		if (!Objects.equals(currentValue, oldValue)) {
@@ -82,13 +83,13 @@ public final class ReactiveController<C> {
 	}
 
 	private void updateView(final String key, final Object value) {
-		List<ReactiveBinder.Binding<?>> bindings = displayBindings.get(key);
+		List<ReactiveBinder.Binding<?,?>> bindings = displayBindings.get(key);
 		if (bindings != null && bindings.size() > 0) {
 			blockReaction = true;
 			bindings.forEach(e -> {
 				Object converted;
 				try {
-					converted = e.getConverter().convert(value);
+					converted = e.getToDisplayConverter().convert(value);
 				} catch (ClassCastException ex) {
 					Class<?> original = value.getClass();
 					throw new ReactiveException("Bad converter. A converter for \"" + key + "\" doesnt accepts type " + original.getSimpleName());

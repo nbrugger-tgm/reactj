@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ReactiveBinder {
 	private final UpdateFunction                     update;
-	private final Map<String, List<Binding<?>>>      displayBindings;
+	private final Map<String, List<Binding<?, ?>>>      displayBindings;
 	private final Map<String, List<BiBinding<?, ?>>> editBindings;
 
 	@FunctionalInterface
@@ -38,25 +38,25 @@ public class ReactiveBinder {
 		R get();
 	}
 
-	public static class Binding<D> {
+	public static class Binding<D,F> {
 		private final DisplayFunction<D> display;
-		private final Converter<?, D>    converter;
+		private final Converter<F, D>    toDisplayConverter;
 
 		public DisplayFunction<D> getDisplay() {
 			return display;
 		}
 
-		public Converter<?, D> getConverter() {
-			return converter;
+		public Converter<F, D> getToDisplayConverter() {
+			return toDisplayConverter;
 		}
 
-		public Binding(DisplayFunction<D> displayFunctions, Converter<?, D> convertToDisplay) {
+		public Binding(DisplayFunction<D> displayFunctions, Converter<F, D> convertToDisplay) {
 			this.display = displayFunctions;
-			converter = convertToDisplay;
+			toDisplayConverter = convertToDisplay;
 		}
 	}
 
-	public static class BiBinding<M, D> extends Binding<D> {
+	public static class BiBinding<M, D> extends Binding<D,M> {
 		final ValueReceiver<D> reciver;
 		final Converter<D, M>  toModelConverter;
 
@@ -69,8 +69,8 @@ public class ReactiveBinder {
 
 
 	public ReactiveBinder(
-			UpdateFunction update,
-			Map<String, List<Binding<?>>> displayBindings,
+			UpdateFunction                     update,
+			Map<String, List<Binding<?, ?>>>   displayBindings,
 			Map<String, List<BiBinding<?, ?>>> editBindings) {
 		this.update = update;
 		this.displayBindings = displayBindings;
@@ -84,7 +84,7 @@ public class ReactiveBinder {
 
 	public <D, M> void bindBi(String view, DisplayFunction<D> function, ValueReceiver<D> reciver, Converter<D, M> toModelConverter, Converter<M, D> toDisplayConverter) {
 		BiBinding<M, D> binding = new BiBinding<>(function, reciver, toDisplayConverter, toModelConverter);
-		List<Binding<?>> funcs = displayBindings.getOrDefault(view, new ArrayList<>());
+		List<Binding<?, ?>> funcs = displayBindings.getOrDefault(view, new ArrayList<>());
 		funcs.add(binding);
 		displayBindings.put(view, funcs);
 		List<BiBinding<?, ?>> biBindings = editBindings.getOrDefault(view, new ArrayList<>());
@@ -105,7 +105,7 @@ public class ReactiveBinder {
 	}
 
 	public <R> void bind(String view, DisplayFunction<R> displayFunction, Converter<Object, R> transformer) {
-		List<Binding<?>> funcs = displayBindings.getOrDefault(view, new ArrayList<>());
+		List<Binding<?, ?>> funcs = displayBindings.getOrDefault(view, new ArrayList<>());
 		funcs.add(new Binding<>(displayFunction, transformer));
 		displayBindings.put(view, funcs);
 	}

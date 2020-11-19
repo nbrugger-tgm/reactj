@@ -1,8 +1,5 @@
 package com.niton.reactj;
 
-import com.niton.reactj.annotation.Reactive;
-
-import java.lang.annotation.Annotation;
 import java.util.Map;
 
 public class ReactiveProxy<C> implements Reactable {

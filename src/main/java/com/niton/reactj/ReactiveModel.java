@@ -1,7 +1,6 @@
 package com.niton.reactj;
 
 import javassist.util.proxy.MethodHandler;
-import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
