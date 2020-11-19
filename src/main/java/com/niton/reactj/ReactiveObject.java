@@ -78,7 +78,7 @@ public class ReactiveObject implements Reactable {
 		listeners.forEach(ReactiveController::modelChanged);
 	}
 
-	public void react(String name,Object obj) {
+	public void react(String name, Object obj) {
 		listeners.forEach(l -> l.modelChanged(Collections.singletonMap(name, obj)));
 	}
 

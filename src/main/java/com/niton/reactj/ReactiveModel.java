@@ -13,13 +13,14 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
 
 /**
  * Only for internal use
+ *
  * @param <M>
  */
 public class ReactiveModel<M> implements MethodHandler, Reactable {
 	protected final List<ReactiveController<?>> listeners = new ArrayList<>();
-	final   M                model;
-	private ReactiveStrategy strategy = REACT_ON_SETTER;
-	private String[]         reactTo;
+	final           M                           model;
+	private         ReactiveStrategy            strategy  = REACT_ON_SETTER;
+	private         String[]                    reactTo;
 
 	public ReactiveModel(M model) {
 		this.model = model;
@@ -29,12 +30,12 @@ public class ReactiveModel<M> implements MethodHandler, Reactable {
 		return strategy;
 	}
 
-	public M getData() {
-		return model;
-	}
-
 	public void setStrategy(ReactiveStrategy strategy) {
 		this.strategy = strategy;
+	}
+
+	public M getData() {
+		return model;
 	}
 
 	public String[] getReactTo() {
@@ -76,7 +77,7 @@ public class ReactiveModel<M> implements MethodHandler, Reactable {
 
 	@Override
 	public void react(String property, Object value) {
-		listeners.forEach(l -> l.modelChanged(Collections.singletonMap(property,value)));
+		listeners.forEach(l -> l.modelChanged(Collections.singletonMap(property, value)));
 	}
 
 	@Override

@@ -10,10 +10,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 class ReactiveReflectorUtil {
-	private static final Map<String, Field[]> fieldCache = new HashMap<>();
-
+	private static final   Map<String, Field[]> fieldCache   = new HashMap<>();
 	public static Map<String, Object> getState(Object model) {
 		HashMap<String, Object> state = new HashMap<>();
 		Class<?> type = model.getClass();
@@ -67,6 +68,5 @@ class ReactiveReflectorUtil {
 				return;
 			}
 		}
-		System.err.println("WARNING! UI tried to change non existing property "+property+"!");
 	}
 }

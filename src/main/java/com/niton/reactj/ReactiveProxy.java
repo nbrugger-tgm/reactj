@@ -33,11 +33,11 @@ public class ReactiveProxy<C> implements Reactable {
 
 	@Override
 	public void react(String property, Object value) {
-		reactive.react(property,value);
+		reactive.react(property, value);
 	}
 
 	@Override
 	public void set(String property, Object value) throws Throwable {
-		reactive.set(property,value);
+		reactive.set(property, value);
 	}
 }

@@ -2,7 +2,6 @@ package com.niton.reactj.special;
 
 import com.niton.reactj.Reactable;
 import com.niton.reactj.ReactiveModel;
-import com.niton.reactj.annotation.Reactive;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -13,14 +12,15 @@ import static com.niton.reactj.special.ReactiveList.*;
 
 public interface ReactiveList<E> extends Reactable, List<E> {
 	public static final String
-		ADD = "add",
-		ADD_INDEX = "add_index",
-		SET_INDEX = "set_index",
-		REMOVE_INDEX = "remove_index",
-		REMOVE_OBJECT = "remove_object",
-		CLEAR = "clear",
-		INIT = "init";
-	static<E> ReactiveList<E> create(List<E> list){
+			ADD           = "add",
+			ADD_INDEX     = "add_index",
+			SET_INDEX     = "set_index",
+			REMOVE_INDEX  = "remove_index",
+			REMOVE_OBJECT = "remove_object",
+			CLEAR         = "clear",
+			INIT          = "init";
+
+	static <E> ReactiveList<E> create(List<E> list) {
 		return (ReactiveList<E>) Proxy.newProxyInstance(
 				ReactiveList.class.getClassLoader(),
 				new Class[]{ReactiveList.class},
@@ -28,11 +28,10 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 	}
 
 }
+
 class ReactiveListHandler<E> implements InvocationHandler {
-	private final List<E> list;
-	private final ReactiveModel<List<E>> model;
 	private static String
-			addMethod,
+	                                      addMethod,
 			intAddMethod,
 			removeObject,
 			removeIndex,
@@ -50,34 +49,37 @@ class ReactiveListHandler<E> implements InvocationHandler {
 		}
 	}
 
+	private final  List<E>                list;
+	private final  ReactiveModel<List<E>> model;
+
 	public ReactiveListHandler(List<E> list) {
 		this.list = list;
 		this.model = new ReactiveModel<>(list);
-		model.react(INIT,list);
+		model.react(INIT, list);
 	}
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		Object ret;
-		if (method.getDeclaringClass().equals(Reactable.class)){
+		if (method.getDeclaringClass().equals(Reactable.class)) {
 			method.setAccessible(true);
-			ret = method.invoke(model,args);
-		}else{
+			ret = method.invoke(model, args);
+		} else {
 			method.setAccessible(true);
-			ret = method.invoke(list,args);
+			ret = method.invoke(list, args);
 			String signature = method.toGenericString();
 
-			if (signature.equals(addMethod)){
-				model.react(ADD,args[0]);
-			}else if(signature.equals(intAddMethod)){
-				model.react(SET_INDEX,args[0]);
-				model.react(ADD_INDEX,args[1]);
-			}else if(signature.equals(removeObject)){
-				model.react(REMOVE_OBJECT,args[0]);
-			}else if(signature.equals(removeIndex)){
-				model.react(REMOVE_INDEX,args[0]);
-			}else if(signature.equals(clear)){
-				model.react(clear,null);
+			if (signature.equals(addMethod)) {
+				model.react(ADD, args[0]);
+			} else if (signature.equals(intAddMethod)) {
+				model.react(SET_INDEX, args[0]);
+				model.react(ADD_INDEX, args[1]);
+			} else if (signature.equals(removeObject)) {
+				model.react(REMOVE_OBJECT, args[0]);
+			} else if (signature.equals(removeIndex)) {
+				model.react(REMOVE_INDEX, args[0]);
+			} else if (signature.equals(clear)) {
+				model.react(clear, null);
 			}
 		}
 		return ret;

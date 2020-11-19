@@ -3,10 +3,9 @@ package com.niton.reactj.examples.list;
 import com.niton.reactj.examples.swing.Gender;
 
 import java.awt.event.ActionEvent;
-import java.util.List;
 
 public class PersonController {
-	private final Person       information;
+	private final Person information;
 
 	public PersonController(Person information) {
 		this.information = information;

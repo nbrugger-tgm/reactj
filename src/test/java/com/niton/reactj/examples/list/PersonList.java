@@ -7,15 +7,13 @@ import com.niton.reactj.special.ReactiveListModel;
 
 import javax.swing.*;
 
-import java.awt.*;
-
 import static javax.swing.BoxLayout.Y_AXIS;
 
 public class PersonList extends ReactiveView<PersonListController, JPanel, ReactiveList<Person>> {
 	private ReactiveListModel<Person> model;
-	private JButton addButton;
-	private JButton removeButton;
-	private JPanel list;
+	private JButton                   addButton;
+	private JButton                   removeButton;
+	private JPanel                    list;
 
 	public PersonList(PersonListController controller) {
 		super(controller);
@@ -33,7 +31,7 @@ public class PersonList extends ReactiveView<PersonListController, JPanel, React
 		panel.add(removeButton);
 
 		list = new JPanel();
-		list.setLayout(new BoxLayout(list,Y_AXIS));
+		list.setLayout(new BoxLayout(list, Y_AXIS));
 		pane.setViewportView(list);
 
 		panel.add(pane);
@@ -41,14 +39,17 @@ public class PersonList extends ReactiveView<PersonListController, JPanel, React
 
 		return panel;
 	}
-
-	private void remove(Person o) {
-		throw new UnsupportedOperationException();
+	private int i = 0;
+	@Override
+	public void createBindings(ReactiveBinder binder) {
+		model = new ReactiveListModel<>(this::indexAdd, this::indexRemove, this::add, this::remove, list::getComponentCount);
+		model.bind(binder);
+		binder.bindBi("penis",System.out::println,()->"penis"+i++);
+		addButton.addActionListener(binder::react);
 	}
 
-	private void add(Person o) {
-		list.add(new PersonView(o).getView());
-		list.validate();
+	private void indexAdd(int i, Person o) {
+		list.add(new PersonView(o).getView(), i);
 	}
 
 	private void indexRemove(int i) {
@@ -56,14 +57,13 @@ public class PersonList extends ReactiveView<PersonListController, JPanel, React
 		list.validate();
 	}
 
-	private void indexAdd(int i,Person o) {
-		list.add(new PersonView(o).getView(),i);
+	private void add(Person o) {
+		list.add(new PersonView(o).getView());
+		list.validate();
 	}
 
-	@Override
-	public void createBindings(ReactiveBinder binder) {
-		model = new ReactiveListModel<>(this::indexAdd,this::indexRemove,this::add,this::remove,list::getComponentCount);
-		model.bind(binder);
+	private void remove(Person o) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

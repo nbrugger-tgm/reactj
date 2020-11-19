@@ -22,6 +22,5 @@ public class PersonListApp {
 		frame.setVisible(true);
 
 
-
 	}
 }

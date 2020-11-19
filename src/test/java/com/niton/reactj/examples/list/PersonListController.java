@@ -11,7 +11,7 @@ public class PersonListController {
 	}
 
 	public void add(ActionEvent actionEvent) {
-		list.add(new Person(0,"Max Mustermann"));
+		list.add(new Person(0, "Max Mustermann"));
 	}
 
 	public void remove(int selectedIndex) {
