@@ -61,6 +61,7 @@ public final class ReactiveController<C> {
 			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
 		}
 	}
+
 	public void modelChanged() {
 		Map<String, Object> changed = new HashMap<>();
 		getChanges(changed);

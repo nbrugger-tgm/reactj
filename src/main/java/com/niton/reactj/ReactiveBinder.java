@@ -50,7 +50,10 @@ public class ReactiveBinder {
 			return toDisplayConverter;
 		}
 
-		public Binding(DisplayFunction<D> displayFunctions, Converter<F, D> convertToDisplay) {
+		public Binding(
+				DisplayFunction<D> displayFunctions,
+				Converter<F, D> convertToDisplay
+		) {
 			this.display = displayFunctions;
 			toDisplayConverter = convertToDisplay;
 		}
@@ -60,7 +63,12 @@ public class ReactiveBinder {
 		final ValueReceiver<D> reciver;
 		final Converter<D, M>  toModelConverter;
 
-		public BiBinding(DisplayFunction<D> display, ValueReceiver<D> reciver, Converter<M, D> toDisplayConverter, Converter<D, M> toModelConverter) {
+		public BiBinding(
+				DisplayFunction<D> display,
+				ValueReceiver<D> reciver,
+				Converter<M, D> toDisplayConverter,
+				Converter<D, M> toModelConverter
+		) {
 			super(display, toDisplayConverter);
 			this.reciver = reciver;
 			this.toModelConverter = toModelConverter;
@@ -71,7 +79,8 @@ public class ReactiveBinder {
 	public ReactiveBinder(
 			UpdateFunction                     update,
 			Map<String, List<Binding<?, ?>>>   displayBindings,
-			Map<String, List<BiBinding<?, ?>>> editBindings) {
+			Map<String, List<BiBinding<?, ?>>> editBindings
+	) {
 		this.update = update;
 		this.displayBindings = displayBindings;
 		this.editBindings = editBindings;
@@ -82,7 +91,13 @@ public class ReactiveBinder {
 		bindBi(view, function, reciver, notConverter, notConverter);
 	}
 
-	public <D, M> void bindBi(String view, DisplayFunction<D> function, ValueReceiver<D> reciver, Converter<D, M> toModelConverter, Converter<M, D> toDisplayConverter) {
+	public <D, M> void bindBi(
+			String view,
+			DisplayFunction<D> function,
+			ValueReceiver<D> reciver,
+			Converter<D, M> toModelConverter,
+			Converter<M, D> toDisplayConverter
+	) {
 		BiBinding<M, D> binding = new BiBinding<>(function, reciver, toDisplayConverter, toModelConverter);
 		List<Binding<?, ?>> funcs = displayBindings.getOrDefault(view, new ArrayList<>());
 		funcs.add(binding);
