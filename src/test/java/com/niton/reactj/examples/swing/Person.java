@@ -9,7 +9,7 @@ import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.
 //optional
 @ReactivResolution(FLAT)
 public class Person {
-	private int age;
+	private int    age;
 	//change reactive name
 	@Reactive("surename")
 	private String name;
