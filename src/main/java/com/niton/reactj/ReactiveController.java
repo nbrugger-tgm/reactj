@@ -10,7 +10,7 @@ public final class ReactiveController<C> {
 	private final Map<String, List<ReactiveBinder.Binding<?, ?>>>   displayBindings = new HashMap<>();
 	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
 	private       Reactable                                         model;
-	private boolean blockReaction = false;
+	private       boolean                                           blockReaction   = false;
 
 	public ReactiveController(ReactiveComponent<C> view, C customController) {
 		//Maybe in the future it is needed to ass the view as field
@@ -54,18 +54,16 @@ public final class ReactiveController<C> {
 		modelChanged();
 	}
 
-
-
-	private void modelChanged(Map<String, Object> changed) {
-		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
-			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
-		}
-	}
-
 	public void modelChanged() {
 		Map<String, Object> changed = new HashMap<>();
 		getChanges(changed);
 		modelChanged(changed);
+	}
+
+	public void modelChanged(Map<String, Object> changed) {
+		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
+			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
+		}
 	}
 
 	private void getChanges(Map<String, Object> changed) {
@@ -84,7 +82,7 @@ public final class ReactiveController<C> {
 	}
 
 	private void updateView(final String key, final Object value) {
-		List<ReactiveBinder.Binding<?,?>> bindings = displayBindings.get(key);
+		List<ReactiveBinder.Binding<?, ?>> bindings = displayBindings.get(key);
 		if (bindings != null && bindings.size() > 0) {
 			blockReaction = true;
 			bindings.forEach(e -> {

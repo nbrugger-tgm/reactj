@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ReactiveBinder {
 	private final UpdateFunction                     update;
-	private final Map<String, List<Binding<?, ?>>>      displayBindings;
+	private final Map<String, List<Binding<?, ?>>>   displayBindings;
 	private final Map<String, List<BiBinding<?, ?>>> editBindings;
 
 	@FunctionalInterface
@@ -38,17 +38,9 @@ public class ReactiveBinder {
 		R get();
 	}
 
-	public static class Binding<D,F> {
+	public static class Binding<D, F> {
 		private final DisplayFunction<D> display;
 		private final Converter<F, D>    toDisplayConverter;
-
-		public DisplayFunction<D> getDisplay() {
-			return display;
-		}
-
-		public Converter<F, D> getToDisplayConverter() {
-			return toDisplayConverter;
-		}
 
 		public Binding(
 				DisplayFunction<D> displayFunctions,
@@ -57,9 +49,17 @@ public class ReactiveBinder {
 			this.display = displayFunctions;
 			toDisplayConverter = convertToDisplay;
 		}
+
+		public DisplayFunction<D> getDisplay() {
+			return display;
+		}
+
+		public Converter<F, D> getToDisplayConverter() {
+			return toDisplayConverter;
+		}
 	}
 
-	public static class BiBinding<M, D> extends Binding<D,M> {
+	public static class BiBinding<M, D> extends Binding<D, M> {
 		final ValueReceiver<D> reciver;
 		final Converter<D, M>  toModelConverter;
 
@@ -77,8 +77,8 @@ public class ReactiveBinder {
 
 
 	public ReactiveBinder(
-			UpdateFunction                     update,
-			Map<String, List<Binding<?, ?>>>   displayBindings,
+			UpdateFunction update,
+			Map<String, List<Binding<?, ?>>> displayBindings,
 			Map<String, List<BiBinding<?, ?>>> editBindings
 	) {
 		this.update = update;

@@ -11,12 +11,12 @@ plugins {
     id 'maven-publish'
 }
 
-publishing{
+publishing {
     publications {
         lib(MavenPublication) {
             groupId = 'com.niton'
             artifactId = 'reactj'
-            version = '2.0.1'
+            version = '2.1.1'
             from components.java
         }
     }
@@ -27,7 +27,7 @@ publishing{
             credentials {
                 username = "nbrugger@student.tgm.ac.at"
                 def pwdFile = new File("TOKENS")
-                if(pwdFile.exists())
+                if (pwdFile.exists())
                     password = pwdFile.readLines().get(0)
                 else
                     password = System.getenv("ARTIFACTORY_API_KEY")
@@ -45,8 +45,6 @@ dependencies {
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
     implementation group: 'org.javassist', name: 'javassist', version: '3.27.0-GA'
 
-
-
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
 
     // Use JUnit Jupiter API for testing.
@@ -56,14 +54,14 @@ dependencies {
 }
 
 repositories {
-    if(useMavenRepos) {
+    if (useMavenRepos) {
         mavenLocal()
         mavenCentral()
     }
     jcenter()
 }
 
-if(isApplication) {
+if (isApplication) {
     application {
         mainClassName = mainClass
     }
