@@ -1,5 +1,7 @@
 package com.niton.reactj.examples.list;
 
+import com.niton.reactj.examples.swing.Gender;
+
 import java.awt.event.ActionEvent;
 import java.util.List;
 

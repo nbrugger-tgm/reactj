@@ -4,6 +4,7 @@ import com.niton.reactj.ReactiveObject;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.annotation.Unreactive;
+import com.niton.reactj.examples.swing.Gender;
 
 import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.FLAT;
 
