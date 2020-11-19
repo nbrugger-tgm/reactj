@@ -9,6 +9,8 @@
 
 ### Usage
 
+[![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fniton.jfrog.io%2Fartifactory%2Fjava-libs%2Fcom%2Fniton%2Freactj%2Fmaven-metadata.xml)](https://niton.jfrog.io/ui/packages/gav:%2F%2Fcom.niton:reactj?name=react&type=packages)
+
 #### Gradle
 
 ```groovy
