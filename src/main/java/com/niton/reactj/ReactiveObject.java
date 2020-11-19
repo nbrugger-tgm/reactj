@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 public class ReactiveObject implements Reactable {
 	@Unreactive
 	protected final List<ReactiveController<?>> listeners = new ArrayList<>();
-	@Unreactive
-	private final   Field[]                     fields    = null;
 
 	public static <C> ReactiveProxy<C> create(Class<C> o, Object... constructorParameters) throws ReactiveException {
 

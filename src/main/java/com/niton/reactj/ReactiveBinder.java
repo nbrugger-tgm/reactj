@@ -39,9 +39,16 @@ public class ReactiveBinder {
 	}
 
 	public static class Binding<D> {
-		final DisplayFunction<D> display;
-		final Converter<?, D>    converter;
+		private final DisplayFunction<D> display;
+		private final Converter<?, D>    converter;
 
+		public DisplayFunction<D> getDisplay() {
+			return display;
+		}
+
+		public Converter<?, D> getConverter() {
+			return converter;
+		}
 
 		public Binding(DisplayFunction<D> displayFunctions, Converter<?, D> convertToDisplay) {
 			this.display = displayFunctions;

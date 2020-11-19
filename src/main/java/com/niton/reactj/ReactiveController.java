@@ -6,7 +6,6 @@ import java.util.*;
 
 public final class ReactiveController<C> {
 
-	private final ReactiveComponent<C>                              view;
 	private final Map<String, Object>                               valueCache      = new HashMap<>();
 	private final Map<String, List<ReactiveBinder.Binding<?>>>      displayBindings = new HashMap<>();
 	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
@@ -14,7 +13,7 @@ public final class ReactiveController<C> {
 	private boolean blockReaction = false;
 
 	public ReactiveController(ReactiveComponent<C> view, C customController) {
-		this.view = view;
+		//this.view = view;
 		ReactiveBinder binder = new ReactiveBinder(this::updateModel, displayBindings, editBindings);
 		view.createBindings(binder);
 		view.createAnnotatedBindings(binder);
@@ -68,7 +67,7 @@ public final class ReactiveController<C> {
 		}
 	}
 
-	void modelChanged(Map<String, Object> changed) {
+	private void modelChanged(Map<String, Object> changed) {
 		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
 			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
 		}
@@ -89,7 +88,7 @@ public final class ReactiveController<C> {
 			bindings.forEach(e -> {
 				Object converted;
 				try {
-					converted = e.converter.convert(value);
+					converted = e.getConverter().convert(value);
 				} catch (ClassCastException ex) {
 					Class<?> original = value.getClass();
 					throw new ReactiveException("Bad converter. A converter for \"" + key + "\" doesnt accepts type " + original.getSimpleName());
@@ -101,7 +100,7 @@ public final class ReactiveController<C> {
 						return;
 				}
 				try {
-					e.display.display(converted);
+					e.getDisplay().display(converted);
 				} catch (ClassCastException ex) {
 					Class<?> original = value.getClass();
 					Class<?> convertedType = converted.getClass();
