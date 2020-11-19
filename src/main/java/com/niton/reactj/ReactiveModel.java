@@ -14,7 +14,7 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
 /**
  * Only for internal use
  *
- * @param <M>
+ * @param <M> The type this Model is going to wrap
  */
 public class ReactiveModel<M> implements MethodHandler, Reactable {
 	protected final List<ReactiveController<?>> listeners = new ArrayList<>();

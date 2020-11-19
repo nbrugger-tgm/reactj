@@ -23,9 +23,9 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 	class ReactiveListHandler<E> implements InvocationHandler {
 		private static String
-				addMethod,
-				intAddMethod,
-				removeObject,
+				addMethod ,
+				intAddMethod ,
+				removeObject ,
 				removeIndex,
 				clear;
 
@@ -45,7 +45,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 				clear =  List.class.getMethod("clear")
 						.toGenericString();
-				
+
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			}
