@@ -67,6 +67,10 @@ public class ReactiveListModel<E> {
 		binder.bind(CLEAR,e -> {while (size.getAsInt()>0)intRemover.remove(0);});
 		binder.bind(INIT,l -> ((List<E>)l).forEach(adder::add));
 	}
+
+	public ListModel<E> swing(){
+		return swingModel;
+	}
 }
 @FunctionalInterface
 interface Adder<E> {
