@@ -56,7 +56,7 @@ public final class ReactiveController<C> {
 
 
 
-	private void modelChanged(Map<String, Object> changed) {
+	public void modelChanged(Map<String, Object> changed) {
 		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
 			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
 		}

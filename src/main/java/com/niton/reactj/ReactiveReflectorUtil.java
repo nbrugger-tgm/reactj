@@ -67,5 +67,6 @@ class ReactiveReflectorUtil {
 				return;
 			}
 		}
+		System.err.println("WARNING! UI tried to change non existing property "+property+"!");
 	}
 }

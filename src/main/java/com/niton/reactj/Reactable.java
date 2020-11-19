@@ -10,6 +10,7 @@ public interface Reactable {
 	void unbind(ReactiveController<?> c);
 
 	void react();
+	void react(String property,Object value);
 
 	void set(String property, Object value) throws Throwable;
 }
