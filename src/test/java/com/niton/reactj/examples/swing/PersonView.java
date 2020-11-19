@@ -50,25 +50,25 @@ public class PersonView extends ReactiveView<PersonController, JPanel, ReactiveP
 	}
 
 	@Override
-	public void createBindings(ReactiveBinder bindings) {
-		bindings.bindBi("surename", surnameInput::setText, surnameInput::getText);
-		surnameInput.getDocument().addUndoableEditListener(bindings::react);
+	public void createBindings(ReactiveBinder binder) {
+		binder.bindBi("surename", surnameInput::setText, surnameInput::getText);
+		surnameInput.getDocument().addUndoableEditListener(binder::react);
 		//surnameInput.addActionListener(bindings::react);
 
 		//bind with value conversion
 		//UI cannot change IQ
-		bindings.bind("iq", iqField::setText, String::valueOf);
+		binder.bind("iq", iqField::setText, String::valueOf);
 
-		bindings.bindBi("gender", genderJComboBox::setSelectedItem, genderJComboBox::getSelectedItem);
-		genderJComboBox.addActionListener(bindings::react);
+		binder.bindBi("gender", genderJComboBox::setSelectedItem, genderJComboBox::getSelectedItem);
+		genderJComboBox.addActionListener(binder::react);
 
 
 		//react to changes in many and different ways
-		bindings.bind("gender", this::adaptColorToGender);
+		binder.bind("gender", this::adaptColorToGender);
 
 		//bidirectional binding (With value conversion)
-		bindings.bindBi("age", ageInput::setText, ageInput::getText, Integer::parseInt, String::valueOf);
-		ageInput.addActionListener(bindings::react);
+		binder.bindBi("age", ageInput::setText, ageInput::getText, Integer::parseInt, String::valueOf);
+		ageInput.addActionListener(binder::react);
 	}
 
 	@Override

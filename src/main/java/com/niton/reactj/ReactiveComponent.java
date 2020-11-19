@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public interface ReactiveComponent<C> {
-	void createBindings(ReactiveBinder controller);
+	void createBindings(ReactiveBinder binder);
 
 	void registerListeners(C controller);
 

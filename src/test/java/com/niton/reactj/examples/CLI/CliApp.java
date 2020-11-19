@@ -45,8 +45,8 @@ class ProgressCli implements ReactiveComponent<CliController> {
 	}
 
 	@Override
-	public void createBindings(ReactiveBinder controller) {
-		controller.bind("percent",this::renderProgress);
+	public void createBindings(ReactiveBinder binder) {
+		binder.bind("percent",this::renderProgress);
 	}
 
 

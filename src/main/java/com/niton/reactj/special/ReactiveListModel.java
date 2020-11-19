@@ -71,23 +71,23 @@ public class ReactiveListModel<E> {
 	public ListModel<E> swing(){
 		return swingModel;
 	}
-}
-@FunctionalInterface
-interface Adder<E> {
-	public void add(E element);
-}
+	@FunctionalInterface
+	public interface Adder<E> {
+		public void add(E element);
+	}
 
-@FunctionalInterface
-interface Remover<E> {
-	public void remove(E element);
-}
+	@FunctionalInterface
+	public interface Remover<E> {
+		public void remove(E element);
+	}
 
-@FunctionalInterface
-interface IndexAdder<E> {
-	public void add(int i,E element);
-}
+	@FunctionalInterface
+	public interface IndexAdder<E> {
+		public void add(int i,E element);
+	}
 
-@FunctionalInterface
-interface IndexRemover {
-	public void remove(int i);
+	@FunctionalInterface
+	public interface IndexRemover {
+		public void remove(int i);
+	}
 }

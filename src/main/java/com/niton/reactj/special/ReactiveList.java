@@ -17,10 +17,10 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 		ADD_INDEX = "add_index",
 		SET_INDEX = "set_index",
 		REMOVE_INDEX = "remove_index",
-		REMOVE_OBJECT = "remove_index",
+		REMOVE_OBJECT = "remove_object",
 		CLEAR = "clear",
 		INIT = "init";
-	default ReactiveList<E> create(List<E> list){
+	static<E> ReactiveList<E> create(List<E> list){
 		return (ReactiveList<E>) Proxy.newProxyInstance(
 				ReactiveList.class.getClassLoader(),
 				new Class[]{ReactiveList.class},
@@ -59,7 +59,7 @@ class ReactiveListHandler<E> implements InvocationHandler {
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		Object ret;
-		if (method.getDeclaringClass().equals(Reactive.class)){
+		if (method.getDeclaringClass().equals(Reactable.class)){
 			method.setAccessible(true);
 			ret = method.invoke(model,args);
 		}else{
