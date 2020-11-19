@@ -6,7 +6,6 @@ import javassist.util.proxy.ProxyFactory;
 
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,8 +16,6 @@ import java.util.stream.Collectors;
 public class ReactiveObject implements Reactable {
 	@Unreactive
 	protected final List<ReactiveController<?>> listeners = new ArrayList<>();
-	@Unreactive
-	private final   Field[]                     fields    = null;
 
 	public static <C> ReactiveProxy<C> create(Class<C> o, Object... constructorParameters) throws ReactiveException {
 
@@ -50,7 +47,7 @@ public class ReactiveObject implements Reactable {
 			}
 
 		}
-		ReactiveModel model = new ReactiveModel(real);
+		ReactiveModel<C> model = new ReactiveModel<>(real);
 		ProxyFactory factory = new ProxyFactory();
 		factory.setSuperclass(o);
 		try {
@@ -64,7 +61,7 @@ public class ReactiveObject implements Reactable {
 				throw ex;
 			}
 		}
-		return new ReactiveProxy<>(wrapped, model);
+		return new ReactiveProxy<C>(wrapped, model);
 	}
 
 	public void bind(ReactiveController<?> c) {
