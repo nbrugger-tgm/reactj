@@ -14,6 +14,7 @@ public class PersonList extends ReactiveView<PersonListController, JPanel, React
 	private JButton                   addButton;
 	private JButton                   removeButton;
 	private JPanel                    list;
+	private int i = 0;
 
 	public PersonList(PersonListController controller) {
 		super(controller);
@@ -39,12 +40,12 @@ public class PersonList extends ReactiveView<PersonListController, JPanel, React
 
 		return panel;
 	}
-	private int i = 0;
+
 	@Override
 	public void createBindings(ReactiveBinder binder) {
 		model = new ReactiveListModel<>(this::indexAdd, this::indexRemove, this::add, this::remove, list::getComponentCount);
 		model.bind(binder);
-		binder.bindBi("penis",System.out::println,()->"penis"+i++);
+		binder.bindBi("penis", System.out::println, () -> "penis" + i++);
 		addButton.addActionListener(binder::react);
 	}
 
