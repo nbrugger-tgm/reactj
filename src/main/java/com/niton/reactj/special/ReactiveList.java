@@ -22,12 +22,11 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 	}
 
 	class ReactiveListHandler<E> implements InvocationHandler {
-		private static String
-				addMethod ,
-				intAddMethod ,
-				removeObject ,
-				removeIndex,
-				clear;
+		private static String addMethod;
+		private static String intAddMethod;
+		private static String removeObject;
+		private static String removeIndex;
+		private static String clear;
 
 		static {
 			try {
