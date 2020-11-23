@@ -22,15 +22,9 @@ public interface ReactiveList<E extends Identity<T>, T> extends Reactable, List<
 				new ReactiveListHandler<>(list));
 	}
 
-	default void removeById(T id){
-		for (int i = 0; i < size(); i++) {
-			if(get(i).getID().equals(id)) {
-				remove(i);
-				return;
-			}
-		}
-	}
-	class ReactiveListHandler<E> implements InvocationHandler {
+	void removeById(T id);
+
+	class ReactiveListHandler<E extends Identity<T>,T> implements InvocationHandler {
 		private static String   addMethod;
 		private static String   intAddMethod;
 		private static String   removeObject;
@@ -81,6 +75,15 @@ public interface ReactiveList<E extends Identity<T>, T> extends Reactable, List<
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			method.setAccessible(true);
+			if(method.toGenericString().equals(ReactiveList.class.toGenericString())){
+				for (int i = 0; i < list.size(); i++) {
+					if(list.get(i).getID().equals(args[0])) {
+						list.remove(i);
+						return null;
+					}
+				}
+				return null;
+			}
 			Object ret = method.invoke(model, args);
 			//just react to list calls
 			if (method.getDeclaringClass().equals(List.class)) {
