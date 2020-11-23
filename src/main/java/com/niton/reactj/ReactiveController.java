@@ -87,6 +87,10 @@ public final class ReactiveController<C> {
 		}
 	}
 
+	public Reactable getModel() {
+		return model;
+	}
+
 	private void updateView(final String key, final Object value) {
 		List<ReactiveBinder.Binding<?, ?>> bindings = displayBindings.get(key);
 		if (bindings != null && bindings.size() > 0) {
