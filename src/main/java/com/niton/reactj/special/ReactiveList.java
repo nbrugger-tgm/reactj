@@ -21,6 +21,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 				new ReactiveListHandler<>(list));
 	}
 
+
 	class ReactiveListHandler<E> implements InvocationHandler {
 		private static String addMethod;
 		private static String intAddMethod;

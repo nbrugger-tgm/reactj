@@ -10,13 +10,21 @@ plugins {
     id 'java-library'
     id 'maven-publish'
 }
-
+java{
+    version = 1.8
+    targetVersion = 1.8
+    withJavadocJar();
+}
+tasks.withType(Javadoc) {
+    failOnWarning = false
+    failOnError = false
+}
 publishing {
     publications {
         lib(MavenPublication) {
             groupId = 'com.niton'
             artifactId = 'reactj'
-            version = '2.1.1'
+            version = '2.1.2'
             from components.java
         }
     }
