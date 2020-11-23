@@ -9,7 +9,7 @@ import javax.swing.*;
 
 import static javax.swing.BoxLayout.Y_AXIS;
 
-public class PersonList extends ReactiveView<PersonListController, JPanel, ReactiveList<Person>> {
+public class PersonList extends ReactiveView<PersonListController, JPanel, ReactiveList<Person,String>> {
 	private ReactiveListModel<Person> model;
 	private JButton                   addButton;
 	private JButton                   removeButton;
