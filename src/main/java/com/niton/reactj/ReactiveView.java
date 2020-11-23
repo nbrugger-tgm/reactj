@@ -35,4 +35,8 @@ public abstract class ReactiveView<C, V, M extends Reactable> implements Reactiv
 	public V getView() {
 		return view;
 	}
+
+	public ReactiveController<C> getController() {
+		return controller;
+	}
 }

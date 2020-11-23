@@ -1,6 +1,8 @@
 package com.niton.reactj;
 
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.special.ListActions;
+import com.niton.reactj.special.ReactiveList;
 
 import java.util.*;
 
@@ -51,7 +53,10 @@ public final class ReactiveController<C> {
 	public void bind(Reactable model) {
 		model.bind(this);
 		this.model = model;
-		modelChanged();
+		if (model instanceof ReactiveList)
+			model.react(ListActions.INIT.id(), model);
+		else
+			modelChanged();
 	}
 
 	public void modelChanged() {
@@ -79,6 +84,10 @@ public final class ReactiveController<C> {
 			valueCache.put(property, currentValue);
 			changed.put(property, currentValue);
 		}
+	}
+
+	public Reactable getModel() {
+		return model;
 	}
 
 	private void updateView(final String key, final Object value) {
