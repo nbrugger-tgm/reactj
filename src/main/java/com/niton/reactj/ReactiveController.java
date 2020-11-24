@@ -26,30 +26,55 @@ public final class ReactiveController<C> {
 		if (blockReaction) {
 			return;
 		}
+		Map<String, Object> changed = findUiChanges();
+
+		if (changed.size() > 0) {
+			model.set(changed);
+			model.react();
+			valueCache.putAll(changed);
+		}
+	}
+
+	/**
+	 * Searches for things that changed in the UI
+	 * @return the changes as map (key: changed property, value: new value)
+	 */
+	private Map<String, Object> findUiChanges() {
 		Map<String, Object> changed = new HashMap<>();
 		Map<String, Object> state = model.getState();
 		for (Map.Entry<String, Object> field : state.entrySet()) {
 			if (!editBindings.containsKey(field.getKey()))
 				continue;
-			Object oldValue = field.getValue();
-			List<ReactiveBinder.BiBinding<?, ?>> editBind = editBindings.get(field.getKey());
-
-			for (ReactiveBinder.BiBinding<?, ?> biBinding : editBind) {
-				Object bindingVal = biBinding.getToModelConverter().convert(biBinding.getReciver().get());
-				if (!Objects.equals(bindingVal, oldValue)) {
-					changed.put(field.getKey(), bindingVal);
-					break;
-				}
-			}
+			findBindingChanges(changed, field.getKey(), field.getValue());
 		}
-		for (Map.Entry<String, Object> change : changed.entrySet()) {
-			model.set(change.getKey(), change.getValue());
-		}
-		if (changed.size() > 0)
-			model.react();
-		valueCache.putAll(changed);
+		return changed;
 	}
 
+	/**
+	 * Finds changes for a specific field among many bindings (but only the first one is accepted
+	 * @param changed the map to put the change into (if found)
+	 * @param field the name of the field/property
+	 * @param oldValue the value to compare against to find a change
+	 */
+	private void findBindingChanges(
+			Map<String, Object> changed,
+			String field,
+			Object oldValue
+	) {
+		List<ReactiveBinder.BiBinding<?, ?>> editBind = editBindings.get(field);
+		for (ReactiveBinder.BiBinding<?, ?> biBinding : editBind) {
+			Object bindingVal = biBinding.getToModelConverter().convert(biBinding.getReciver().get());
+			if (!Objects.equals(bindingVal, oldValue)) {
+				changed.put(field, bindingVal);
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Bind the model to the UI
+	 * @param model the model to display for this controller (its UI)
+	 */
 	public void bind(Reactable model) {
 		model.bind(this);
 		this.model = model;
@@ -59,12 +84,19 @@ public final class ReactiveController<C> {
 			modelChanged();
 	}
 
+	/**
+	 * Updates the UI to the new state of the model
+	 */
 	public void modelChanged() {
 		Map<String, Object> changed = new HashMap<>();
 		getChanges(changed);
 		modelChanged(changed);
 	}
 
+	/**
+	 * Updates the UI to the given values
+	 * @param changed the values that changed and will be changed on the UI
+	 */
 	public void modelChanged(Map<String, Object> changed) {
 		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
 			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
@@ -86,40 +118,46 @@ public final class ReactiveController<C> {
 		}
 	}
 
+	/**
+	 * Updatee
+	 * @param key
+	 * @param value
+	 */
 	private void updateView(final String key, final Object value) {
 		List<ReactiveBinder.Binding<?, ?>> bindings = displayBindings.get(key);
-		if (bindings != null && bindings.size() > 0) {
-			blockReaction = true;
-			bindings.forEach(e -> {
-				Object converted;
-				try {
-					converted = e.getToDisplayConverter().convert(value);
-				} catch (ClassCastException ex) {
-					Class<?> original = value.getClass();
-					throw new ReactiveException("Bad converter. A converter for \"" + key + "\" doesnt accepts type " + original.getSimpleName());
-				}
-
-				if (e instanceof ReactiveBinder.BiBinding) {
-					Object present = ((ReactiveBinder.BiBinding<?, ?>) e).getReciver().get();
-					if (present.equals(value))
-						return;
-				}
-				try {
-					e.getDisplay().display(converted);
-				} catch (ClassCastException ex) {
-					Class<?> original = value.getClass();
-					Class<?> convertedType = converted.getClass();
-					ReactiveException exception;
-					if (convertedType.equals(original))
-						exception = new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accept type " + original.getTypeName());
-					else
-						exception = new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accepts converted (from " + original.getTypeName() + " to " + convertedType.getTypeName() + ")");
-					exception.initCause(ex);
-					throw exception;
-				}
-			});
-			blockReaction = false;
+		if (bindings == null || bindings.size() > 0) {
+			return;
 		}
+		blockReaction = true;
+		bindings.forEach(e -> {
+			Object converted;
+			try {
+				converted = e.getToDisplayConverter().convert(value);
+			} catch (ClassCastException ex) {
+				Class<?> original = value.getClass();
+				throw new ReactiveException("Bad converter. A converter for \"" + key + "\" doesnt accepts type " + original.getSimpleName());
+			}
+
+			if (e instanceof ReactiveBinder.BiBinding) {
+				Object present = ((ReactiveBinder.BiBinding<?, ?>) e).getReciver().get();
+				if (present.equals(value))
+					return;
+			}
+			try {
+				e.getDisplay().display(converted);
+			} catch (ClassCastException ex) {
+				Class<?> original = value.getClass();
+				Class<?> convertedType = converted.getClass();
+				ReactiveException exception;
+				if (convertedType.equals(original))
+					exception = new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accept type " + original.getTypeName());
+				else
+					exception = new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accepts converted (from " + original.getTypeName() + " to " + convertedType.getTypeName() + ")");
+				exception.initCause(ex);
+				throw exception;
+			}
+		});
+		blockReaction = false;
 	}
 
 	public Reactable getModel() {
