@@ -17,10 +17,11 @@ import java.util.function.Function;
 public abstract class ListView<M, E> implements ReactiveComponent<Void> {
 	private final Function<M, E>           elementCreator;
 	private final Map<M, E>                componentCache = new HashMap<>();
-	private final ReactiveController<Void> controller     = new ReactiveController<>(this, null);
+	private final ReactiveController<Void> controller;
 
 	protected ListView(Function<M, E> elementCreator) {
 		this.elementCreator = elementCreator;
+		controller = new ReactiveController<>(this, null);
 	}
 
 	@Override

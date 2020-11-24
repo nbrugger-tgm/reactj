@@ -3,6 +3,7 @@ package com.niton.reactj.special;
 import com.niton.reactj.Identity;
 import com.niton.reactj.Reactable;
 import com.niton.reactj.ReactiveModel;
+import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.exceptions.ReactiveException;
 
 import java.lang.reflect.InvocationHandler;
@@ -68,14 +69,26 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			method.setAccessible(true);
 			if (method.toGenericString().equals(removeById)) {
-				return performRemoveByID(args);
+				performRemoveByID(args);
+				return null;
 			}
-			Object delegate = null;
-			//Order is important as 'Object' calls (equals and such) need to be handled by the list
-			if (method.getDeclaringClass().isAssignableFrom(List.class)) {
+			Object delegate = getDelegateObject(method);
+			Object returnValue = method.invoke(delegate, args);
+
+			//just react to list calls
+			if (method.getDeclaringClass().equals(List.class)) {
+				String signature = method.toGenericString();
+				reactToListCall(signature, args);
+			}
+			return returnValue;
+		}
+
+		private Object getDelegateObject(Method method) {
+			Object delegate;
+			if (originatesFrom(method,List.class)) {
 				delegate = list;
 			}
-			else if (method.getDeclaringClass().isAssignableFrom(Reactable.class)) {
+			else if (originatesFrom(method, Reactable.class)) {
 				delegate = model;
 			}
 			else {
@@ -83,31 +96,33 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 						"Proxy doesnt know how to call " + method.getDeclaringClass()
 				);
 			}
-
-			Object ret = method.invoke(delegate, args);
-			//just react to list calls
-			if (method.getDeclaringClass().equals(List.class)) {
-				String signature = method.toGenericString();
-				reactToListCall(signature, args);
-			}
-			return ret;
+			return delegate;
 		}
 
-		private Object performRemoveByID(Object[] args) {
+		/**
+		 * Checks if the given method is avainable in the tree of a given type.
+		 * @param method the method to check
+		 * @param type the type to check for the method
+		 * @return true if type contains the method
+		 */
+		private boolean originatesFrom(Method method, Class<?> type) {
+			return method.getDeclaringClass().isAssignableFrom(type);
+		}
+
+		private void performRemoveByID(Object[] args) {
 			for (int i = 0; i < list.size(); i++) {
-				if (list.get(i) instanceof Identity) {
-					Identity<?> identity = (Identity<?>) list.get(i);
-					if (identity.getID().equals(args[0])) {
-						list.remove(i);
-						return null;
-					}
-				}
-				else if (list.get(i).equals(args[0])) {
+				if(isSameIdentity(list.get(i),args[0])){
 					list.remove(i);
-					return null;
 				}
 			}
-			return null;
+		}
+
+		private boolean isSameIdentity(E element, Object arg) {
+			if (element instanceof Identity) {
+				Identity<?> identity = (Identity<?>) element;
+				return identity.getID().equals(arg);
+			}
+			return element.equals(arg);
 		}
 
 		private void reactToListCall(String signature, Object[] parameters) {
