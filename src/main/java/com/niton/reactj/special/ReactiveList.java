@@ -3,7 +3,6 @@ package com.niton.reactj.special;
 import com.niton.reactj.Identity;
 import com.niton.reactj.Reactable;
 import com.niton.reactj.ReactiveModel;
-import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.exceptions.ReactiveException;
 
 import java.lang.reflect.InvocationHandler;
@@ -37,8 +36,10 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 				addMethod = List.class.getMethod("add", Object.class)
 						.toGenericString();
+
 				setMethod = List.class.getMethod("set", int.class, Object.class)
 						.toGenericString();
+
 				intAddMethod = List.class.getMethod("add", int.class, Object.class)
 						.toGenericString();
 
@@ -50,7 +51,6 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 				clear = List.class.getMethod("clear")
 						.toGenericString();
-
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			}
