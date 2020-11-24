@@ -13,11 +13,14 @@ import java.util.List;
 
 import static com.niton.reactj.special.ListActions.*;
 
+/**
+ * Proxy creating interface. There are no implementations! You have to use ReactiveList.create
+ * @param <E> Type of the list as specified in {@link List}
+ */
+public interface ReactiveList<E> extends Reactable, List<E> {
 
-public interface ReactiveList<E extends Identity<?>> extends Reactable, List<E> {
 
-
-	static <E extends Identity<T>,T> ReactiveList<E> create(List<E> list) {
+	static <E,T> ReactiveList<E> create(List<E> list) {
 		return (ReactiveList<E>) Proxy.newProxyInstance(
 				ReactiveList.class.getClassLoader(),
 				new Class[]{ReactiveList.class},
@@ -26,7 +29,7 @@ public interface ReactiveList<E extends Identity<?>> extends Reactable, List<E> 
 
 	void removeById(Object id);
 
-	class ReactiveListHandler<E extends Identity<T>,T> implements InvocationHandler {
+	class ReactiveListHandler<E,T> implements InvocationHandler {
 		private static String   addMethod;
 		private static String   intAddMethod;
 		private static String   removeObject;
@@ -79,10 +82,16 @@ public interface ReactiveList<E extends Identity<?>> extends Reactable, List<E> 
 			method.setAccessible(true);
 			if(method.getDeclaringClass().toGenericString().equals(ReactiveList.class.toGenericString())){
 				for (int i = 0; i < list.size(); i++) {
-					if(list.get(i).getID().equals(args[0])) {
-						list.remove(i);
-						return null;
-					}
+					if(list.get(i) instanceof Identity)
+						if(((Identity<?>) list.get(i)).getID().equals(args[0])) {
+							list.remove(i);
+							return null;
+						}
+					else
+						if(list.get(i).equals(args[0])) {
+							list.remove(i);
+							return null;
+						}
 				}
 				return null;
 			}
