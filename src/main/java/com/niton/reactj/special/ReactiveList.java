@@ -85,7 +85,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 		private Object getDelegateObject(Method method) {
 			Object delegate;
-			if (originatesFrom(method,List.class)) {
+			if (originatesFrom(method, List.class)) {
 				delegate = list;
 			}
 			else if (originatesFrom(method, Reactable.class)) {

@@ -56,6 +56,7 @@ public abstract class ListView<M, E> implements ReactiveComponent<Void> {
 
 	@Override
 	public void registerListeners(Void controller) {
+		//Simple lists are immutable therefore there are no listeners
 	}
 
 	public abstract E getView();
