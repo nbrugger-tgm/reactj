@@ -7,10 +7,7 @@ import javassist.util.proxy.ProxyFactory;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ReactiveObject implements Reactable {
@@ -79,6 +76,10 @@ public class ReactiveObject implements Reactable {
 
 	public void react() {
 		listeners.forEach(ReactiveController::modelChanged);
+	}
+
+	public void react(String name, Object obj) {
+		listeners.forEach(l -> l.modelChanged(Collections.singletonMap(name, obj)));
 	}
 
 	@Override

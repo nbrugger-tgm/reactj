@@ -1,17 +1,25 @@
 
-<center><h1 align="center">React J</h1></center>
+<center>
+	<h1 align="center">React J</h1>
+</center>
 <p align="center">
 <img src="media/logo.png" alt="Unbenannt" height="180pt"><br/>
-	This library introduces <b>easy</b> reactive Bindings in Java, very useful to create a MVC UI without backdraws.<br>
-	Its just like <b>Vue js</b> for java
-</p> 
+</p>
+<p align="center">
+<a href="https://app.codacy.com/gh/nbrugger-tgm/reactj?utm_source=github.com&utm_medium=referral&utm_content=nbrugger-tgm/reactj&utm_campaign=Badge_Grade_Settings"><img src="https://api.codacy.com/project/badge/Grade/f0aa98c14a794c419f8400de14e3dbc8"></a>
+</p>
+
+<p align="center">
+This library introduces <b>easy</b> reactive Bindings in Java, very useful to create a MVC UI without backdraws.<br>
+Its just like <b>Vue js</b> for java
+</p>
 
 [Wiki](https://github.com/nbrugger-tgm/reactj/wiki)
 
-### Usage
+### Usage [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fniton.jfrog.io%2Fartifactory%2Fjava-libs%2Fcom%2Fniton%2Freactj%2Fmaven-metadata.xml)](https://niton.jfrog.io/ui/packages/gav:%2F%2Fcom.niton:reactj?name=react&type=packages)
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f0aa98c14a794c419f8400de14e3dbc8)](https://app.codacy.com/gh/nbrugger-tgm/reactj?utm_source=github.com&utm_medium=referral&utm_content=nbrugger-tgm/reactj&utm_campaign=Badge_Grade_Settings)
-[![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fniton.jfrog.io%2Fartifactory%2Fjava-libs%2Fcom%2Fniton%2Freactj%2Fmaven-metadata.xml)](https://niton.jfrog.io/ui/packages/gav:%2F%2Fcom.niton:reactj?name=react&type=packages)
+
+
 
 #### Gradle
 
@@ -52,6 +60,8 @@ Adding the dependency
 ```
 
 ### Example
+
+> All functional examples can be found at https://github.com/nbrugger-tgm/reactj/tree/master/src/test/java/com/niton/reactj/examples
 
 Create a View
 

@@ -5,18 +5,24 @@ import javassist.util.proxy.MethodHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
 
+/**
+ * Only for internal use
+ *
+ * @param <M> The type this Model is going to wrap
+ */
 public class ReactiveModel<M> implements MethodHandler, Reactable {
 	protected final List<ReactiveController<?>> listeners = new ArrayList<>();
 	final           M                           model;
 	private         ReactiveStrategy            strategy  = REACT_ON_SETTER;
 	private         String[]                    reactTo;
 
-	ReactiveModel(M model) {
+	public ReactiveModel(M model) {
 		this.model = model;
 	}
 
@@ -67,6 +73,11 @@ public class ReactiveModel<M> implements MethodHandler, Reactable {
 
 	public void react() {
 		listeners.forEach(ReactiveController::modelChanged);
+	}
+
+	@Override
+	public void react(String property, Object value) {
+		listeners.forEach(l -> l.modelChanged(Collections.singletonMap(property, value)));
 	}
 
 	@Override

@@ -3,17 +3,20 @@ package com.niton.reactj.examples.CLI;
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.Reactive;
 
+import java.util.Random;
+
 public class CliApp {
 
 	public static void main(String[] args) throws InterruptedException {
 		ReactiveProxy<Progress> proxy = ReactiveObject.create(Progress.class);
 		Progress progress = proxy.object;
+
 		ReactiveController<CliController> controller = new ReactiveController<>(new ProgressCli(), null);
 		controller.bind(proxy.reactive);
 
 		while (true) {
-			Thread.sleep(85);
-			progress.setProgress((progress.getProgress() + 0.01) % 1);
+			Thread.sleep((long) (Math.random()*90));
+			progress.setProgress((progress.getProgress() + 0.002) % 1);
 		}
 	}
 }
@@ -37,8 +40,14 @@ class Progress {
 class ProgressCli implements ReactiveComponent<CliController> {
 
 	@Override
-	public void createBindings(ReactiveBinder controller) {
-		controller.bind("percent", this::renderProgress);
+	public void createBindings(ReactiveBinder binder) {
+		binder.bind("percent", this::renderProgress);
+		binder.<Double>showIf("percent",this::displayNearlyDone,p -> p>=0.8);
+	}
+
+	private void displayNearlyDone(Boolean condition) {
+		if(condition)
+			System.out.print("  !Nearly done!");
 	}
 
 	private void renderProgress(double percent) {
@@ -47,7 +56,7 @@ class ProgressCli implements ReactiveComponent<CliController> {
 		System.out.print("\r");
 		System.out.print('[');
 		for (int i = 0; i < width; i++) {
-			System.out.print(i <= done ? '=' : '-');
+			System.out.print(i < done ? "█" : (i == done ? '>' : ' '));
 		}
 		System.out.print(']');
 		System.out.print((int) (percent * 100) + "%");

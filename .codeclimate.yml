@@ -1,0 +1,12 @@
+engines:
+  checkstyle:
+    enabled: true
+    checks:
+      com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck:
+        enabled: false
+      com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck:
+        enabled: false
+      com.puppycrawl.tools.checkstyle.checks.whitespace.EmptyLineSeparatorCheck:
+        enabled: false
+      com.puppycrawl.tools.checkstyle.checks.javadoc.SummaryJavadocCheck:
+        enabled: false

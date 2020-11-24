@@ -1,6 +1,8 @@
 package com.niton.reactj;
 
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.special.ListActions;
+import com.niton.reactj.special.ReactiveList;
 
 import java.util.*;
 
@@ -51,7 +53,10 @@ public final class ReactiveController<C> {
 	public void bind(Reactable model) {
 		model.bind(this);
 		this.model = model;
-		modelChanged();
+		if (model instanceof ReactiveList)
+			model.react(ListActions.INIT.id(), model);
+		else
+			modelChanged();
 	}
 
 	public void modelChanged() {
@@ -60,6 +65,11 @@ public final class ReactiveController<C> {
 		modelChanged(changed);
 	}
 
+	public void modelChanged(Map<String, Object> changed) {
+		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
+			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
+		}
+	}
 	private void getChanges(Map<String, Object> changed) {
 		Map<String, Object> state = model.getState();
 		for (String property : state.keySet()) {
@@ -67,11 +77,6 @@ public final class ReactiveController<C> {
 		}
 	}
 
-	private void modelChanged(Map<String, Object> changed) {
-		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
-			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
-		}
-	}
 
 	private void detectChange(Map<String, Object> changed, String property, Object currentValue) {
 		Object oldValue = valueCache.get(property);
@@ -115,5 +120,9 @@ public final class ReactiveController<C> {
 			});
 			blockReaction = false;
 		}
+	}
+
+	public Reactable getModel() {
+		return model;
 	}
 }
