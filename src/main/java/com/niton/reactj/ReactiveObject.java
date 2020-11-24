@@ -35,13 +35,21 @@ public class ReactiveObject implements Reactable {
 			}catch (NoSuchMethodException e){
 				wrapped = (C) factory.create(unboxedParamTypes, constructorParameters, model);
 			}
-		} catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
+		} catch (
+				IllegalAccessException | InstantiationException |
+				InvocationTargetException | NoSuchMethodException e
+		) {
 			return handle(type,constructorParameters,unboxedParamTypes,e);
 		}
 		return wrapped;
 	}
 
-	private static <C> C handle(Class<C> type, Object[] constructorParameters, Class<?>[] types, ReflectiveOperationException e) {
+	private static <C> C handle(
+			Class<C> type,
+			Object[] constructorParameters,
+			Class<?>[] types,
+			ReflectiveOperationException e
+	) {
 		if(e instanceof NoSuchMethodException){
 			throw constructorNotFound(type,types);
 		}else{
@@ -71,25 +79,40 @@ public class ReactiveObject implements Reactable {
 
 			return real;
 		}
-		catch (InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+		catch (
+				InstantiationException | InvocationTargetException |
+				IllegalAccessException | NoSuchMethodException e
+		) {
 			return handle(type,parameters,unboxedParamTypes,e);
 		}
 	}
 
 	private static <C> ReactiveException constructorNotFound(Class<C> o, Class<?>[] paramTypes) {
-		return new ReactiveException("No constructor(" + Arrays.stream(paramTypes).map(Class::getSimpleName).collect(Collectors.joining(", ")) + ") found in class " + o.getSimpleName());
+		return new ReactiveException(
+				"No constructor(" +
+				Arrays.stream(paramTypes)
+						.map(Class::getSimpleName)
+						.collect(Collectors.joining(", ")) +
+				") found in class " + o.getSimpleName());
 	}
 
 	private static <C> C instanciate
 			(Class<C> type,Class<?>[] types,Object[] params)
-			throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException
+			throws
+			NoSuchMethodException,
+			IllegalAccessException,
+			InvocationTargetException,
+			InstantiationException
 	{
 		Constructor<C> constructor = type.getConstructor(types);
 		constructor.setAccessible(true);
 		return constructor.newInstance(params);
 	}
 
-	private static <C> ReactiveException constructionException(Class<C> o, ReflectiveOperationException e) {
+	private static <C> ReactiveException constructionException(
+			Class<C> o,
+			ReflectiveOperationException e
+	) {
 		ReactiveException exception = new ReactiveException("Couldn't construct " + o.getSimpleName());
 		exception.initCause(e);
 		return exception;
