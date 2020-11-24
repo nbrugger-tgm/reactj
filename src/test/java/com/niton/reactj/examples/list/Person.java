@@ -1,5 +1,6 @@
 package com.niton.reactj.examples.list;
 
+import com.niton.reactj.Identity;
 import com.niton.reactj.ReactiveObject;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
@@ -10,7 +11,7 @@ import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.
 
 //optional
 @ReactivResolution(FLAT)
-public class Person extends ReactiveObject {
+public class Person extends ReactiveObject implements Identity<String> {
 	private int    age;
 	//change reactive name
 	@Reactive("surename")
@@ -72,5 +73,10 @@ public class Person extends ReactiveObject {
 		sb.append(", address='").append(address).append('\'');
 		sb.append('}');
 		return sb.toString();
+	}
+
+	@Override
+	public String getID() {
+		return name+address;
 	}
 }

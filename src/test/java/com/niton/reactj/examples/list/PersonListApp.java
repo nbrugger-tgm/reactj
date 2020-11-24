@@ -8,7 +8,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class PersonListApp {
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
 		ReactiveList<Person> list = ReactiveList.create(new ArrayList<>());
 
 		PersonList view = new PersonList(new PersonListController(list));
@@ -20,7 +20,5 @@ public class PersonListApp {
 		frame.add(view.getView());
 		frame.pack();
 		frame.setVisible(true);
-
-
 	}
 }

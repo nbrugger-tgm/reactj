@@ -8,3 +8,5 @@ engines:
         enabled: false
       com.puppycrawl.tools.checkstyle.checks.whitespace.EmptyLineSeparatorCheck:
         enabled: false
+      com.puppycrawl.tools.checkstyle.checks.javadoc.SummaryJavadocCheck:
+        enabled: false

@@ -70,7 +70,6 @@ public final class ReactiveController<C> {
 			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
 		}
 	}
-
 	private void getChanges(Map<String, Object> changed) {
 		Map<String, Object> state = model.getState();
 		for (String property : state.keySet()) {
@@ -78,16 +77,13 @@ public final class ReactiveController<C> {
 		}
 	}
 
+
 	private void detectChange(Map<String, Object> changed, String property, Object currentValue) {
 		Object oldValue = valueCache.get(property);
 		if (!Objects.equals(currentValue, oldValue)) {
 			valueCache.put(property, currentValue);
 			changed.put(property, currentValue);
 		}
-	}
-
-	public Reactable getModel() {
-		return model;
 	}
 
 	private void updateView(final String key, final Object value) {
@@ -124,5 +120,9 @@ public final class ReactiveController<C> {
 			});
 			blockReaction = false;
 		}
+	}
+
+	public Reactable getModel() {
+		return model;
 	}
 }

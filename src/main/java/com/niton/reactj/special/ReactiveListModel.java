@@ -94,6 +94,10 @@ public class ReactiveListModel<E> {
 		binder.bind(SET_INDEX.id(), i -> index = (int) i);
 		binder.bind(REMOVE_INDEX.id(), intRemover::remove);
 		binder.bind(REMOVE_OBJECT.id(), remover::remove);
+		binder.bind(REPLACE.id(), o -> {
+			intRemover.remove(index);
+			intAdder.add(index, (E) o);
+		});
 		binder.bind(CLEAR.id(),
 				e -> {
 					while (size.getAsInt() > 0)

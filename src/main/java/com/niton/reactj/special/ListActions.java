@@ -7,7 +7,8 @@ public enum ListActions {
 	REMOVE_INDEX("remove_index"),
 	REMOVE_OBJECT("remove_object"),
 	CLEAR("clear"),
-	INIT("init");
+	INIT("init"),
+	REPLACE("replace_index");
 
 	private final String id;
 
