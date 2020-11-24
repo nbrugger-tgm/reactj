@@ -22,8 +22,8 @@ public class PersonList extends ReactiveListView<PersonListController, JPanel,JP
 	}
 
 	@Override
-	public void removeFrom(int i) {
-		list.remove(i);
+	public void removeFrom(int index) {
+		list.remove(index);
 
 	}
 
@@ -33,13 +33,13 @@ public class PersonList extends ReactiveListView<PersonListController, JPanel,JP
 	}
 
 	@Override
-	public ReactiveView<?, JPanel, Person> createElement(Person o) {
-		return new PersonView(o);
+	public ReactiveView<?, JPanel, Person> createElement(Person element) {
+		return new PersonView(element);
 	}
 
 	@Override
-	public void addAt(JPanel subView, int i) {
-		list.add(subView,i);
+	public void addAt(JPanel subView, int index) {
+		list.add(subView, index);
 	}
 
 	@Override

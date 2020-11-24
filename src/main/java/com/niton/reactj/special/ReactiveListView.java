@@ -30,40 +30,40 @@ public abstract class ReactiveListView
 		model.bind(binder);
 	}
 
-	private void addElement(int i, E e) {
-		ReactiveView<?, C, E> view = createElement(e);
+	private void addElement(int index, E element) {
+		ReactiveView<?, C, E> view = createElement(element);
 		C subV = view.getView();
-		viewMap.put(e.getID(), subV);
-		addAt(subV, i);
+		viewMap.put(element.getID(), subV);
+		addAt(subV, index);
 		refresh();
 	}
 
-	private void removeFromIndex(int i) {
-		removeFrom(i);
+	private void removeFromIndex(int index) {
+		removeFrom(index);
 		refresh();
 	}
 
 	protected abstract int size();
 
-	private void remove(E e) {
-		removeById(e.getID());
+	private void remove(E element) {
+		removeById(element.getID());
 	}
 
-	public abstract ReactiveView<?, C, E> createElement(E o);
+	public abstract void remove(C child);
 
-	public abstract void addAt(C subView, int i);
+	public abstract ReactiveView<?, C, E> createElement(E element);
+
+	public abstract void addAt(C subView, int index);
 
 	/**
 	 * Some UI frameworks such as swing need to repaint after changes. If your framework doesnt requires such a change you can leave this method empty
 	 */
 	public abstract void refresh();
 
-	public abstract void removeFrom(int i);
+	public abstract void removeFrom(int index);
 
 	public void removeById(Object id) {
 		remove(viewMap.get(id));
 		refresh();
 	}
-
-	public abstract void remove(C child);
 }

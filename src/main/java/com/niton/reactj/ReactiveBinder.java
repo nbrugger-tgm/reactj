@@ -119,7 +119,11 @@ public class ReactiveBinder {
 		bind(view, displayFunction, arg -> (R) arg);
 	}
 
-	public <F, R> void bind(String view, DisplayFunction<R> displayFunction, Converter<F, R> transformer) {
+	public <F, R> void bind(
+			String view,
+			DisplayFunction<R> displayFunction,
+			Converter<F, R> transformer
+	) {
 		List<Binding<?, ?>> funcs = displayBindings.getOrDefault(view, new ArrayList<>());
 		funcs.add(new Binding<>(displayFunction, transformer));
 		displayBindings.put(view, funcs);
@@ -133,11 +137,15 @@ public class ReactiveBinder {
 	 * @param condition      a function that results in a boolean
 	 * @param <M>            the type (of the property) present in the model
 	 */
-	public <M> void showIf(String property, DisplayFunction<Boolean> enableFunction, Converter<M, Boolean> condition) {
+	public <M> void showIf(
+			String property,
+			DisplayFunction<Boolean> enableFunction,
+			Converter<M, Boolean> condition
+	) {
 		bind(property, enableFunction, condition);
 	}
 
-	public <M> void showIf(String view, DisplayFunction<Boolean> enableFunction) {
+	public void showIf(String view, DisplayFunction<Boolean> enableFunction) {
 		bind(view, enableFunction, b -> (boolean) b);
 	}
 }

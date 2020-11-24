@@ -25,27 +25,33 @@ public abstract class ListView<M, E> implements ReactiveComponent<Void> {
 
 	@Override
 	public void createBindings(ReactiveBinder binder) {
-		ReactiveListModel<M> list = new ReactiveListModel<>(this::convertingAdd, this::remove, (e) -> convertingAdd(size(), e), this::convertingRemove, this::size);
+		ReactiveListModel<M> list = new ReactiveListModel<>(
+				this::convertingAdd,
+				this::remove,
+				(e) -> convertingAdd(size(), e),
+				this::convertingRemove,
+				this::size
+		);
 		list.bind(binder);
 	}
 
-	private void convertingAdd(int i, M m) {
-		E el = elementCreator.apply(m);
-		add(i, el);
-		componentCache.put(m, el);
+	private void convertingAdd(int index, M element) {
+		E el = elementCreator.apply(element);
+		add(index, el);
+		componentCache.put(element, el);
 	}
 
 	public abstract void remove(int index);
+	public abstract void remove(E model);
 
 	public abstract int size();
 
-	private void convertingRemove(M m) {
-		remove(componentCache.get(m));
+	private void convertingRemove(M element) {
+		remove(componentCache.get(element));
 	}
 
 	public abstract void add(int index, E model);
 
-	public abstract void remove(E model);
 
 	@Override
 	public void registerListeners(Void controller) {
