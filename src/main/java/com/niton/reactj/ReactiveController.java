@@ -35,7 +35,7 @@ public final class ReactiveController<C> {
 			List<ReactiveBinder.BiBinding<?, ?>> editBind = editBindings.get(field.getKey());
 
 			for (ReactiveBinder.BiBinding<?, ?> biBinding : editBind) {
-				Object bindingVal = biBinding.toModelConverter.convert(biBinding.reciver.get());
+				Object bindingVal = biBinding.getToModelConverter().convert(biBinding.getReciver().get());
 				if (!Objects.equals(bindingVal, oldValue)) {
 					changed.put(field.getKey(), bindingVal);
 					break;
@@ -100,7 +100,7 @@ public final class ReactiveController<C> {
 				}
 
 				if (e instanceof ReactiveBinder.BiBinding) {
-					Object present = ((ReactiveBinder.BiBinding<?, ?>) e).reciver.get();
+					Object present = ((ReactiveBinder.BiBinding<?, ?>) e).getReciver().get();
 					if (present.equals(value))
 						return;
 				}

@@ -111,7 +111,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 		private void performRemoveByID(Object[] args) {
 			for (int i = 0; i < list.size(); i++) {
-				if(isSameIdentity(list.get(i),args[0])){
+				if(isSameIdentity(list.get(i),args[0])) {
 					list.remove(i);
 				}
 			}
