@@ -12,7 +12,7 @@ public final class ReactiveController<C> {
 	private final Map<String, List<ReactiveBinder.Binding<?, ?>>>   displayBindings = new HashMap<>();
 	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
 	private       Reactable                                         model;
-	private       boolean                                           blockReaction   = false;
+	private       boolean                                           blockReactions  = false;
 
 	public ReactiveController(ReactiveComponent<C> view, C customController) {
 		//Maybe in the future it is needed to ass the view as field
@@ -23,7 +23,7 @@ public final class ReactiveController<C> {
 	}
 
 	private void updateModel(EventObject actionEvent) throws Throwable {
-		if (blockReaction) {
+		if (blockReactions) {
 			return;
 		}
 		Map<String, Object> changed = findUiChanges();
@@ -125,39 +125,57 @@ public final class ReactiveController<C> {
 	 */
 	private void updateView(final String key, final Object value) {
 		List<ReactiveBinder.Binding<?, ?>> bindings = displayBindings.get(key);
-		if (bindings == null || bindings.size() > 0) {
+		if (bindings == null || bindings.size() == 0) {
 			return;
 		}
-		blockReaction = true;
-		bindings.forEach(e -> {
-			Object converted;
-			try {
-				converted = e.getToDisplayConverter().convert(value);
-			} catch (ClassCastException ex) {
-				Class<?> original = value.getClass();
-				throw new ReactiveException("Bad converter. A converter for \"" + key + "\" doesnt accepts type " + original.getSimpleName());
-			}
+		blockReactions = true;
+		bindings.forEach( e -> updateBinding(key, value, e));
+		blockReactions = false;
+	}
 
-			if (e instanceof ReactiveBinder.BiBinding) {
-				Object present = ((ReactiveBinder.BiBinding<?, ?>) e).getReciver().get();
-				if (present.equals(value))
-					return;
-			}
-			try {
-				e.getDisplay().display(converted);
-			} catch (ClassCastException ex) {
-				Class<?> original = value.getClass();
-				Class<?> convertedType = converted.getClass();
-				ReactiveException exception;
-				if (convertedType.equals(original))
-					exception = new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accept type " + original.getTypeName());
-				else
-					exception = new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accepts converted (from " + original.getTypeName() + " to " + convertedType.getTypeName() + ")");
-				exception.initCause(ex);
-				throw exception;
-			}
-		});
-		blockReaction = false;
+	private void updateBinding(String key, Object value, ReactiveBinder.Binding<?, ?> e) {
+		Object converted;
+		try {
+			converted = e.getToDisplayConverter().convert(value);
+		} catch (ClassCastException ex) {
+			throw badConverterException(key,value.getClass());
+		}
+
+		if (e instanceof ReactiveBinder.BiBinding) {
+			//ignore change when the value is already present
+			Object present = ((ReactiveBinder.BiBinding<?, ?>) e).getReciver().get();
+			if (present.equals(value))
+				return;
+		}
+		try {
+			e.getDisplay().display(converted);
+		} catch (ClassCastException ex) {
+			throw bindingException(key, value, converted, ex);
+		}
+	}
+
+	private ReactiveException bindingException(String key, Object value, Object converted, ClassCastException ex) {
+		Class<?> original = value.getClass();
+		Class<?> convertedType = converted.getClass();
+		ReactiveException exception;
+		if (convertedType.equals(original))
+			exception = badBindingTarget(key, original);
+		else
+			exception = badConverterBindingTarget(key, original, convertedType);
+		exception.initCause(ex);
+		return exception;
+	}
+
+	private ReactiveException badConverterBindingTarget(String key, Class<?> original, Class<?> convertedType) {
+		return new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accepts converted (from " + original.getTypeName() + " to " + convertedType.getTypeName() + ")");
+	}
+
+	private ReactiveException badBindingTarget(String key, Class<?> original) {
+		return new ReactiveException("Bad binding for \"" + key + "\". Target function doesnt accept type " + original.getTypeName());
+	}
+
+	private ReactiveException badConverterException(String property,Class<?> type) {
+		return new ReactiveException("Bad converter. A converter for \"" + property + "\" doesnt accepts type " + type.getSimpleName());
 	}
 
 	public Reactable getModel() {
