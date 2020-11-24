@@ -3,7 +3,6 @@ package com.niton.reactj.special;
 import com.niton.reactj.Identity;
 import com.niton.reactj.Reactable;
 import com.niton.reactj.ReactiveModel;
-import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.exceptions.ReactiveException;
 
 import java.lang.reflect.InvocationHandler;
@@ -15,21 +14,13 @@ import static com.niton.reactj.special.ListActions.*;
 
 /**
  * Proxy creating interface. There are no implementations! You have to use ReactiveList.create
+ *
  * @param <E> Type of the list as specified in {@link List}
  */
 public interface ReactiveList<E> extends Reactable, List<E> {
 
 
-	static <E,T> ReactiveList<E> create(List<E> list) {
-		return (ReactiveList<E>) Proxy.newProxyInstance(
-				ReactiveList.class.getClassLoader(),
-				new Class[]{ReactiveList.class},
-				new ReactiveListHandler<>(list));
-	}
-
-	void removeById(Object id);
-
-	class ReactiveListHandler<E,T> implements InvocationHandler {
+	class ReactiveListHandler<E, T> implements InvocationHandler {
 		private static String   addMethod;
 		private static String   intAddMethod;
 		private static String   removeObject;
@@ -41,26 +32,26 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 		static {
 			try {
 				justPassMethods = new String[]{
-					ReactiveList.class.getMethod("removeById", Object.class).toGenericString()
+						ReactiveList.class.getMethod("removeById", Object.class).toGenericString()
 				};
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			}
 			try {
-				addMethod =  List.class.getMethod("add", Object.class)
+				addMethod = List.class.getMethod("add", Object.class)
 						.toGenericString();
 				setMethod = List.class.getMethod("set", int.class, Object.class)
 						.toGenericString();
-				intAddMethod =  List.class.getMethod("add", int.class, Object.class)
+				intAddMethod = List.class.getMethod("add", int.class, Object.class)
 						.toGenericString();
 
-				removeObject =  List.class.getMethod("remove", Object.class)
+				removeObject = List.class.getMethod("remove", Object.class)
 						.toGenericString();
 
-				removeIndex =  List.class.getMethod("remove", int.class)
+				removeIndex = List.class.getMethod("remove", int.class)
 						.toGenericString();
 
-				clear =  List.class.getMethod("clear")
+				clear = List.class.getMethod("clear")
 						.toGenericString();
 
 			} catch (NoSuchMethodException e) {
@@ -80,15 +71,13 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			method.setAccessible(true);
-			if(method.getDeclaringClass().toGenericString().equals(ReactiveList.class.toGenericString())){
+			if (method.getDeclaringClass().toGenericString().equals(ReactiveList.class.toGenericString())) {
 				for (int i = 0; i < list.size(); i++) {
-					if(list.get(i) instanceof Identity)
-						if(((Identity<?>) list.get(i)).getID().equals(args[0])) {
+					if (list.get(i) instanceof Identity)
+						if (((Identity<?>) list.get(i)).getID().equals(args[0])) {
 							list.remove(i);
 							return null;
-						}
-					else
-						if(list.get(i).equals(args[0])) {
+						} else if (list.get(i).equals(args[0])) {
 							list.remove(i);
 							return null;
 						}
@@ -97,12 +86,12 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 			}
 			Object delegate = null;
 			//Order is important as 'Object' calls (equals and such) need to be handled by the list
-			if(method.getDeclaringClass().isAssignableFrom(List.class)){
+			if (method.getDeclaringClass().isAssignableFrom(List.class)) {
 				delegate = list;
-			}else if (method.getDeclaringClass().isAssignableFrom(Reactable.class)) {
+			} else if (method.getDeclaringClass().isAssignableFrom(Reactable.class)) {
 				delegate = model;
-			}else
-				throw new ReactiveException("Proxy doesnt know how to call "+method.getDeclaringClass());
+			} else
+				throw new ReactiveException("Proxy doesnt know how to call " + method.getDeclaringClass());
 			Object ret = method.invoke(delegate, args);
 			//just react to list calls
 			if (method.getDeclaringClass().equals(List.class)) {
@@ -124,10 +113,19 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 				model.react(REMOVE_INDEX.id(), parameters[0]);
 			} else if (signature.equals(clear)) {
 				model.react(CLEAR.id(), null);
-			}else if (signature.equals(setMethod)){
+			} else if (signature.equals(setMethod)) {
 				model.react(SET_INDEX.id(), parameters[0]);
 				model.react(REPLACE.id(), parameters[1]);
 			}
 		}
 	}
+
+	static <E, T> ReactiveList<E> create(List<E> list) {
+		return (ReactiveList<E>) Proxy.newProxyInstance(
+				ReactiveList.class.getClassLoader(),
+				new Class[]{ReactiveList.class},
+				new ReactiveListHandler<>(list));
+	}
+
+	void removeById(Object id);
 }

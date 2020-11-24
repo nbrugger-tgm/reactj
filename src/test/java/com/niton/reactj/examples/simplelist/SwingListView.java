@@ -6,8 +6,8 @@ import javax.swing.*;
 import java.util.function.Function;
 
 public class SwingListView<M> extends ListView<M, JComponent> {
-	private DefaultListModel<M> model = new DefaultListModel<>();
-	private JPanel view = new JPanel();
+	private final DefaultListModel<M> model = new DefaultListModel<>();
+	private final JPanel              view  = new JPanel();
 	protected SwingListView(Function<M, JComponent> elementCreator) {
 		super(elementCreator);
 		view.setLayout(new BoxLayout(view, BoxLayout.Y_AXIS));
