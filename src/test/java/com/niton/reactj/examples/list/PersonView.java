@@ -76,7 +76,6 @@ public class PersonView extends ReactiveView<PersonController, JPanel, Person> {
 
 	@Reactive("gender")
 	public void adaptColorToGender(Gender g) {
-		System.out.println("se");
 		panel.setBackground(g == Gender.MALE ? Color.BLUE : (g == Gender.FEMALE ? Color.PINK : Color.WHITE));
 		panel.repaint();
 	}

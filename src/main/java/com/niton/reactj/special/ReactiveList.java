@@ -3,6 +3,8 @@ package com.niton.reactj.special;
 import com.niton.reactj.Identity;
 import com.niton.reactj.Reactable;
 import com.niton.reactj.ReactiveModel;
+import com.niton.reactj.annotation.Reactive;
+import com.niton.reactj.exceptions.ReactiveException;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -12,17 +14,17 @@ import java.util.List;
 import static com.niton.reactj.special.ListActions.*;
 
 
-public interface ReactiveList<E extends Identity<T>, T> extends Reactable, List<E> {
+public interface ReactiveList<E extends Identity<?>> extends Reactable, List<E> {
 
 
-	static <E extends Identity<T>,T> ReactiveList<E,T> create(List<E> list) {
-		return (ReactiveList<E,T>) Proxy.newProxyInstance(
+	static <E extends Identity<T>,T> ReactiveList<E> create(List<E> list) {
+		return (ReactiveList<E>) Proxy.newProxyInstance(
 				ReactiveList.class.getClassLoader(),
 				new Class[]{ReactiveList.class},
 				new ReactiveListHandler<>(list));
 	}
 
-	void removeById(T id);
+	void removeById(Object id);
 
 	class ReactiveListHandler<E extends Identity<T>,T> implements InvocationHandler {
 		private static String   addMethod;
@@ -75,7 +77,7 @@ public interface ReactiveList<E extends Identity<T>, T> extends Reactable, List<
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			method.setAccessible(true);
-			if(method.toGenericString().equals(ReactiveList.class.toGenericString())){
+			if(method.getDeclaringClass().toGenericString().equals(ReactiveList.class.toGenericString())){
 				for (int i = 0; i < list.size(); i++) {
 					if(list.get(i).getID().equals(args[0])) {
 						list.remove(i);
@@ -84,7 +86,15 @@ public interface ReactiveList<E extends Identity<T>, T> extends Reactable, List<
 				}
 				return null;
 			}
-			Object ret = method.invoke(model, args);
+			Object delegate = null;
+			//Order is important as 'Object' calls (equals and such) need to be handled by the list
+			if(method.getDeclaringClass().isAssignableFrom(List.class)){
+				delegate = list;
+			}else if (method.getDeclaringClass().isAssignableFrom(Reactable.class)) {
+				delegate = model;
+			}else
+				throw new ReactiveException("Proxy doesnt know how to call "+method.getDeclaringClass());
+			Object ret = method.invoke(delegate, args);
 			//just react to list calls
 			if (method.getDeclaringClass().equals(List.class)) {
 				String signature = method.toGenericString();

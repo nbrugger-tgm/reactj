@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class PersonListApp {
 	public static void main(String[] args) {
-		ReactiveList<Person,String> list = ReactiveList.create(new ArrayList<>());
+		ReactiveList<Person> list = ReactiveList.create(new ArrayList<>());
 
 		PersonList view = new PersonList(new PersonListController(list));
 		view.setData(list);
@@ -20,7 +20,5 @@ public class PersonListApp {
 		frame.add(view.getView());
 		frame.pack();
 		frame.setVisible(true);
-
-
 	}
 }

@@ -1,23 +1,52 @@
 package com.niton.reactj.examples.list;
 
-import com.niton.reactj.ReactiveBinder;
 import com.niton.reactj.ReactiveView;
-import com.niton.reactj.special.ReactiveList;
-import com.niton.reactj.special.ReactiveListModel;
+import com.niton.reactj.special.ReactiveListView;
 
 import javax.swing.*;
 
 import static javax.swing.BoxLayout.Y_AXIS;
 
-public class PersonList extends ReactiveView<PersonListController, JPanel, ReactiveList<Person,String>> {
-	private ReactiveListModel<Person> model;
+public class PersonList extends ReactiveListView<PersonListController, JPanel,JPanel, Person> {
 	private JButton                   addButton;
 	private JButton                   removeButton;
 	private JPanel                    list;
-	private int i = 0;
 
 	public PersonList(PersonListController controller) {
 		super(controller);
+	}
+
+	@Override
+	protected int size() {
+		return list.getComponentCount();
+	}
+
+	@Override
+	public void removeFrom(int i) {
+		list.remove(i);
+
+	}
+
+	@Override
+	public void remove(JPanel child) {
+		list.remove(child);
+	}
+
+	@Override
+	public ReactiveView<?, JPanel, Person> createElement(Person o) {
+		return new PersonView(o);
+	}
+
+	@Override
+	public void addAt(JPanel subView, int i) {
+		list.add(subView,i);
+	}
+
+	@Override
+	public void refresh() {
+		//Just ..... swing
+		list.validate();
+		list.repaint();
 	}
 
 	@Override
@@ -37,35 +66,10 @@ public class PersonList extends ReactiveView<PersonListController, JPanel, React
 
 		panel.add(pane);
 
-
 		return panel;
 	}
 
-	@Override
-	public void createBindings(ReactiveBinder binder) {
-		model = new ReactiveListModel<>(this::indexAdd, this::indexRemove, this::add, this::remove, list::getComponentCount);
-		model.bind(binder);
-		binder.bindBi("penis", System.out::println, () -> "penis" + i++);
-		addButton.addActionListener(binder::react);
-	}
 
-	private void indexAdd(int i, Person o) {
-		list.add(new PersonView(o).getView(), i);
-	}
-
-	private void indexRemove(int i) {
-		list.remove(i);
-		list.validate();
-	}
-
-	private void add(Person o) {
-		list.add(new PersonView(o).getView());
-		list.validate();
-	}
-
-	private void remove(Person o) {
-		throw new UnsupportedOperationException();
-	}
 
 	@Override
 	public void registerListeners(PersonListController controller) {
