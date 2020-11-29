@@ -50,8 +50,8 @@ public class ReactiveBinder {
 			toDisplayConverter = convertToDisplay;
 		}
 
-		public D convertToDisplay(Object o) {
-			return toDisplayConverter.convert(o);
+		public D convertToDisplay(Object value) {
+			return toDisplayConverter.convert(value);
 		}
 
 		public void display(Object data) {
@@ -71,8 +71,8 @@ public class ReactiveBinder {
 		private final ValueReceiver<D> reciver;
 		private final Converter<D, M>  toModelConverter;
 
-		public M convertToModel(Object o) {
-			return toModelConverter.convert(o);
+		public M convertToModel(Object value) {
+			return toModelConverter.convert(value);
 		}
 
 		public D get() {

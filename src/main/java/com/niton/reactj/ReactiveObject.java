@@ -95,20 +95,19 @@ public class ReactiveObject implements Reactable {
 
 			return real;
 		} catch (
-				InstantiationException | InvocationTargetException |
-						IllegalAccessException | NoSuchMethodException e
-		) {
+			InstantiationException | InvocationTargetException |
+			IllegalAccessException | NoSuchMethodException e) {
 			return handle(type, unboxedParamTypes, e);
 		}
 	}
 
-	private static <C> ReactiveException constructorNotFound(Class<C> o, Class<?>[] paramTypes) {
+	private static <C> ReactiveException constructorNotFound(Class<C> type, Class<?>[] paramTypes) {
 		return new ReactiveException(
 				String.format("No constructor(%s) found in class %s",
 				              Arrays.stream(paramTypes)
 				                    .map(Class::getSimpleName)
 				                    .collect(Collectors.joining(", ")),
-				              o.getSimpleName()));
+				              type.getSimpleName()));
 	}
 
 	private static <C> C instanciate(Class<C> type, Class<?>[] types, Object[] params)

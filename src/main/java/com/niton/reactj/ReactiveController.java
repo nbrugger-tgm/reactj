@@ -55,7 +55,7 @@ public final class ReactiveController<C> {
 	}
 
 	/**
-	 * Finds changes for a specific field among many bindings (but only the first one is accepted
+	 * Finds changes for a specific field among many bindings (but only the first one is accepted)
 	 *
 	 * @param changed  the map to put the change into (if found)
 	 * @param field    the name of the field/property
