@@ -10,6 +10,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.DEEP;
+
 public interface ReactiveComponent<C> {
 	void createBindings(ReactiveBinder binder);
 
@@ -20,9 +22,9 @@ public interface ReactiveComponent<C> {
 		Method[]                           methods   = MethodUtils.getMethodsWithAnnotation(
 				viewClass,
 				Reactive.class,
-				viewClass.isAnnotationPresent(ReactivResolution.class) && viewClass.getAnnotation(
-						ReactivResolution.class)
-				                                                                   .value() == ReactivResolution.ReactiveResolutions.DEEP,
+				viewClass.isAnnotationPresent(ReactivResolution.class)
+						&&
+						viewClass.getAnnotation(ReactivResolution.class).value() == DEEP,
 				true);
 		for (Method method : methods) {
 			processAnnotatedMethod(binder, method);
@@ -65,9 +67,10 @@ public interface ReactiveComponent<C> {
 
 
 	default String getMethodSignature(Method method) {
-		return method.getDeclaringClass()
-		             .getSimpleName() + "." + method.getName() + "(" + getMethodParamSignature(
-				method) + ")";
+		return String.format("%s.%s(%s)",
+		                     method.getDeclaringClass().getSimpleName(),
+		                     method.getName(),
+		                     getMethodParamSignature(method));
 	}
 
 	default String getMethodParamSignature(Method method) {
