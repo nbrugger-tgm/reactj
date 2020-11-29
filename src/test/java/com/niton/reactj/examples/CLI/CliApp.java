@@ -19,23 +19,21 @@ public class CliApp {
 			progress.setProgress((progress.getProgress() + 0.002) % 1);
 		}
 	}
-}
 
-class Progress {
-	@Reactive("percent")
-	private double progress;
+	public static class Progress {
+		@Reactive("percent")
+		private double progress;
 
-	public Progress() {
-	}
+		public double getProgress() {
+			return progress;
+		}
 
-	public double getProgress() {
-		return progress;
-	}
-
-	public void setProgress(double progress) {
-		this.progress = progress;
+		public void setProgress(double progress) {
+			this.progress = progress;
+		}
 	}
 }
+
 
 class ProgressCli implements ReactiveComponent<CliController> {
 

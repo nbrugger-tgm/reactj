@@ -20,30 +20,34 @@ public interface ReactiveComponent<C> {
 		Class<? extends ReactiveComponent> viewClass = this.getClass();
 		Method[] methods = MethodUtils.getMethodsWithAnnotation(viewClass, Reactive.class, viewClass.isAnnotationPresent(ReactivResolution.class) && viewClass.getAnnotation(ReactivResolution.class).value() == ReactivResolution.ReactiveResolutions.DEEP, true);
 		for (Method method : methods) {
-			if (method.getParameterTypes().length > 1) {
-				throw new ReactiveException("@Reactive method " + method + " has more than one parameter");
-			}
-			String mapTarget = method.getAnnotation(Reactive.class).value();
-			binder.bind(mapTarget, (val) -> {
-
-				if (method.getParameterTypes().length == 1) {
-					if (!val.getClass().isAssignableFrom(method.getParameterTypes()[0]) && !MethodType.methodType(val.getClass()).unwrap().returnType().isAssignableFrom(method.getParameterTypes()[0]))
-						throw new ClassCastException("Method " + (method.getDeclaringClass().getSimpleName() + "." + method.getName() + "(" + Arrays.stream(method.getParameterTypes()).map(Class::getTypeName).collect(Collectors.joining(", ")) + ")") + " doesnt accepts type " + val.getClass().getTypeName());
-					else
-						try {
-							method.invoke(this, val);
-						} catch (IllegalAccessException | InvocationTargetException e) {
-							throw new ReactiveException("Failed to call automatic binding : " + e);
-						}
-				} else {
-					try {
-						method.invoke(this);
-					} catch (IllegalAccessException | InvocationTargetException e) {
-						throw new ReactiveException("Failed to call automatic binding : " + e);
-					}
-				}
-			});
+			processAnnotatedMethod(binder, method);
 		}
+	}
 
+	default void processAnnotatedMethod(ReactiveBinder binder, Method method) {
+		if (method.getParameterTypes().length > 1) {
+			throw new ReactiveException("@Reactive method " + method + " has more than one parameter");
+		}
+		String mapTarget = method.getAnnotation(Reactive.class).value();
+		binder.bind(mapTarget, (val) -> dynamicCall(method, val));
+	}
+
+	default void dynamicCall(Method method, Object val) {
+		try {
+			if (method.getParameterTypes().length == 1) {
+				if (!val.getClass().isAssignableFrom(method.getParameterTypes()[0]) && !MethodType.methodType(val.getClass()).unwrap().returnType().isAssignableFrom(method.getParameterTypes()[0]))
+					throw new ClassCastException("Method " + (method.getDeclaringClass().getSimpleName() + "." + method.getName() + "(" + Arrays.stream(method.getParameterTypes()).map(Class::getTypeName).collect(Collectors.joining(", ")) + ")") + " doesnt accepts type " + val.getClass().getTypeName());
+				else
+						method.invoke(this, val);
+			} else {
+				try {
+					method.invoke(this);
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					throw new ReactiveException("Failed to call automatic binding : " + e);
+				}
+			}
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			throw new ReactiveException("Failed to call automatic binding : " + e);
+		}
 	}
 }
