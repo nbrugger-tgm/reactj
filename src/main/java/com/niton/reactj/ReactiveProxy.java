@@ -7,7 +7,7 @@ public class ReactiveProxy<C> implements Reactable {
 	public final ReactiveModel<C> reactive;
 
 	public ReactiveProxy(C wrapped, ReactiveModel<C> model) {
-		this.object = wrapped;
+		this.object   = wrapped;
 		this.reactive = model;
 	}
 

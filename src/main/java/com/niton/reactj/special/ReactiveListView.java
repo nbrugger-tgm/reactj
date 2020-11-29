@@ -32,7 +32,7 @@ public abstract class ReactiveListView
 
 	private void addElement(int index, E element) {
 		ReactiveView<?, C, E> view = createElement(element);
-		C subV = view.getView();
+		C                     subV = view.getView();
 		viewMap.put(element.getID(), subV);
 		addAt(subV, index);
 		refresh();

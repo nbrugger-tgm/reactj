@@ -18,4 +18,10 @@ public interface Reactable {
 	void react(String property, Object value);
 
 	void set(String property, Object value) throws Throwable;
+
+	default void set(Map<String, Object> changed) throws Throwable {
+		for (Map.Entry<String, Object> change : changed.entrySet()) {
+			set(change.getKey(), change.getValue());
+		}
+	}
 }

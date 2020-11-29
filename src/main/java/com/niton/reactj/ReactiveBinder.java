@@ -46,8 +46,16 @@ public class ReactiveBinder {
 				DisplayFunction<D> displayFunctions,
 				Converter<F, D> convertToDisplay
 		) {
-			this.display = displayFunctions;
+			this.display       = displayFunctions;
 			toDisplayConverter = convertToDisplay;
+		}
+
+		public D convertToDisplay(Object value) {
+			return toDisplayConverter.convert(value);
+		}
+
+		public void display(Object data) {
+			display.display(data);
 		}
 
 		public DisplayFunction<D> getDisplay() {
@@ -60,8 +68,16 @@ public class ReactiveBinder {
 	}
 
 	public static class BiBinding<M, D> extends Binding<D, M> {
-		final ValueReceiver<D> reciver;
-		final Converter<D, M>  toModelConverter;
+		private final ValueReceiver<D> reciver;
+		private final Converter<D, M>  toModelConverter;
+
+		public M convertToModel(Object value) {
+			return toModelConverter.convert(value);
+		}
+
+		public D get() {
+			return reciver.get();
+		}
 
 		public BiBinding(
 				DisplayFunction<D> display,
@@ -70,8 +86,23 @@ public class ReactiveBinder {
 				Converter<D, M> toModelConverter
 		) {
 			super(display, toDisplayConverter);
-			this.reciver = reciver;
+			this.reciver          = reciver;
 			this.toModelConverter = toModelConverter;
+		}
+
+		public Converter<D, M> getToModelConverter() {
+			return toModelConverter;
+		}
+
+		public ValueReceiver<D> getReciver() {
+			return reciver;
+		}
+
+		/**
+		 * @return the value from the UI converted to a value for the model
+		 */
+		public M getModelConverted() {
+			return toModelConverter.convertTypesave(get());
 		}
 	}
 
@@ -81,9 +112,9 @@ public class ReactiveBinder {
 			Map<String, List<Binding<?, ?>>> displayBindings,
 			Map<String, List<BiBinding<?, ?>>> editBindings
 	) {
-		this.update = update;
+		this.update          = update;
 		this.displayBindings = displayBindings;
-		this.editBindings = editBindings;
+		this.editBindings    = editBindings;
 	}
 
 	public <T> void bindBi(String view, DisplayFunction<T> function, ValueReceiver<T> reciver) {
@@ -98,8 +129,11 @@ public class ReactiveBinder {
 			Converter<D, M> toModelConverter,
 			Converter<M, D> toDisplayConverter
 	) {
-		BiBinding<M, D> binding = new BiBinding<>(function, reciver, toDisplayConverter, toModelConverter);
-		List<Binding<?, ?>> funcs = displayBindings.getOrDefault(view, new ArrayList<>());
+		BiBinding<M, D>     binding = new BiBinding<>(function,
+		                                              reciver,
+		                                              toDisplayConverter,
+		                                              toModelConverter);
+		List<Binding<?, ?>> funcs   = displayBindings.getOrDefault(view, new ArrayList<>());
 		funcs.add(binding);
 		displayBindings.put(view, funcs);
 		List<BiBinding<?, ?>> biBindings = editBindings.getOrDefault(view, new ArrayList<>());

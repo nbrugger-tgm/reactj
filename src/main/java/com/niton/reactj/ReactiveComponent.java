@@ -5,11 +5,12 @@ import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.exceptions.ReactiveException;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
-import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
+import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.DEEP;
 
 public interface ReactiveComponent<C> {
 	void createBindings(ReactiveBinder binder);
@@ -18,32 +19,64 @@ public interface ReactiveComponent<C> {
 
 	default void createAnnotatedBindings(ReactiveBinder binder) {
 		Class<? extends ReactiveComponent> viewClass = this.getClass();
-		Method[] methods = MethodUtils.getMethodsWithAnnotation(viewClass, Reactive.class, viewClass.isAnnotationPresent(ReactivResolution.class) && viewClass.getAnnotation(ReactivResolution.class).value() == ReactivResolution.ReactiveResolutions.DEEP, true);
+		Method[]                           methods   = MethodUtils.getMethodsWithAnnotation(
+				viewClass,
+				Reactive.class,
+				viewClass.isAnnotationPresent(ReactivResolution.class)
+						&&
+						viewClass.getAnnotation(ReactivResolution.class).value() == DEEP,
+				true);
 		for (Method method : methods) {
-			if (method.getParameterTypes().length > 1) {
-				throw new ReactiveException("@Reactive method " + method + " has more than one parameter");
-			}
-			String mapTarget = method.getAnnotation(Reactive.class).value();
-			binder.bind(mapTarget, (val) -> {
+			processAnnotatedMethod(binder, method);
+		}
+	}
 
-				if (method.getParameterTypes().length == 1) {
-					if (!val.getClass().isAssignableFrom(method.getParameterTypes()[0]) && !MethodType.methodType(val.getClass()).unwrap().returnType().isAssignableFrom(method.getParameterTypes()[0]))
-						throw new ClassCastException("Method " + (method.getDeclaringClass().getSimpleName() + "." + method.getName() + "(" + Arrays.stream(method.getParameterTypes()).map(Class::getTypeName).collect(Collectors.joining(", ")) + ")") + " doesnt accepts type " + val.getClass().getTypeName());
-					else
-						try {
-							method.invoke(this, val);
-						} catch (IllegalAccessException | InvocationTargetException e) {
-							throw new ReactiveException("Failed to call automatic binding : " + e);
-						}
-				} else {
-					try {
-						method.invoke(this);
-					} catch (IllegalAccessException | InvocationTargetException e) {
-						throw new ReactiveException("Failed to call automatic binding : " + e);
-					}
-				}
-			});
+	default void processAnnotatedMethod(ReactiveBinder binder, Method method) {
+		if (method.getParameterTypes().length > 1) {
+			throw new ReactiveException(
+					String.format("@Reactive method %s has more than one parameter", method)
+			);
 		}
 
+		String mapTarget = method.getAnnotation(Reactive.class).value();
+		binder.bind(mapTarget, (val) -> dynamicCall(method, val));
+	}
+
+	default void dynamicCall(Method method, Object val) {
+		try {
+			if (method.getParameterTypes().length == 1) {
+				Class<?> paramType = method.getParameterTypes()[0];
+				if (ReactiveReflectorUtil.isFitting(val, paramType)) {
+					throw invalidMethodParameterException(method, val);
+				}
+				method.invoke(this, val);
+			} else {
+				method.invoke(this);
+			}
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			throw new ReactiveException("Failed to call automatic binding : " + e);
+		}
+	}
+
+	default ClassCastException invalidMethodParameterException(Method method, Object val) {
+		String message = String.format("Method %s doesnt accepts type %s",
+		                               getMethodSignature(method),
+		                               val.getClass().getTypeName());
+		return new ClassCastException(message);
+	}
+
+
+	default String getMethodSignature(Method method) {
+		return String.format("%s.%s(%s)",
+		                     method.getDeclaringClass().getSimpleName(),
+		                     method.getName(),
+		                     getMethodParamSignature(method));
+	}
+
+	default String getMethodParamSignature(Method method) {
+		return Arrays
+				.stream(method.getParameterTypes())
+				.map(Class::getTypeName)
+				.collect(Collectors.joining(", "));
 	}
 }
