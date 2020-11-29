@@ -8,7 +8,7 @@ package com.niton.reactj;
  * @param <M> The model class for this view
  */
 public abstract class ReactiveView<C, V, M extends Reactable> implements ReactiveComponent<C> {
-	private final ReactiveController<C> controller;
+	private final ReactiveController<C,M> controller;
 	private final V                     view;
 
 	public ReactiveView(C controller) {
@@ -36,7 +36,7 @@ public abstract class ReactiveView<C, V, M extends Reactable> implements Reactiv
 		return view;
 	}
 
-	public ReactiveController<C> getController() {
+	public ReactiveController<C,M> getController() {
 		return controller;
 	}
 }

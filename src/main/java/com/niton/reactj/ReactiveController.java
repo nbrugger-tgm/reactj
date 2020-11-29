@@ -6,12 +6,10 @@ import com.niton.reactj.special.ReactiveList;
 
 import java.util.*;
 
-public final class ReactiveController<C> {
+public final class ReactiveController<C,M extends Reactable> extends Observer<M>{
 
-	private final Map<String, Object>                               valueCache      = new HashMap<>();
 	private final Map<String, List<ReactiveBinder.Binding<?, ?>>>   displayBindings = new HashMap<>();
 	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
-	private       Reactable                                         model;
 	private       boolean                                           blockReactions  = false;
 
 	public ReactiveController(ReactiveComponent<C> view, C customController) {
@@ -31,9 +29,9 @@ public final class ReactiveController<C> {
 		Map<String, Object> changed = findUiChanges();
 
 		if (changed.size() > 0) {
-			model.set(changed);
-			model.react();
-			valueCache.putAll(changed);
+			getModel().set(changed);
+			getModel().react();
+			updateCache(changed);
 		}
 	}
 
@@ -44,7 +42,7 @@ public final class ReactiveController<C> {
 	 */
 	private Map<String, Object> findUiChanges() {
 		Map<String, Object> changed = new HashMap<>();
-		Map<String, Object> state   = model.getState();
+		Map<String, Object> state   = getModel().getState();
 		for (Map.Entry<String, Object> field : state.entrySet()) {
 			if (!editBindings.containsKey(field.getKey())) {
 				continue;
@@ -76,56 +74,6 @@ public final class ReactiveController<C> {
 		}
 	}
 
-	/**
-	 * Bind the model to the UI
-	 *
-	 * @param model the model to display for this controller (its UI)
-	 */
-	public void bind(Reactable model) {
-		model.bind(this);
-		this.model = model;
-		if (model instanceof ReactiveList) {
-			model.react(ListActions.INIT.id(), model);
-		} else {
-			modelChanged();
-		}
-	}
-
-	/**
-	 * Updates the UI to the new state of the model
-	 */
-	public void modelChanged() {
-		Map<String, Object> changed = new HashMap<>();
-		getChanges(changed);
-		modelChanged(changed);
-	}
-
-	/**
-	 * Updates the UI to the given values
-	 *
-	 * @param changed the values that changed and will be changed on the UI
-	 */
-	public void modelChanged(Map<String, Object> changed) {
-		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
-			updateView(stringObjectEntry.getKey(), stringObjectEntry.getValue());
-		}
-	}
-
-	private void getChanges(Map<String, Object> changed) {
-		Map<String, Object> state = model.getState();
-		for (String property : state.keySet()) {
-			detectChange(changed, property, state.get(property));
-		}
-	}
-
-
-	private void detectChange(Map<String, Object> changed, String property, Object currentValue) {
-		Object oldValue = valueCache.get(property);
-		if (!Objects.equals(currentValue, oldValue)) {
-			valueCache.put(property, currentValue);
-			changed.put(property, currentValue);
-		}
-	}
 
 	/**
 	 * Sends a signal to all bindings with the regarding key
@@ -206,7 +154,8 @@ public final class ReactiveController<C> {
 				type.getSimpleName()));
 	}
 
-	public Reactable getModel() {
-		return model;
+	@Override
+	public void onChange(String property, Object value) {
+		updateView(property,value);
 	}
 }

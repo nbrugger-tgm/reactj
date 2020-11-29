@@ -17,7 +17,7 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
  * @param <M> The type this Model is going to wrap
  */
 public class ReactiveModel<M> implements MethodHandler, Reactable {
-	protected final List<ReactiveController<?>> listeners = new ArrayList<>();
+	protected final List<Observer<?>> listeners = new ArrayList<>();
 	final           M                           model;
 	private         ReactiveStrategy            strategy  = REACT_ON_SETTER;
 	private         String[]                    reactTo;
@@ -59,7 +59,7 @@ public class ReactiveModel<M> implements MethodHandler, Reactable {
 	}
 
 	@Override
-	public void bind(ReactiveController<?> c) {
+	public void bind(Observer<?> c) {
 		listeners.add(c);
 	}
 
@@ -69,17 +69,17 @@ public class ReactiveModel<M> implements MethodHandler, Reactable {
 	}
 
 	@Override
-	public void unbind(ReactiveController<?> c) {
+	public void unbind(Observer<?> c) {
 		listeners.remove(c);
 	}
 
 	public void react() {
-		listeners.forEach(ReactiveController::modelChanged);
+		listeners.forEach(Observer::update);
 	}
 
 	@Override
 	public void react(String property, Object value) {
-		listeners.forEach(l -> l.modelChanged(Collections.singletonMap(property, value)));
+		listeners.forEach(l -> l.update(Collections.singletonMap(property, value)));
 	}
 
 	@Override

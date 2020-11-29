@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class ReactiveObject implements Reactable {
 	@Unreactive
-	protected final List<ReactiveController<?>> listeners = new ArrayList<>();
+	protected final List<Observer<?>> listeners = new ArrayList<>();
 
 	public static <C> ReactiveProxy<C> create(Class<C> type, Object... constructorParameters)
 	throws
@@ -139,7 +139,7 @@ public class ReactiveObject implements Reactable {
 				.toArray(Class[]::new);
 	}
 
-	public void bind(ReactiveController<?> c) {
+	public void bind(Observer<?> c) {
 		listeners.add(c);
 	}
 
@@ -148,16 +148,16 @@ public class ReactiveObject implements Reactable {
 		return ReactiveReflectorUtil.getState(this);
 	}
 
-	public void unbind(ReactiveController<?> c) {
+	public void unbind(Observer<?> c) {
 		listeners.remove(c);
 	}
 
 	public void react() {
-		listeners.forEach(ReactiveController::modelChanged);
+		listeners.forEach(Observer::update);
 	}
 
 	public void react(String name, Object obj) {
-		listeners.forEach(l -> l.modelChanged(Collections.singletonMap(name, obj)));
+		listeners.forEach(l -> l.update(Collections.singletonMap(name, obj)));
 	}
 
 	@Override

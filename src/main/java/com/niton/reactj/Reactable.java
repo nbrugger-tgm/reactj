@@ -7,11 +7,11 @@ import java.util.Map;
  * implementing this interface makes it able to bind it to an UI
  */
 public interface Reactable {
-	void bind(ReactiveController<?> c);
+	void bind(Observer<?> c);
 
 	Map<String, Object> getState();
 
-	void unbind(ReactiveController<?> c);
+	void unbind(Observer<?> c);
 
 	void react();
 

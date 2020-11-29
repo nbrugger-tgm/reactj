@@ -12,7 +12,7 @@ public class ReactiveProxy<C> implements Reactable {
 	}
 
 	@Override
-	public void bind(ReactiveController<?> c) {
+	public void bind(Observer<?> c) {
 		reactive.bind(c);
 	}
 
@@ -22,7 +22,7 @@ public class ReactiveProxy<C> implements Reactable {
 	}
 
 	@Override
-	public void unbind(ReactiveController<?> c) {
+	public void unbind(Observer<?> c) {
 		reactive.unbind(c);
 	}
 
