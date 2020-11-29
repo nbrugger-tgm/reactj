@@ -21,7 +21,7 @@ public abstract class ListView<M, E> implements ReactiveComponent<Void> {
 
 	protected ListView(Function<M, E> elementCreator) {
 		this.elementCreator = elementCreator;
-		controller = new ReactiveController<>(this, null);
+		controller          = new ReactiveController<>(this, null);
 	}
 
 	@Override
@@ -43,6 +43,7 @@ public abstract class ListView<M, E> implements ReactiveComponent<Void> {
 	}
 
 	public abstract void remove(int index);
+
 	public abstract void remove(E model);
 
 	public abstract int size();

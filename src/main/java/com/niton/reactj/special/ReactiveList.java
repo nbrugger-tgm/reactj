@@ -21,36 +21,36 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 
 	class ReactiveListHandler<E, T> implements InvocationHandler {
-		private static String   addMethod;
-		private static String   intAddMethod;
-		private static String   removeObject;
-		private static String   removeIndex;
-		private static String   clear;
-		private static String   setMethod;
-		private static String   removeById;
+		private static String addMethod;
+		private static String intAddMethod;
+		private static String removeObject;
+		private static String removeIndex;
+		private static String clear;
+		private static String setMethod;
+		private static String removeById;
 
 		static {
 			try {
 				removeById = ReactiveList.class.getMethod("removeById", Object.class)
-						.toGenericString();
+				                               .toGenericString();
 
 				addMethod = List.class.getMethod("add", Object.class)
-						.toGenericString();
+				                      .toGenericString();
 
 				setMethod = List.class.getMethod("set", int.class, Object.class)
-						.toGenericString();
+				                      .toGenericString();
 
 				intAddMethod = List.class.getMethod("add", int.class, Object.class)
-						.toGenericString();
+				                         .toGenericString();
 
 				removeObject = List.class.getMethod("remove", Object.class)
-						.toGenericString();
+				                         .toGenericString();
 
 				removeIndex = List.class.getMethod("remove", int.class)
-						.toGenericString();
+				                        .toGenericString();
 
 				clear = List.class.getMethod("clear")
-						.toGenericString();
+				                  .toGenericString();
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			}
@@ -60,7 +60,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 		private final ReactiveModel<List<E>> model;
 
 		public ReactiveListHandler(List<E> list) {
-			this.list = list;
+			this.list  = list;
 			this.model = new ReactiveModel<>(list);
 			model.react(INIT.id(), list);
 		}
@@ -72,7 +72,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 				performRemoveByID(args);
 				return null;
 			}
-			Object delegate = getDelegateObject(method);
+			Object delegate    = getDelegateObject(method);
 			Object returnValue = method.invoke(delegate, args);
 
 			//just react to list calls
@@ -87,11 +87,9 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 			Object delegate;
 			if (originatesFrom(method, List.class)) {
 				delegate = list;
-			}
-			else if (originatesFrom(method, Reactable.class)) {
+			} else if (originatesFrom(method, Reactable.class)) {
 				delegate = model;
-			}
-			else {
+			} else {
 				throw new ReactiveException(
 						"Proxy doesnt know how to call " + method.getDeclaringClass()
 				);
@@ -101,8 +99,9 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 		/**
 		 * Checks if the given method is avainable in the tree of a given type.
+		 *
 		 * @param method the method to check
-		 * @param type the type to check for the method
+		 * @param type   the type to check for the method
 		 * @return true if type contains the method
 		 */
 		private boolean originatesFrom(Method method, Class<?> type) {
@@ -111,7 +110,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 		private void performRemoveByID(Object[] args) {
 			for (int i = 0; i < list.size(); i++) {
-				if(isSameIdentity(list.get(i),args[0])) {
+				if (isSameIdentity(list.get(i), args[0])) {
 					list.remove(i);
 				}
 			}
@@ -128,21 +127,16 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 		private void reactToListCall(String signature, Object[] parameters) {
 			if (signature.equals(addMethod)) {
 				model.react(ADD.id(), parameters[0]);
-			}
-			else if (signature.equals(intAddMethod)) {
+			} else if (signature.equals(intAddMethod)) {
 				model.react(SET_INDEX.id(), parameters[0]);
 				model.react(ADD_INDEX.id(), parameters[1]);
-			}
-			else if (signature.equals(removeObject)) {
+			} else if (signature.equals(removeObject)) {
 				model.react(REMOVE_OBJECT.id(), parameters[0]);
-			}
-			else if (signature.equals(removeIndex)) {
+			} else if (signature.equals(removeIndex)) {
 				model.react(REMOVE_INDEX.id(), parameters[0]);
-			}
-			else if (signature.equals(clear)) {
+			} else if (signature.equals(clear)) {
 				model.react(CLEAR.id(), null);
-			}
-			else if (signature.equals(setMethod)) {
+			} else if (signature.equals(setMethod)) {
 				model.react(SET_INDEX.id(), parameters[0]);
 				model.react(REPLACE.id(), parameters[1]);
 			}

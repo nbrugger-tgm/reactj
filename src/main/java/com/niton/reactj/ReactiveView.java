@@ -12,7 +12,7 @@ public abstract class ReactiveView<C, V, M extends Reactable> implements Reactiv
 	private final V                     view;
 
 	public ReactiveView(C controller) {
-		view = createView();
+		view            = createView();
 		this.controller = new ReactiveController<>(this, controller);
 	}
 

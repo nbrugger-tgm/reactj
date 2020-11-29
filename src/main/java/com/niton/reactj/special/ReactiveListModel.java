@@ -52,11 +52,11 @@ public class ReactiveListModel<E> {
 			Remover<E> remover,
 			IntSupplier size
 	) {
-		this.adder = adder;
-		this.remover = remover;
-		this.intAdder = intAdder;
+		this.adder      = adder;
+		this.remover    = remover;
+		this.intAdder   = intAdder;
 		this.intRemover = intRemover;
-		this.size = size;
+		this.size       = size;
 	}
 
 	/**
@@ -67,10 +67,10 @@ public class ReactiveListModel<E> {
 	 * @param size    function to get the number of elements displayed on the ui
 	 */
 	public ReactiveListModel(Adder<E> adder, Remover<E> remover, IntSupplier size) {
-		this.adder = adder;
-		this.remover = remover;
-		this.intAdder = (i, o) -> adder.add(o);
-		this.size = size;
+		this.adder      = adder;
+		this.remover    = remover;
+		this.intAdder   = (i, o) -> adder.add(o);
+		this.size       = size;
 		this.intRemover = i -> {
 			throw new UnsupportedOperationException();
 		};
@@ -81,11 +81,11 @@ public class ReactiveListModel<E> {
 	 */
 	public ReactiveListModel() {
 		swingModel = new DefaultListModel<>();
-		adder = swingModel::addElement;
-		remover = swingModel::removeElement;
+		adder      = swingModel::addElement;
+		remover    = swingModel::removeElement;
 		intRemover = swingModel::removeElementAt;
-		intAdder = swingModel::add;
-		size = swingModel::size;
+		intAdder   = swingModel::add;
+		size       = swingModel::size;
 	}
 
 	public void bind(ReactiveBinder binder) {
@@ -99,10 +99,11 @@ public class ReactiveListModel<E> {
 			intAdder.add(index, (E) o);
 		});
 		binder.bind(CLEAR.id(),
-				e -> {
-					while (size.getAsInt() > 0)
-						intRemover.remove(0);
-				}
+		            e -> {
+			            while (size.getAsInt() > 0) {
+				            intRemover.remove(0);
+			            }
+		            }
 		);
 		binder.bind(INIT.id(), l -> ((List<E>) l).forEach(adder::add));
 	}

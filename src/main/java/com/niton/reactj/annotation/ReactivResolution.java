@@ -9,7 +9,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface ReactivResolution {
 	enum ReactiveResolutions {
-		FLAT, DEEP
+		FLAT,
+		DEEP
 	}
 
 	ReactiveResolutions value();
