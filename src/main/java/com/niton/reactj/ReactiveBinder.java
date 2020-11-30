@@ -129,11 +129,11 @@ public class ReactiveBinder {
 			Converter<D, M> toModelConverter,
 			Converter<M, D> toDisplayConverter
 	) {
-		BiBinding<M, D>     binding = new BiBinding<>(function,
-		                                              reciver,
-		                                              toDisplayConverter,
-		                                              toModelConverter);
-		List<Binding<?, ?>> funcs   = displayBindings.getOrDefault(view, new ArrayList<>());
+		BiBinding<M, D> binding = new BiBinding<>(function,
+		                                          reciver,
+		                                          toDisplayConverter,
+		                                          toModelConverter);
+		List<Binding<?, ?>> funcs = displayBindings.getOrDefault(view, new ArrayList<>());
 		funcs.add(binding);
 		displayBindings.put(view, funcs);
 		List<BiBinding<?, ?>> biBindings = editBindings.getOrDefault(view, new ArrayList<>());

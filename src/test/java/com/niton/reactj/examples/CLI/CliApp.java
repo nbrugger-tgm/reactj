@@ -11,7 +11,8 @@ public class CliApp {
 		ReactiveProxy<Progress> proxy = ReactiveObject.create(Progress.class);
 		Progress progress = proxy.object;
 
-		ReactiveController<CliController> controller = new ReactiveController<>(new ProgressCli(), null);
+		ReactiveController<CliController,ReactiveModel<Progress>> controller;
+		controller = new ReactiveController<>(new ProgressCli(), null);
 		controller.bind(proxy.reactive);
 
 		while (true) {
