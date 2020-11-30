@@ -12,8 +12,8 @@ public class ReactiveProxy<C> implements Reactable {
 	}
 
 	@Override
-	public void bind(Observer<?> c) {
-		reactive.bind(c);
+	public void bind(Observer<?> observer) {
+		reactive.bind(observer);
 	}
 
 	@Override
@@ -22,8 +22,8 @@ public class ReactiveProxy<C> implements Reactable {
 	}
 
 	@Override
-	public void unbind(Observer<?> c) {
-		reactive.unbind(c);
+	public void unbind(Observer<?> observer) {
+		reactive.unbind(observer);
 	}
 
 	@Override

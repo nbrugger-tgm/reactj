@@ -139,8 +139,8 @@ public class ReactiveObject implements Reactable {
 				.toArray(Class[]::new);
 	}
 
-	public void bind(Observer<?> c) {
-		listeners.add(c);
+	public void bind(Observer<?> observer) {
+		listeners.add(observer);
 	}
 
 	@Override
@@ -148,8 +148,8 @@ public class ReactiveObject implements Reactable {
 		return ReactiveReflectorUtil.getState(this);
 	}
 
-	public void unbind(Observer<?> c) {
-		listeners.remove(c);
+	public void unbind(Observer<?> observer) {
+		listeners.remove(observer);
 	}
 
 	public void react() {

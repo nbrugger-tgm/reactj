@@ -59,8 +59,8 @@ public class ReactiveModel<M> implements MethodHandler, Reactable {
 	}
 
 	@Override
-	public void bind(Observer<?> c) {
-		listeners.add(c);
+	public void bind(Observer<?> observer) {
+		listeners.add(observer);
 	}
 
 	@Override
@@ -69,8 +69,8 @@ public class ReactiveModel<M> implements MethodHandler, Reactable {
 	}
 
 	@Override
-	public void unbind(Observer<?> c) {
-		listeners.remove(c);
+	public void unbind(Observer<?> observer) {
+		listeners.remove(observer);
 	}
 
 	public void react() {
