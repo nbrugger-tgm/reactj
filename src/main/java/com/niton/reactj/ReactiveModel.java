@@ -18,9 +18,9 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
  */
 public class ReactiveModel<M> implements MethodHandler, Reactable {
 	protected final List<Observer<?>> listeners = new ArrayList<>();
-	final           M                           model;
-	private         ReactiveStrategy            strategy  = REACT_ON_SETTER;
-	private         String[]                    reactTo;
+	final           M                 model;
+	private         ReactiveStrategy  strategy  = REACT_ON_SETTER;
+	private         String[]          reactTo;
 
 	public ReactiveModel(M model) {
 		this.model = model;

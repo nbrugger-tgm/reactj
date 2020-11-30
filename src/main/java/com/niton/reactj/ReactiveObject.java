@@ -95,8 +95,8 @@ public class ReactiveObject implements Reactable {
 
 			return real;
 		} catch (
-			InstantiationException | InvocationTargetException |
-			IllegalAccessException | NoSuchMethodException e) {
+				InstantiationException | InvocationTargetException |
+						IllegalAccessException | NoSuchMethodException e) {
 			return handle(type, unboxedParamTypes, e);
 		}
 	}

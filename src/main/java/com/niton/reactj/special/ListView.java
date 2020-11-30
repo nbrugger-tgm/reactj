@@ -15,9 +15,9 @@ import java.util.function.Function;
  * @param <E> the component class eg. JLabel
  */
 public abstract class ListView<M, E> implements ReactiveComponent<Void> {
-	private final Function<M, E>           elementCreator;
-	private final Map<M, E>                componentCache = new HashMap<>();
-	private final ReactiveController<Void,ReactiveList<M>> controller;
+	private final Function<M, E>                            elementCreator;
+	private final Map<M, E>                                 componentCache = new HashMap<>();
+	private final ReactiveController<Void, ReactiveList<M>> controller;
 
 	protected ListView(Function<M, E> elementCreator) {
 		this.elementCreator = elementCreator;

@@ -1,12 +1,10 @@
 package com.niton.reactj;
 
 import com.niton.reactj.exceptions.ReactiveException;
-import com.niton.reactj.special.ListActions;
-import com.niton.reactj.special.ReactiveList;
 
 import java.util.*;
 
-public final class ReactiveController<C,M extends Reactable> extends Observer<M>{
+public final class ReactiveController<C, M extends Reactable> extends Observer<M> {
 
 	private final Map<String, List<ReactiveBinder.Binding<?, ?>>>   displayBindings = new HashMap<>();
 	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
@@ -156,6 +154,6 @@ public final class ReactiveController<C,M extends Reactable> extends Observer<M>
 
 	@Override
 	public void onChange(String property, Object value) {
-		updateView(property,value);
+		updateView(property, value);
 	}
 }

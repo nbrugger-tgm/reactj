@@ -19,7 +19,7 @@ public interface ReactiveComponent<C> {
 
 	default void createAnnotatedBindings(ReactiveBinder binder) {
 		Class<? extends ReactiveComponent> viewClass = this.getClass();
-		Method[]                           methods   = MethodUtils.getMethodsWithAnnotation(
+		Method[] methods = MethodUtils.getMethodsWithAnnotation(
 				viewClass,
 				Reactive.class,
 				viewClass.isAnnotationPresent(ReactivResolution.class)
