@@ -25,6 +25,48 @@ public class AnnotationTest {
 
 	public static final int SET1 = 12, SET2 = 22, SET3 = 83;
 
+	private String stringDeposit;
+
+	private int testDeposit;
+	void testBiBinding() throws Throwable {
+		ReactiveComponent<AnnotationTest> deepComponent = new ReactiveComponent<AnnotationTest>() {
+			@Override
+			public void createBindings(ReactiveBinder binder) {
+				binder.bind("c", v -> cCalled = true);
+				binder.bind("test",v->testCalled = true);
+
+				binder.bindBi("c", v -> stringDeposit = v,()->stringDeposit,Integer::parseInt,String::valueOf);
+				binder.bindBi("test",v->testDeposit = v,()->testDeposit);
+			}
+
+			@Override
+			public void registerListeners(AnnotationTest controller) {}
+		};
+
+		ReactiveController<AnnotationTest,ReactiveProxy<DeepBase>> controller = new ReactiveController<>(deepComponent,this);
+		deep.setA(0);
+		deep.setB(0);
+		deep.setC(0);
+		controller.bind(deepProxy);
+
+		aCalled = false;
+		bCalled = false;
+		cCalled = false;
+		testCalled = false;
+
+		controller.update();
+		assertEquals("0",stringDeposit);
+		assertEquals(0,testDeposit);
+		deep.setA(99);
+		assertEquals(99,testDeposit);
+		deep.setC(1234);
+		assertEquals("1234",stringDeposit);
+
+		stringDeposit = "987";
+		controller.updateModel();
+		assertEquals(987,deep.c);
+	}
+
 	<M extends Base> void test(ReactiveProxy<M> proxy,boolean a,boolean b,boolean test){
 		ReactiveComponent<AnnotationTest> deepComponent = new ReactiveComponent<AnnotationTest>() {
 			@Override
@@ -84,6 +126,7 @@ public class AnnotationTest {
 		assertEquals(test,testCalled);
 		proxy.object.setB(SET2);
 		assertEquals(b,bCalled);
+		proxy.unbind(controller);
 	}
 
 
@@ -138,6 +181,7 @@ public class AnnotationTest {
 			};
 			ReactiveController<AnnotationTest,ReactiveProxy<DeepBase>> cont = new ReactiveController<>(deepComponent,this);
 			cont.bind(deepProxy);
+			deepProxy.unbind(cont);
 		});
 
 		assertThrows(ReactiveException.class, () -> {
@@ -155,6 +199,7 @@ public class AnnotationTest {
 			};
 			ReactiveController<AnnotationTest,ReactiveProxy<DeepBase>> cont = new ReactiveController<>(deepComponent,this);
 			cont.bind(deepProxy);
+			deepProxy.unbind(cont);
 		});
 
 	}
