@@ -192,6 +192,6 @@ public class AnnotationTest {
 
 	public static class FailBase extends Base {
 		public int c;
-		private FailBase(int wröng){};
+		private FailBase(int wrong){};
 	}
 }
