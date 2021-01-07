@@ -55,7 +55,9 @@ public interface ReactiveComponent<C> {
 				method.invoke(this);
 			}
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new ReactiveException("Failed to call automatic binding : " + e);
+			throw new ReactiveException(
+					String.format("Failed to call automatic binding (%s): %s",method,e)
+			);
 		}
 	}
 
