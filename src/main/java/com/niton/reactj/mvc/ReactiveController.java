@@ -31,6 +31,10 @@ public final class ReactiveController<C, M extends Reactable> extends Observer<M
 		view.registerListeners(customController);
 	}
 
+	public void updateModel() throws Throwable {
+		updateModel(null);
+	}
+
 	private void updateModel(EventObject actionEvent) throws Throwable {
 		if (blockReactions) {
 			return;
