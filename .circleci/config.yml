@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:11-jdk
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -20,6 +20,7 @@ jobs:
       # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
       TERM: dumb
+      CC_TEST_REPORTER_ID: 518e1f28993c76934c9dc7df618443fde8c9fdbcc416e1841023abe47411dd53
 
     steps:
       - checkout
@@ -33,11 +34,31 @@ jobs:
 
       - run: gradle dependencies
 
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+
       - save_cache:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
-
+          
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            ./cc-test-reporter before-build
+            
       # run tests!
-      - run: gradle test
-
+      - run:
+          name: Run testcases (Gradle)
+          command: |
+            gradle test
+            
+      - run:
+          name: commit-code-coverage
+          command: |
+            export JACOCO_SOURCE_PATH=`pwd`/src/main/java/
+            ./cc-test-reporter format-coverage build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
+            ./cc-test-reporter upload-coverage
