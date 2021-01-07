@@ -21,18 +21,19 @@ public class ObserverTest {
 	public String lastChanged;
 	public Object lastValue;
 	public String converted;
+	public int changeCounter = 0;
+	public ReactiveProxy<TestData> personProxy = ReactiveObject.create(TestData.class);
+	public TestData                td          = personProxy.object;
 
 	@Test
 	public void testObserving(){
-		ReactiveProxy<TestData> personProxy = ReactiveObject.create(TestData.class);
-		TestData                td          = personProxy.object;
-
 		Observer<ReactiveProxy<TestData>> testDataObserver = new Observer<ReactiveProxy<TestData>>() {
 			@Override
 			public void onChange(String property, Object value) {
 				System.out.println(property+" changed to "+value);
 				lastChanged = property;
 				lastValue = value;
+				changeCounter++;
 			}
 		};
 
@@ -41,13 +42,12 @@ public class ObserverTest {
 		lastValue = null;
 		lastChanged = null;
 		td.id = 0;
-		assertNull(lastChanged);
-		assertNull(lastValue);
+		assertNull(lastChanged,"Observer should not be triggered from assigment");
+		assertNull(lastValue, "Observer should not be triggered from assigment");
 
 		try {
 			personProxy.set("id",12);
-			assertNull(lastChanged);
-			assertNull(lastValue);
+			assertNull(lastChanged,"set(param,val) should not trigger observer");
 		} catch (Throwable throwable) {
 			fail("ID should be set-able");
 		}
@@ -64,6 +64,26 @@ public class ObserverTest {
 		assertEquals("id",lastChanged);
 		td.setColor(Color.WHITE);
 		assertEquals(Color.WHITE,lastValue);
+		int oldCounter = changeCounter;
+		testDataObserver.bind(personProxy);
+		assertEquals(oldCounter, changeCounter,"Rebinding the same object should not create changes");
+		personProxy.unbind(testDataObserver);
+		td.setId(9999);
+		assertEquals(oldCounter, changeCounter,"Unbound is not working");
+
+		ReactiveProxy<TestData> newProxy = ReactiveObject.create(TestData.class);
+		testDataObserver.bind(newProxy);
+		assertEquals(testDataObserver.getModel(),newProxy);
+	}
+
+	@Test
+	public void testArgumentVerification(){
+		Observer<ReactiveProxy<TestData>> observer = new Observer<ReactiveProxy<TestData>>() {
+			@Override
+			public void onChange(String property, Object value) {
+			}
+		};
+		assertThrows(IllegalArgumentException.class,()->observer.bind(null));
 	}
 
 	@Test
