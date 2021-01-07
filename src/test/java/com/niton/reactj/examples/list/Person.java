@@ -1,7 +1,7 @@
 package com.niton.reactj.examples.list;
 
 import com.niton.reactj.Identity;
-import com.niton.reactj.ReactiveObject;
+import com.niton.reactj.mvc.ReactiveObject;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.annotation.Unreactive;

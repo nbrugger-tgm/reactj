@@ -1,6 +1,6 @@
 package com.niton.reactj.examples.list;
 
-import com.niton.reactj.ReactiveBinder;
+import com.niton.reactj.mvc.ReactiveBinder;
 import com.niton.reactj.ReactiveView;
 import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.examples.swing.Gender;

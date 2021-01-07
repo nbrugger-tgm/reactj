@@ -1,5 +1,7 @@
 package com.niton.reactj;
 
+import com.niton.reactj.mvc.ReactiveController;
+
 /**
  * A view with automatic binding
  *

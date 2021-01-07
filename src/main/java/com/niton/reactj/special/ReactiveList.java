@@ -2,7 +2,7 @@ package com.niton.reactj.special;
 
 import com.niton.reactj.Identity;
 import com.niton.reactj.Reactable;
-import com.niton.reactj.ReactiveModel;
+import com.niton.reactj.mvc.ReactiveModel;
 import com.niton.reactj.exceptions.ReactiveException;
 
 import java.lang.reflect.InvocationHandler;
