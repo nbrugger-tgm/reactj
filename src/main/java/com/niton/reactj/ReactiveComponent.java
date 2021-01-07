@@ -50,8 +50,10 @@ public interface ReactiveComponent<C> {
 				if (!ReactiveReflectorUtil.isFitting(val, paramType)) {
 					throw invalidMethodParameterException(method, val);
 				}
+				method.setAccessible(true);
 				method.invoke(this, val);
 			} else {
+				method.setAccessible(true);
 				method.invoke(this);
 			}
 		} catch (IllegalAccessException | InvocationTargetException e) {
