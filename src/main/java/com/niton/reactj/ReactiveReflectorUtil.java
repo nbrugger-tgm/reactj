@@ -80,8 +80,7 @@ public class ReactiveReflectorUtil {
 		Class<?> type     = model.getClass();
 		String   typeName = type.getName();
 		Field[]  fields   = fieldCache.get(typeName);
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
+		for (Field f : fields) {
 			if (getReactiveName(f).equals(property)) {
 				try {
 					FieldUtils.writeField(f, model, value, true);
