@@ -47,6 +47,7 @@ public class AnnotationTest {
 		deep.setA(0);
 		deep.setB(0);
 		deep.setC(0);
+		deepProxy.unbindAll();
 		controller.bind(deepProxy);
 
 		aCalled = false;
@@ -126,7 +127,6 @@ public class AnnotationTest {
 		assertEquals(test,testCalled);
 		proxy.object.setB(SET2);
 		assertEquals(b,bCalled);
-		proxy.unbind(controller);
 	}
 
 
