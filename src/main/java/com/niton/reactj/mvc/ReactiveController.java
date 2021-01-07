@@ -17,6 +17,10 @@ public final class ReactiveController<C, M extends Reactable> extends Observer<M
 	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
 	private       boolean                                           blockReactions  = false;
 
+	/**
+	 * @param view the view or component to controll. Most likely a UI element
+	 * @param customController
+	 */
 	public ReactiveController(ReactiveComponent<C> view, C customController) {
 		//Maybe in the future it is needed to ass the view as field
 		ReactiveBinder binder = new ReactiveBinder(this::updateModel,
