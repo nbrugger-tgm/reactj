@@ -1,7 +1,8 @@
 package com.niton.reactj.examples;
 
 import com.niton.reactj.*;
-import com.niton.reactj.annotation.Reactive;
+import com.niton.reactj.mvc.ReactiveModel;
+import com.niton.reactj.mvc.ReactiveObject;
 
 import java.awt.*;
 

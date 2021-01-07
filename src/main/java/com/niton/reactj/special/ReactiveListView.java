@@ -2,7 +2,7 @@ package com.niton.reactj.special;
 
 import com.niton.reactj.Identity;
 import com.niton.reactj.Reactable;
-import com.niton.reactj.ReactiveBinder;
+import com.niton.reactj.mvc.ReactiveBinder;
 import com.niton.reactj.ReactiveView;
 
 import java.util.HashMap;

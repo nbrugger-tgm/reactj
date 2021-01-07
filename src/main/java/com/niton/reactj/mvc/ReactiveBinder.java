@@ -1,4 +1,4 @@
-package com.niton.reactj;
+package com.niton.reactj.mvc;
 
 import java.util.ArrayList;
 import java.util.EventObject;

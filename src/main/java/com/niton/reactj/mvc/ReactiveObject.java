@@ -1,5 +1,9 @@
-package com.niton.reactj;
+package com.niton.reactj.mvc;
 
+import com.niton.reactj.Observer;
+import com.niton.reactj.Reactable;
+import com.niton.reactj.ReactiveProxy;
+import com.niton.reactj.ReactiveReflectorUtil;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
 import javassist.util.proxy.ProxyFactory;
@@ -12,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class ReactiveObject implements Reactable {
 	@Unreactive
-	protected final List<Observer<?>> listeners = new ArrayList<>();
+	protected final List<com.niton.reactj.Observer<?>> listeners = new ArrayList<>();
 
 	public static <C> ReactiveProxy<C> create(Class<C> type, Object... constructorParameters)
 	throws
@@ -139,7 +143,7 @@ public class ReactiveObject implements Reactable {
 				.toArray(Class[]::new);
 	}
 
-	public void bind(Observer<?> observer) {
+	public void bind(com.niton.reactj.Observer<?> observer) {
 		listeners.add(observer);
 	}
 
@@ -148,7 +152,7 @@ public class ReactiveObject implements Reactable {
 		return ReactiveReflectorUtil.getState(this);
 	}
 
-	public void unbind(Observer<?> observer) {
+	public void unbind(com.niton.reactj.Observer<?> observer) {
 		listeners.remove(observer);
 	}
 

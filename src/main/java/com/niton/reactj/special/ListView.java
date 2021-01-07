@@ -1,8 +1,8 @@
 package com.niton.reactj.special;
 
-import com.niton.reactj.ReactiveBinder;
+import com.niton.reactj.mvc.ReactiveBinder;
 import com.niton.reactj.ReactiveComponent;
-import com.niton.reactj.ReactiveController;
+import com.niton.reactj.mvc.ReactiveController;
 
 import java.util.HashMap;
 import java.util.Map;

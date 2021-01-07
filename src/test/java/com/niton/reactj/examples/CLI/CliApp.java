@@ -2,8 +2,10 @@ package com.niton.reactj.examples.CLI;
 
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.Reactive;
-
-import java.util.Random;
+import com.niton.reactj.mvc.ReactiveBinder;
+import com.niton.reactj.mvc.ReactiveController;
+import com.niton.reactj.mvc.ReactiveModel;
+import com.niton.reactj.mvc.ReactiveObject;
 
 public class CliApp {
 

@@ -12,7 +12,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-class ReactiveReflectorUtil {
+public class ReactiveReflectorUtil {
 	private static final Map<String, Field[]> fieldCache = new HashMap<>();
 
 	public static boolean isFitting(Object val, Class<?> paramType) {

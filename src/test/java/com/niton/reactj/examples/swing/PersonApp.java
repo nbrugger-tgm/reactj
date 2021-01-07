@@ -1,6 +1,6 @@
 package com.niton.reactj.examples.swing;
 
-import com.niton.reactj.ReactiveObject;
+import com.niton.reactj.mvc.ReactiveObject;
 import com.niton.reactj.ReactiveProxy;
 import com.niton.reactj.ReactiveStrategy;
 
