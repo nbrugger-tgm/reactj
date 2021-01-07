@@ -47,7 +47,7 @@ public interface ReactiveComponent<C> {
 		try {
 			if (method.getParameterTypes().length == 1) {
 				Class<?> paramType = method.getParameterTypes()[0];
-				if (ReactiveReflectorUtil.isFitting(val, paramType)) {
+				if (!ReactiveReflectorUtil.isFitting(val, paramType)) {
 					throw invalidMethodParameterException(method, val);
 				}
 				method.invoke(this, val);

@@ -28,7 +28,7 @@ public class ReactiveReflectorUtil {
 		 * True if the unwrapped class fits into the parameter type
 		 */
 		boolean wrappedValid = unwrapped.isAssignableFrom(paramType);
-		return !unwrappedValid && !wrappedValid;
+		return unwrappedValid || wrappedValid;
 	}
 
 	public static Map<String, Object> getState(Object model) {
