@@ -2,12 +2,18 @@ package com.niton.reactj.special;
 
 import com.niton.reactj.Identity;
 import com.niton.reactj.Reactable;
-import com.niton.reactj.ReactiveBinder;
+import com.niton.reactj.mvc.ReactiveBinder;
 import com.niton.reactj.ReactiveView;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @param <L> Custom controller class
+ * @param <V> The component used as view (eg. JPanel/JList)
+ * @param <C> Entry component type (eg JPanel/JLabel)
+ * @param <E> the data type of the list (eg. Person)
+ */
 public abstract class ReactiveListView
 		<L, V, C, E extends Reactable & Identity<?>>
 		extends ReactiveView<L, V, ReactiveList<E>> {

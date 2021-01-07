@@ -3,6 +3,7 @@ package com.niton.reactj;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.mvc.ReactiveBinder;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.InvocationTargetException;

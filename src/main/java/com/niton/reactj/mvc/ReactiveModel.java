@@ -1,5 +1,9 @@
-package com.niton.reactj;
+package com.niton.reactj.mvc;
 
+import com.niton.reactj.Observer;
+import com.niton.reactj.Reactable;
+import com.niton.reactj.ReactiveReflectorUtil;
+import com.niton.reactj.ReactiveStrategy;
 import javassist.util.proxy.MethodHandler;
 
 import java.lang.reflect.InvocationTargetException;

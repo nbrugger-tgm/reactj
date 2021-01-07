@@ -24,7 +24,6 @@ public class PersonList extends ReactiveListView<PersonListController, JPanel,JP
 	@Override
 	public void removeFrom(int index) {
 		list.remove(index);
-
 	}
 
 	@Override

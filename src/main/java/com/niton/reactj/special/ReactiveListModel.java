@@ -1,6 +1,6 @@
 package com.niton.reactj.special;
 
-import com.niton.reactj.ReactiveBinder;
+import com.niton.reactj.mvc.ReactiveBinder;
 
 import javax.swing.*;
 import java.util.List;

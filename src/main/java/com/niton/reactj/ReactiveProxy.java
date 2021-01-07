@@ -1,5 +1,7 @@
 package com.niton.reactj;
 
+import com.niton.reactj.mvc.ReactiveModel;
+
 import java.util.Map;
 
 public class ReactiveProxy<C> implements Reactable {

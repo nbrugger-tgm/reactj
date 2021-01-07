@@ -1,9 +1,16 @@
-package com.niton.reactj;
+package com.niton.reactj.mvc;
 
+import com.niton.reactj.Observer;
+import com.niton.reactj.Reactable;
+import com.niton.reactj.ReactiveComponent;
 import com.niton.reactj.exceptions.ReactiveException;
 
 import java.util.*;
 
+/**
+ * @param <C> Custom controller
+ * @param <M> Model Type (might be a proxy type)
+ */
 public final class ReactiveController<C, M extends Reactable> extends Observer<M> {
 
 	private final Map<String, List<ReactiveBinder.Binding<?, ?>>>   displayBindings = new HashMap<>();
