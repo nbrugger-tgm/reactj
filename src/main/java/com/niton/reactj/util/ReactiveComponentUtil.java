@@ -14,7 +14,9 @@ import java.util.stream.Collectors;
 
 import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.DEEP;
 
-public class ReactiveComponentUtil {
+
+public final class ReactiveComponentUtil{
+	private ReactiveComponentUtil(){}
 	/**
 	 * Registers all @Reactive annotated methods in component to the binder
 	 *

@@ -1,17 +1,5 @@
 package com.niton.reactj;
 
-import com.niton.reactj.annotation.ReactivResolution;
-import com.niton.reactj.annotation.Reactive;
-import com.niton.reactj.exceptions.ReactiveException;
-import org.apache.commons.lang3.reflect.MethodUtils;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.DEEP;
-
 /**
  * Used to create a component that reacts to a Reactable Model. Most likely used for Views and similar stuff.<br>
  *     Annotate methods with @Reactive for automatic bindings

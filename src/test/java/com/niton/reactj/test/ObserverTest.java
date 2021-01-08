@@ -38,7 +38,7 @@ public class ObserverTest {
 		try {
 			personProxy.set("id",12);
 			assertNull(lastChanged,"set(param,val) should not trigger observer");
-		} catch (Throwable throwable) {
+		} catch (Exception throwable) {
 			fail("ID should be set-able");
 		}
 

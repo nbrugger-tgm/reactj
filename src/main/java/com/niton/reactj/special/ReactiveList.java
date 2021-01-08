@@ -21,7 +21,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 	static <E, T> ReactiveList<E> create(List<E> list) {
 		return (ReactiveList<E>) Proxy.newProxyInstance(
-				ReactiveList.class.getClassLoader(),
+				Thread.currentThread().getContextClassLoader(),
 				new Class[]{ReactiveList.class},
 				new ReactiveListHandler<>(list));
 	}
@@ -29,38 +29,39 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 	void removeById(Object id);
 
 	class ReactiveListHandler<E, T> implements InvocationHandler {
-		private static String addMethod;
-		private static String intAddMethod;
-		private static String removeObject;
-		private static String removeIndex;
-		private static String clear;
-		private static String setMethod;
-		private static String removeById;
+		private static final String ADD_METHOD;
+		private static final String INT_ADD_METHOD;
+		private static final String REMOVE_OBJECT;
+		private static final String REMOVE_INDEX;
+		private static final String CLEAR;
+		private static final String SET_METHOD;
+		private static final String REMOVE_BY_ID;
 
 		static {
 			try {
-				removeById = ReactiveList.class.getMethod("removeById", Object.class)
-				                               .toGenericString();
+				REMOVE_BY_ID = ReactiveList.class.getMethod("removeById", Object.class)
+				                                 .toGenericString();
 
-				addMethod = List.class.getMethod("add", Object.class)
-				                      .toGenericString();
+				ADD_METHOD = List.class.getMethod("add", Object.class)
+				                       .toGenericString();
 
-				setMethod = List.class.getMethod("set", int.class, Object.class)
-				                      .toGenericString();
+				SET_METHOD = List.class.getMethod("set", int.class, Object.class)
+				                       .toGenericString();
 
-				intAddMethod = List.class.getMethod("add", int.class, Object.class)
+				INT_ADD_METHOD = List.class.getMethod("add", int.class, Object.class)
+				                           .toGenericString();
+
+				REMOVE_OBJECT = List.class.getMethod("remove", Object.class)
+				                          .toGenericString();
+
+				REMOVE_INDEX = List.class.getMethod("remove", int.class)
 				                         .toGenericString();
 
-				removeObject = List.class.getMethod("remove", Object.class)
-				                         .toGenericString();
-
-				removeIndex = List.class.getMethod("remove", int.class)
-				                        .toGenericString();
-
-				clear = List.class.getMethod("clear")
+				CLEAR = List.class.getMethod("clear")
 				                  .toGenericString();
 			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
+				//will not be reached. If reached only because java radicaly changed
+				throw new Error("Expected methods not found in java.lang.List class",e);
 			}
 		}
 
@@ -76,7 +77,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			method.setAccessible(true);
-			if (method.toGenericString().equals(removeById)) {
+			if (method.toGenericString().equals(REMOVE_BY_ID)) {
 				performRemoveByID(args);
 				return null;
 			}
@@ -116,7 +117,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 			return method.getDeclaringClass().isAssignableFrom(type);
 		}
 
-		private void performRemoveByID(Object[] args) {
+		private void performRemoveByID(Object... args) {
 			for (int i = 0; i < list.size(); i++) {
 				if (isSameIdentity(list.get(i), args[0])) {
 					list.remove(i);
@@ -132,19 +133,19 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 			return element.equals(arg);
 		}
 
-		private void reactToListCall(String signature, Object[] parameters) {
-			if (signature.equals(addMethod)) {
+		private void reactToListCall(String signature, Object... parameters) {
+			if (signature.equals(ADD_METHOD)) {
 				model.react(ADD.id(), parameters[0]);
-			} else if (signature.equals(intAddMethod)) {
+			} else if (signature.equals(INT_ADD_METHOD)) {
 				model.react(SET_INDEX.id(), parameters[0]);
 				model.react(ADD_INDEX.id(), parameters[1]);
-			} else if (signature.equals(removeObject)) {
-				model.react(REMOVE_OBJECT.id(), parameters[0]);
-			} else if (signature.equals(removeIndex)) {
-				model.react(REMOVE_INDEX.id(), parameters[0]);
-			} else if (signature.equals(clear)) {
-				model.react(CLEAR.id(), null);
-			} else if (signature.equals(setMethod)) {
+			} else if (signature.equals(REMOVE_OBJECT)) {
+				model.react(ListActions.REMOVE_OBJECT.id(), parameters[0]);
+			} else if (signature.equals(REMOVE_INDEX)) {
+				model.react(ListActions.REMOVE_INDEX.id(), parameters[0]);
+			} else if (signature.equals(CLEAR)) {
+				model.react(ListActions.CLEAR.id(), null);
+			} else if (signature.equals(SET_METHOD)) {
 				model.react(SET_INDEX.id(), parameters[0]);
 				model.react(REPLACE.id(), parameters[1]);
 			}

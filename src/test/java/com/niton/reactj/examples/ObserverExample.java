@@ -1,7 +1,6 @@
 package com.niton.reactj.examples;
 
 import com.niton.reactj.*;
-import com.niton.reactj.ReactiveObject;
 
 import java.awt.*;
 

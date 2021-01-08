@@ -6,10 +6,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class ClickableListEntry extends JLabel {
-	private final Remover remover;
 	public ClickableListEntry(String text, Remover remover) {
 		super(text);
-		this.remover = remover;
 
 		addMouseListener(new MouseAdapter() {
 			@Override

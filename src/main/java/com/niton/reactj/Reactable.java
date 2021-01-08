@@ -1,5 +1,7 @@
 package com.niton.reactj;
 
+import com.niton.reactj.exceptions.ReactiveException;
+
 import java.util.Map;
 
 /**
@@ -44,18 +46,21 @@ public interface Reactable {
 	 * Updates a field in this object with the respective name (sentivie to @Reactive)
 	 * @param property the name of the property to set (@Reactive respected)
 	 * @param value the value to change to
-	 * @throws Throwable if anything goes wrong
+	 * @throws Exception if anything goes wrong
 	 */
-	void set(String property, Object value) throws Throwable;
+	void set(String property, Object value) throws Exception;
 
 	/**
 	 * Performs multiple {@link #set(String, Object)} operations. One for every Map Entry
 	 * @param changed the Map containing all changes
-	 * @throws Throwable id anything goes wrong
 	 */
-	default void set(Map<String, Object> changed) throws Throwable {
+	default void set(Map<String, Object> changed) {
 		for (Map.Entry<String, Object> change : changed.entrySet()) {
-			set(change.getKey(), change.getValue());
+			try{
+				set(change.getKey(), change.getValue());
+			}catch (Exception e){
+				throw new ReactiveException("Set("+change.getKey()+", "+change.getValue()+") failed",e);
+			}
 		}
 	}
 

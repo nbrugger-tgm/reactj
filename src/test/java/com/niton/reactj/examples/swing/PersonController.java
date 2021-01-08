@@ -2,7 +2,6 @@ package com.niton.reactj.examples.swing;
 
 import com.niton.reactj.mvc.Listener;
 
-import java.awt.event.ActionEvent;
 
 public class PersonController implements Listener<Person> {
 	@Override

@@ -19,7 +19,7 @@ public class ReactiveListModel<E> {
 	private final IndexAdder<E>       intAdder;
 	private final IndexRemover        intRemover;
 	private final IntSupplier         size;
-	private       DefaultListModel<E> swingModel = null;
+	private       DefaultListModel<E> swingModel;
 	private       int                 index;
 
 	/**

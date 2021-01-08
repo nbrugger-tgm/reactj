@@ -15,12 +15,13 @@ public abstract class ReactiveView<V, M extends Reactable> implements ReactiveCo
 	private final V                     view;
 
 	public ReactiveView() {
-		view            = createView();
-		this.controller = new ReactiveController<>(this);
+		view       = createView();
+		controller = new ReactiveController<>(this);
 		registerListeners();
 	}
 
 	protected void registerListeners() {
+		//empty by intend as it should only be overwritten if needed
 	}
 
 	/**
