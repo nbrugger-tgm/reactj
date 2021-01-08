@@ -1,9 +1,16 @@
 package com.niton.reactj;
 
-import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.ReactiveBinder.BiBinding;
+import com.niton.reactj.ReactiveBinder.Binding;
 import com.niton.reactj.util.ReactiveComponentUtil;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static com.niton.reactj.exceptions.ReactiveException.*;
 
 /**
  * A reactive controller is responsible to communicate changes between ReactableObjects and ReactiveComponents.<br>
@@ -13,15 +20,15 @@ import java.util.*;
  */
 public final class ReactiveController<M extends Reactable> extends Observer<M> {
 
-	private final Map<String, List<ReactiveBinder.Binding<?, ?>>>   displayBindings = new HashMap<>();
-	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
-	private       boolean                                           blockReactions  = false;
+	private final Map<String, List<Binding<?, ?>>>   displayBindings = new ConcurrentHashMap<>();
+	private final Map<String, List<BiBinding<?, ?>>> editBindings    = new ConcurrentHashMap<>();
+	private       boolean                            blockReactions;
 
 	/**
 	 * @param view the view or component to control. Most likely a UI element
 	 */
 	public ReactiveController(ReactiveComponent view) {
-		//Maybe in the future it is needed to ass the view as field
+		//Maybe in the future it is needed to add the view as field
 		ReactiveBinder binder = new ReactiveBinder(this::updateModel,
 		                                           displayBindings,
 		                                           editBindings);
@@ -40,18 +47,18 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 
 	/**
 	 * Pulls changes from the Component to the Model
-	 * @param actionEvent
-	 * @throws Throwable
+	 * @param unused not used
 	 */
-	private void updateModel(Object actionEvent) throws Throwable {
+	private void updateModel(Object unused) {
 		if (blockReactions) {
 			return;
 		}
 		Map<String, Object> changed = findUiChanges();
 
-		if (changed.size() > 0) {
-			getModel().set(changed);
-			getModel().react();
+		if (!changed.isEmpty()) {
+			M model = getModel();
+			model.set(changed);
+			model.react();
 			updateCache(changed);
 		}
 	}
@@ -85,8 +92,8 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 			String field,
 			Object oldValue
 	) {
-		List<ReactiveBinder.BiBinding<?, ?>> editBind = editBindings.get(field);
-		for (ReactiveBinder.BiBinding<?, ?> biBinding : editBind) {
+		List<BiBinding<?, ?>> editBind = editBindings.get(field);
+		for (BiBinding<?, ?> biBinding : editBind) {
 			Object bindingVal = biBinding.getModelConverted();
 			if (!Objects.equals(bindingVal, oldValue)) {
 				changed.put(field, bindingVal);
@@ -103,8 +110,8 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 	 * @param value the value the event carries
 	 */
 	private void updateView(final String key, final Object value) {
-		List<ReactiveBinder.Binding<?, ?>> bindings = displayBindings.get(key);
-		if (bindings == null || bindings.size() == 0) {
+		List<Binding<?, ?>> bindings = displayBindings.get(key);
+		if (bindings == null || bindings.isEmpty()) {
 			return;
 		}
 		blockReactions = true;
@@ -118,7 +125,7 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 	 * @param value the value to pass to the binding
 	 * @param binding the binding to call
 	 */
-	private void updateBinding(String key, Object value, ReactiveBinder.Binding<?, ?> binding) {
+	private static void updateBinding(String key, Object value, Binding<?, ?> binding) {
 		Object converted;
 		try {
 			converted = binding.getToDisplayConverter().convert(value);
@@ -126,60 +133,20 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 			throw badConverterException(key, value.getClass());
 		}
 
-		if (binding instanceof ReactiveBinder.BiBinding) {
+		if (binding instanceof BiBinding) {
 			//ignore change when the value is already present
-			Object present = ((ReactiveBinder.BiBinding<?, ?>) binding).getReciver().get();
+			Object present = ((BiBinding<?, ?>) binding).getReciver().get();
 			if (present.equals(value)) {
 				return;
 			}
 		}
 		try {
-			binding.getDisplay().display(converted);
+			binding.getDisplayFunction().display(converted);
 		} catch (ClassCastException ex) {
 			throw bindingException(key, value, converted, ex);
 		}
 	}
 
-	private ReactiveException bindingException(String key,
-	                                           Object value,
-	                                           Object converted,
-	                                           ClassCastException ex) {
-		Class<?> original      = value.getClass();
-		Class<?> convertedType = converted.getClass();
-
-		ReactiveException exception;
-		if (convertedType.equals(original)) {
-			exception = badBindingTarget(key, original);
-		} else {
-			exception = badConverterBindingTarget(key, original, convertedType);
-		}
-		exception.initCause(ex);
-		return exception;
-	}
-
-	private ReactiveException badConverterBindingTarget(String key,
-	                                                    Class<?> original,
-	                                                    Class<?> convertedType) {
-		return new ReactiveException(String.format(
-				"Bad binding for \"%s\". Target function doesnt accepts converted (from %s to %s)",
-				key,
-				original.getTypeName(),
-				convertedType.getTypeName()));
-	}
-
-	private ReactiveException badBindingTarget(String key, Class<?> original) {
-		return new ReactiveException(String.format(
-				"Bad binding for \"%s\". Target function doesnt accept type %s",
-				key,
-				original.getTypeName()));
-	}
-
-	private ReactiveException badConverterException(String property, Class<?> type) {
-		return new ReactiveException(String.format(
-				"Bad converter. A converter for \"%s\" doesnt accepts type %s",
-				property,
-				type.getSimpleName()));
-	}
 
 	@Override
 	public void onChange(String property, Object value) {

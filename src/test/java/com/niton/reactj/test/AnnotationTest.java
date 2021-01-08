@@ -11,14 +11,21 @@ import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AnnotationTest {
-	private boolean aCalled = false,bCalled = false,cCalled = false,testCalled = false;
+	private boolean
+			aCalled = false,
+			bCalled = false,
+			cCalled = false,
+			testCalled = false;
 	public ReactiveProxy<DeepBase> deepProxy = ReactiveObject.create(DeepBase.class);
 	public DeepBase                deep        = deepProxy.getObject();
 
 	public ReactiveProxy<FlatBase> flatProxy = ReactiveObject.create(FlatBase.class);
 	public FlatBase                flat        = flatProxy.getObject();
 
-	public static final int SET1 = 12, SET2 = 22, SET3 = 83;
+	public static final int
+			SET1 = 12,
+			SET2 = 22,
+			SET3 = 83;
 
 	private String stringDeposit;
 
@@ -48,8 +55,8 @@ public class AnnotationTest {
 		testCalled = false;
 
 		controller.update();
-		assertEquals("0",stringDeposit);
-		assertEquals(0,testDeposit);
+		assertEquals("0",stringDeposit,"Change not correctly detected");
+		assertEquals(0,testDeposit,"Change not correctly detected");
 		deep.setA(99);
 		assertEquals(99,testDeposit);
 		deep.setC(1234);

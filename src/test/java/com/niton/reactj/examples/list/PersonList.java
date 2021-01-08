@@ -1,12 +1,9 @@
 package com.niton.reactj.examples.list;
 
 import com.niton.reactj.examples.swing.Gender;
-import com.niton.reactj.mvc.EventManager;
 import com.niton.reactj.special.ReactiveListView;
 
 import javax.swing.*;
-
-import java.util.List;
 
 import static javax.swing.BoxLayout.Y_AXIS;
 

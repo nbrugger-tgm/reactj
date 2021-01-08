@@ -6,6 +6,7 @@ import com.niton.reactj.ReactiveController;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
@@ -16,8 +17,8 @@ import java.util.function.Function;
  * @param <C> The container component class eg. JPanel
  */
 public abstract class ListView<M, E, C> implements ReactiveComponent {
-	private final Function<M, E>                            elementCreator;
-	private final Map<M, E>                                 componentCache = new HashMap<>();
+	private final Function<M, E>                      elementCreator;
+	private final Map<M, E>                           componentCache = new ConcurrentHashMap<>();
 	private final ReactiveController<ReactiveList<M>> controller;
 
 	protected ListView(Function<M, E> elementCreator) {
@@ -38,9 +39,9 @@ public abstract class ListView<M, E, C> implements ReactiveComponent {
 	}
 
 	private void convertingAdd(int index, M element) {
-		E el = elementCreator.apply(element);
-		add(index, el);
-		componentCache.put(element, el);
+		E convertedElement = elementCreator.apply(element);
+		add(index, convertedElement);
+		componentCache.put(element, convertedElement);
 	}
 
 	public abstract void remove(int index);

@@ -68,8 +68,8 @@ public abstract class Observer<M extends Reactable> {
 	 * @return the map of all properties that changed
 	 */
 	private Map<String, Object> getChanges() {
-		Map<String, Object> changed = new ConcurrentHashMap<>();
-		Map<String, Object> state   = model.getState();
+		final Map<String, Object> changed = new ConcurrentHashMap<>();
+		final Map<String, Object> state   = model.getState();
 		for (String property : state.keySet()) {
 			detectChange(changed, property, state.get(property));
 		}
@@ -106,6 +106,8 @@ public abstract class Observer<M extends Reactable> {
 		}
 		model.bind(this);
 		this.model = model;
+
+		//This is kind of propritary and is subject to change
 		if (model instanceof ReactiveList) {
 			model.react(ListActions.INIT.id(), model);
 		} else {

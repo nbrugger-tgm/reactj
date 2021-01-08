@@ -14,7 +14,7 @@ public class ReactiveBinder {
 
 	@FunctionalInterface
 	public interface UpdateFunction {
-		void update(Object obj) throws Throwable;
+		void update(Object obj);
 	}
 
 	/**
@@ -37,11 +37,11 @@ public class ReactiveBinder {
 	 */
 	@FunctionalInterface
 	public interface Converter<F, T> {
-		default T convert(Object o) {
-			return convertTypesave((F) o);
+		default T convert(Object toConvert) {
+			return convertTypesave((F) toConvert);
 		}
 
-		T convertTypesave(F arg);
+		T convertTypesave(F toConvert);
 	}
 
 	/**
@@ -54,15 +54,15 @@ public class ReactiveBinder {
 	}
 
 	public static class Binding<D, F> {
-		private final DisplayFunction<D> display;
+		private final DisplayFunction<D> displayFunction;
 		private final Converter<F, D>    toDisplayConverter;
 
 		public Binding(
 				DisplayFunction<D> displayFunctions,
 				Converter<F, D> convertToDisplay
 		) {
-			this.display       = displayFunctions;
-			toDisplayConverter = convertToDisplay;
+			this.displayFunction = displayFunctions;
+			toDisplayConverter   = convertToDisplay;
 		}
 
 		public D convertToDisplay(Object value) {
@@ -70,11 +70,11 @@ public class ReactiveBinder {
 		}
 
 		public void display(Object data) {
-			display.display(data);
+			displayFunction.display(data);
 		}
 
-		public DisplayFunction<D> getDisplay() {
-			return display;
+		public DisplayFunction<D> getDisplayFunction() {
+			return displayFunction;
 		}
 
 		public Converter<F, D> getToDisplayConverter() {
@@ -174,19 +174,11 @@ public class ReactiveBinder {
 	 * @param actionEvent not used, just there to enable method references
 	 */
 	public void react(Object actionEvent) {
-		try {
-			update.update(actionEvent);
-		} catch (Throwable throwable) {
-			throwable.printStackTrace();
-		}
+		update.update(actionEvent);
 	}
 
 	public void react(){
-		try {
-			update.update(null);
-		} catch (Throwable throwable) {
-			throwable.printStackTrace();
-		}
+		update.update(null);
 	}
 
 	public <R> void bind(String view, DisplayFunction<R> displayFunction) {

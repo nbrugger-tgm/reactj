@@ -5,10 +5,7 @@ import javassist.util.proxy.MethodHandler;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
 
@@ -22,10 +19,10 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
  */
 public class ReactiveProxy<M> implements MethodHandler, Reactable {
 	protected final List<Observer<?>> listeners = new ArrayList<>();
-	private final    M                 backend;
-	private     M                      proxy;
+	private final    M                backend;
+	private     M                     proxy;
 	private         ReactiveStrategy  strategy  = REACT_ON_SETTER;
-	private         String[]          reactTo;
+	private         String[]          reactToList;
 
 	/**
 	 * This returns the mutable Objects.
@@ -36,6 +33,7 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 	public M getObject() {
 		return proxy;
 	}
+
 	void setProxy(M proxy){
 		this.proxy = proxy;
 	}
@@ -61,8 +59,8 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 		this.strategy = strategy;
 	}
 
-	public String[] getReactTo() {
-		return reactTo;
+	public List<String> getReactToList() {
+		return Arrays.asList(reactToList);
 	}
 
 	/**
@@ -70,7 +68,7 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 	 * @param reactTo a list of method names to react to
 	 */
 	public void reactTo(String... reactTo) {
-		this.reactTo = reactTo;
+		this.reactToList = reactTo;
 	}
 
 	@Override
@@ -78,7 +76,7 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 	throws InvocationTargetException, IllegalAccessException {
 		thisMethod.setAccessible(true);
 		Object  ret   = thisMethod.invoke(backend, args);
-		boolean react = strategy.reactTo(thisMethod.getName(), reactTo);
+		boolean react = strategy.reactTo(thisMethod.getName(), reactToList);
 		if (react) {
 			react();
 		}
@@ -111,7 +109,7 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 	}
 
 	@Override
-	public void set(String property, Object value) throws Throwable {
+	public void set(String property, Object value) throws Exception {
 		ReactiveReflectorUtil.updateField(backend, property, value);
 	}
 

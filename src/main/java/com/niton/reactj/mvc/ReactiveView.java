@@ -12,18 +12,22 @@ import com.niton.reactj.ReactiveController;
  */
 public abstract class ReactiveView<V, M extends Reactable> implements ReactiveComponent {
 	private final ReactiveController<M> controller;
-	private final V                        view;
+	private final V                     view;
 
 	public ReactiveView() {
-		view            = createView();
-		this.controller = new ReactiveController<>(this);
+		view       = createView();
+		controller = new ReactiveController<>(this);
 		registerListeners();
 	}
 
-	protected void registerListeners(){};
+	protected void registerListeners() {
+		//empty by intend as it should only be overwritten if needed
+	}
+
 	/**
 	 * Create the view and the layout.
 	 * <b>Do not try to display anything from the model here. Just create the layout</b>
+	 *
 	 * @return the completed view
 	 */
 	protected abstract V createView();
@@ -31,7 +35,7 @@ public abstract class ReactiveView<V, M extends Reactable> implements ReactiveCo
 	/**
 	 * @return the model of the underlying controller
 	 */
-	public M getModel(){
+	public M getModel() {
 		return controller.getModel();
 	}
 

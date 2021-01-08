@@ -2,9 +2,6 @@ package com.niton.reactj.examples.CLI;
 
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.Reactive;
-import com.niton.reactj.ReactiveBinder;
-import com.niton.reactj.ReactiveController;
-import com.niton.reactj.ReactiveObject;
 
 public class CliApp {
 

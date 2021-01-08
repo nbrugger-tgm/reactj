@@ -9,20 +9,23 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class is intended for internal use only
- *
+ * <p>
  * Serves several methods for reflective access specifically for @Annotations
  */
-public class ReactiveReflectorUtil {
-	private static final Map<String, Field[]> fieldCache = new HashMap<>();
+public final class ReactiveReflectorUtil {
+	private static final Map<String, Field[]> FIELD_CACHE = new ConcurrentHashMap<>();
+	private ReactiveReflectorUtil(){}
 
 	/**
-	 * @param val the object to check the type of
- 	 * @param paramType
+	 * @param val       the object to check the type of
+	 * @param paramType
 	 * @return true if val is usable as method parameter with type paramType
 	 */
 	public static boolean isFitting(Object val, Class<?> paramType) {
@@ -43,6 +46,7 @@ public class ReactiveReflectorUtil {
 
 	/**
 	 * Returns the object as Map, by applying @Reactive and @Unreactive annotations
+	 *
 	 * @param model the object to convert
 	 * @return the map containing all (renamed) properties
 	 */
@@ -50,20 +54,21 @@ public class ReactiveReflectorUtil {
 		HashMap<String, Object> state    = new HashMap<>();
 		Class<?>                type     = model.getClass();
 		String                  typeName = type.getName();
-		Field[]                 fields   = fieldCache.get(typeName);
+		Field[]                 fields   = FIELD_CACHE.get(typeName);
 		if (fields == null) {
-			fieldCache.put(typeName, fields = loadRelevantFields(type));
+			FIELD_CACHE.put(typeName, fields = loadRelevantFields(type));
 		}
 		try {
 			ReactiveReflectorUtil.readState(model, fields, state);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			throw new ReactiveException("Cannot read field of model", e);
 		}
 		return state;
 	}
 
 	/**
 	 * Resolves all fields depending on @ReactiveResolution
+	 *
 	 * @param type the type to scan
 	 * @return the fields as array
 	 */
@@ -94,34 +99,43 @@ public class ReactiveReflectorUtil {
 
 	/**
 	 * Resolves the name by @Reactive
-	 * @param f the field to get the name from
+	 *
+	 * @param field the field to get the name from
 	 * @return the name to be used for this field
 	 */
-	public static String getReactiveName(Field f) {
-		return f.isAnnotationPresent(Reactive.class) ? f.getAnnotation(Reactive.class)
-		                                                .value() : f.getName();
+	public static String getReactiveName(Field field) {
+		return field.isAnnotationPresent(Reactive.class) ? field.getAnnotation(Reactive.class)
+		                                                .value() : field.getName();
 	}
 
 	/**
 	 * Update the field of an object without triggering react()
-	 * @param model the object to update the field
+	 *
+	 * @param model    the object to update the field
 	 * @param property the name of the field to update regarding to @Reactive
-	 * @param value the value to set the property to
-	 * @throws Throwable if anything goes wrong for example when using a wrong type for value
+	 * @param value    the value to set the property to
+	 * @throws Exception if anything goes wrong for example when using a wrong type for value
 	 */
-	public static void updateField(Object model, String property, Object value) throws Throwable {
+	public static void updateField(Object model, String property, Object value) throws Exception {
 		Class<?> type     = model.getClass();
 		String   typeName = type.getName();
-		Field[]  fields   = fieldCache.get(typeName);
+		Field[]  fields   = FIELD_CACHE.get(typeName);
 		for (Field f : fields) {
 			if (getReactiveName(f).equals(property)) {
 				try {
 					FieldUtils.writeField(f, model, value, true);
 				} catch (IllegalAccessException e) {
-					throw new ReactiveException("Updating model failed").initCause(e);
+					throw new ReactiveException("Updating model failed",e);
 				}
 				return;
 			}
 		}
+	}
+
+	public static Class<?>[] unboxTypes(Class<?>... paramTypes) {
+		return Arrays
+				.stream(paramTypes)
+				.map(c -> MethodType.methodType(c).unwrap().returnType())
+				.toArray(Class[]::new);
 	}
 }

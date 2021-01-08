@@ -6,9 +6,11 @@ import com.niton.reactj.mvc.ReactiveView;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A class for List with reactive Objects in it
+ *
  * @param <V> The component used as view (eg. JPanel/JList)
  * @param <C> Entry component type (eg JPanel/JLabel)
  * @param <E> the data type of the list (eg. Person)
@@ -17,7 +19,7 @@ public abstract class ReactiveListView
 		<V, C, E extends Reactable & Identity<?>>
 		extends ReactiveView<V, ReactiveList<E>> {
 
-	private final Map<Object, C> viewMap = new HashMap<>();
+	private final Map<Object, C> viewMap = new ConcurrentHashMap<>();
 
 
 	@Override
@@ -31,9 +33,10 @@ public abstract class ReactiveListView
 		);
 		model.bind(binder);
 	}
+
 	private void addElement(int index, E element) {
-		ReactiveView<C,E> view = createElement(element);
-		C               subV = view.getView();
+		ReactiveView<C, E> view = createElement(element);
+		C                  subV = view.getView();
 		viewMap.put(element.getID(), subV);
 		addAt(subV, index);
 		refresh();
