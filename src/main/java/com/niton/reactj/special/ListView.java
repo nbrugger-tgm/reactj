@@ -13,8 +13,9 @@ import java.util.function.Function;
  *
  * @param <M> The class in the list eg. String
  * @param <E> the component class eg. JLabel
+ * @param <C> The container component class eg. JPanel
  */
-public abstract class ListView<M, E> implements ReactiveComponent<Void> {
+public abstract class ListView<M, E, C> implements ReactiveComponent<Void> {
 	private final Function<M, E>                            elementCreator;
 	private final Map<M, E>                                 componentCache = new HashMap<>();
 	private final ReactiveController<Void, ReactiveList<M>> controller;
@@ -60,7 +61,7 @@ public abstract class ListView<M, E> implements ReactiveComponent<Void> {
 		//Simple lists are immutable therefore there are no listeners
 	}
 
-	public abstract E getView();
+	public abstract C getView();
 
 	public void setList(ReactiveList<M> someArray) {
 		controller.bind(someArray);
