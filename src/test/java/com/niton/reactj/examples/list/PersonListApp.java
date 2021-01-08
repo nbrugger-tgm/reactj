@@ -11,7 +11,7 @@ public class PersonListApp {
 	public static void main(String[] args) {
 		ReactiveList<Person> list = ReactiveList.create(new ArrayList<>());
 
-		PersonList view = new PersonList(new PersonListController(list));
+		PersonList view = new PersonList();
 		view.setData(list);
 
 		JFrame frame = new JFrame();

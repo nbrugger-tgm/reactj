@@ -1,9 +1,5 @@
-package com.niton.reactj.mvc;
+package com.niton.reactj;
 
-import com.niton.reactj.Observer;
-import com.niton.reactj.Reactable;
-import com.niton.reactj.ReactiveProxy;
-import com.niton.reactj.ReactiveReflectorUtil;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
 import javassist.util.proxy.ProxyFactory;
@@ -15,8 +11,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ReactiveObject implements Reactable {
+	private final Object store;
+
 	@Unreactive
 	protected final List<com.niton.reactj.Observer<?>> listeners = new ArrayList<>();
+
+	public ReactiveObject(Object obj) {
+		store = obj;
+	}
+	public ReactiveObject(){
+		store = this;
+	}
 
 	public static <C> ReactiveProxy<C> create(Class<C> type, Object... constructorParameters)
 	throws
@@ -31,20 +36,20 @@ public class ReactiveObject implements Reactable {
 		                          paramTypes,
 		                          unboxedParamTypes,
 		                          constructorParameters);
-		ReactiveModel<C> model = new ReactiveModel<>(real);
+		ReactiveProxy<C> model = new ReactiveProxy<>(real);
 		C wrapped = constructProxy(type,
 		                           paramTypes,
 		                           unboxedParamTypes,
 		                           model,
 		                           constructorParameters);
-
-		return new ReactiveProxy<>(wrapped, model);
+		model.setProxy(wrapped);
+		return model;
 	}
 
 	private static <C> C constructProxy(Class<C> type,
 	                                    Class<?>[] paramTypes,
 	                                    Class<?>[] unboxedParamTypes,
-	                                    ReactiveModel<C> model,
+	                                    ReactiveProxy<C> model,
 	                                    Object[] constructorParameters) {
 		C wrapped;
 
@@ -149,7 +154,7 @@ public class ReactiveObject implements Reactable {
 
 	@Override
 	public Map<String, Object> getState() {
-		return ReactiveReflectorUtil.getState(this);
+		return ReactiveReflectorUtil.getState(store);
 	}
 
 	public void unbind(com.niton.reactj.Observer<?> observer) {
@@ -166,7 +171,7 @@ public class ReactiveObject implements Reactable {
 
 	@Override
 	public void set(String property, Object value) throws Throwable {
-		ReactiveReflectorUtil.updateField(this, property, value);
+		ReactiveReflectorUtil.updateField(store, property, value);
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package com.niton.reactj;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.exceptions.ReactiveException;
-import com.niton.reactj.mvc.ReactiveBinder;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,13 +12,18 @@ import java.util.stream.Collectors;
 
 import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.DEEP;
 
-public interface ReactiveComponent<C> {
+/**
+ * Used to create a component that reacts to a Reactable Model. Most likely used for Views and simmilar stuff
+ */
+public interface ReactiveComponent {
 	void createBindings(ReactiveBinder binder);
 
-	void registerListeners(C controller);
-
-	default void createAnnotatedBindings(ReactiveBinder binder) {
-		Class<? extends ReactiveComponent> viewClass = this.getClass();
+	/**
+	 * Registers all @Reactive annotated methods in component to the binder
+	 * @param binder the binder to register the bindings to
+	 */
+	static void createAnnotatedBindings(ReactiveComponent component,ReactiveBinder binder) {
+		Class<? extends ReactiveComponent> viewClass = component.getClass();
 		Method[] methods = MethodUtils.getMethodsWithAnnotation(
 				viewClass,
 				Reactive.class,
@@ -28,11 +32,13 @@ public interface ReactiveComponent<C> {
 						viewClass.getAnnotation(ReactivResolution.class).value() == DEEP,
 				true);
 		for (Method method : methods) {
-			processAnnotatedMethod(binder, method);
+			processAnnotatedMethod(component,binder, method);
 		}
 	}
 
-	default void processAnnotatedMethod(ReactiveBinder binder, Method method) {
+	static void processAnnotatedMethod(ReactiveComponent component,
+	                                   ReactiveBinder binder,
+	                                   Method method) {
 		if (method.getParameterTypes().length > 1) {
 			throw new ReactiveException(
 					String.format("@Reactive method %s has more than one parameter", method)
@@ -40,21 +46,20 @@ public interface ReactiveComponent<C> {
 		}
 
 		String mapTarget = method.getAnnotation(Reactive.class).value();
-		binder.bind(mapTarget, (val) -> dynamicCall(method, val));
+		binder.bind(mapTarget, (val) -> dynamicCall(component, method, val));
 	}
 
-	default void dynamicCall(Method method, Object val) {
+	static void dynamicCall(ReactiveComponent component, Method method, Object val) {
 		try {
+			method.setAccessible(true);
 			if (method.getParameterTypes().length == 1) {
 				Class<?> paramType = method.getParameterTypes()[0];
 				if (!ReactiveReflectorUtil.isFitting(val, paramType)) {
 					throw invalidMethodParameterException(method, val);
 				}
-				method.setAccessible(true);
-				method.invoke(this, val);
+				method.invoke(component, val);
 			} else {
-				method.setAccessible(true);
-				method.invoke(this);
+				method.invoke(component);
 			}
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new ReactiveException(
@@ -63,7 +68,7 @@ public interface ReactiveComponent<C> {
 		}
 	}
 
-	default ClassCastException invalidMethodParameterException(Method method, Object val) {
+	static ClassCastException invalidMethodParameterException(Method method, Object val) {
 		String message = String.format("Method %s doesnt accepts type %s",
 		                               getMethodSignature(method),
 		                               val.getClass().getTypeName());
@@ -71,14 +76,14 @@ public interface ReactiveComponent<C> {
 	}
 
 
-	default String getMethodSignature(Method method) {
+	static String getMethodSignature(Method method) {
 		return String.format("%s.%s(%s)",
 		                     method.getDeclaringClass().getSimpleName(),
 		                     method.getName(),
 		                     getMethodParamSignature(method));
 	}
 
-	default String getMethodParamSignature(Method method) {
+	static String getMethodParamSignature(Method method) {
 		return Arrays
 				.stream(method.getParameterTypes())
 				.map(Class::getTypeName)

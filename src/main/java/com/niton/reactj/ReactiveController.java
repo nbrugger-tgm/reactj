@@ -1,34 +1,28 @@
-package com.niton.reactj.mvc;
+package com.niton.reactj;
 
-import com.niton.reactj.Observer;
-import com.niton.reactj.Reactable;
-import com.niton.reactj.ReactiveComponent;
 import com.niton.reactj.exceptions.ReactiveException;
 
 import java.util.*;
 
 /**
- * @param <C> Custom controller
  * @param <M> Model Type (might be a proxy type)
  */
-public final class ReactiveController<C, M extends Reactable> extends Observer<M> {
+public final class ReactiveController<M extends Reactable> extends Observer<M> {
 
 	private final Map<String, List<ReactiveBinder.Binding<?, ?>>>   displayBindings = new HashMap<>();
 	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
 	private       boolean                                           blockReactions  = false;
 
 	/**
-	 * @param view the view or component to controll. Most likely a UI element
-	 * @param customController
+	 * @param view the view or component to control. Most likely a UI element
 	 */
-	public ReactiveController(ReactiveComponent<C> view, C customController) {
+	public ReactiveController(ReactiveComponent view) {
 		//Maybe in the future it is needed to ass the view as field
 		ReactiveBinder binder = new ReactiveBinder(this::updateModel,
 		                                           displayBindings,
 		                                           editBindings);
 		view.createBindings(binder);
-		view.createAnnotatedBindings(binder);
-		view.registerListeners(customController);
+		ReactiveComponent.createAnnotatedBindings(view,binder);
 	}
 
 	public void updateModel() throws Throwable {

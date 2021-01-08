@@ -1,19 +1,24 @@
 package com.niton.reactj.examples.list;
 
-import com.niton.reactj.ReactiveView;
+import com.niton.reactj.examples.swing.Gender;
+import com.niton.reactj.mvc.EventManager;
 import com.niton.reactj.special.ReactiveListView;
 
 import javax.swing.*;
 
+import java.util.List;
+
 import static javax.swing.BoxLayout.Y_AXIS;
 
-public class PersonList extends ReactiveListView<PersonListController, JPanel,JPanel, Person> {
-	private JButton                   addButton;
-	private JButton                   removeButton;
-	private JPanel                    list;
+public class PersonList extends ReactiveListView<JPanel,JPanel, Person> {
+	private JButton                      addButton;
+	private JButton                      removeButton;
+	private JPanel                       list;
 
-	public PersonList(PersonListController controller) {
-		super(controller);
+	@Override
+	protected void registerListeners() {
+		removeButton.addActionListener(e -> getModel().remove(0));
+		addButton.addActionListener(e -> getModel().add(new Person(12,"Max Musterman")));
 	}
 
 	@Override
@@ -32,8 +37,15 @@ public class PersonList extends ReactiveListView<PersonListController, JPanel,JP
 	}
 
 	@Override
-	public ReactiveView<?, JPanel, Person> createElement(Person element) {
-		return new PersonView(element);
+	public PersonView createElement(Person element) {
+		PersonView view = new PersonView(element);
+		view.resetEvent.listen(p -> {
+			p.setAge(18);
+			p.setName("Max Mustermann");
+			p.setIq(99);
+			p.setGender(Gender.MALE);
+		});
+		return view;
 	}
 
 	@Override
@@ -66,13 +78,5 @@ public class PersonList extends ReactiveListView<PersonListController, JPanel,JP
 		panel.add(pane);
 
 		return panel;
-	}
-
-
-
-	@Override
-	public void registerListeners(PersonListController controller) {
-		addButton.addActionListener(controller::add);
-		removeButton.addActionListener((e) -> controller.remove(0));
 	}
 }

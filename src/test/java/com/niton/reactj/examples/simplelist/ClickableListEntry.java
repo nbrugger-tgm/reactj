@@ -10,6 +10,7 @@ public class ClickableListEntry extends JLabel {
 	public ClickableListEntry(String text, Remover remover) {
 		super(text);
 		this.remover = remover;
+
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -22,8 +23,11 @@ public class ClickableListEntry extends JLabel {
 			}
 		});
 	}
-	@FunctionalInterface
-	public interface Remover{
-		void remove(String s);
-	}
+
+
+}
+
+@FunctionalInterface
+interface Remover{
+	void remove(String s);
 }

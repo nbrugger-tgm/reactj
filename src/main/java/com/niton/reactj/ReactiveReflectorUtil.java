@@ -12,6 +12,9 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This clas is intended for internal use only
+ */
 public class ReactiveReflectorUtil {
 	private static final Map<String, Field[]> fieldCache = new HashMap<>();
 
