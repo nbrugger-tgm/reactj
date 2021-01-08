@@ -1,4 +1,4 @@
-package com.niton.reactj;
+package com.niton.reactj.util;
 
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
@@ -13,11 +13,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This clas is intended for internal use only
+ * This class is intended for internal use only
+ *
+ * Serves several methods for reflective access specifically for @Annotations
  */
 public class ReactiveReflectorUtil {
 	private static final Map<String, Field[]> fieldCache = new HashMap<>();
 
+	/**
+	 * @param val the object to check the type of
+ 	 * @param paramType
+	 * @return true if val is usable as method parameter with type paramType
+	 */
 	public static boolean isFitting(Object val, Class<?> paramType) {
 		Class<?> base = val.getClass();
 		Class<?> unwrapped = MethodType.methodType(base)
@@ -34,6 +41,11 @@ public class ReactiveReflectorUtil {
 		return unwrappedValid || wrappedValid;
 	}
 
+	/**
+	 * Returns the object as Map, by applying @Reactive and @Unreactive annotations
+	 * @param model the object to convert
+	 * @return the map containing all (renamed) properties
+	 */
 	public static Map<String, Object> getState(Object model) {
 		HashMap<String, Object> state    = new HashMap<>();
 		Class<?>                type     = model.getClass();
@@ -50,6 +62,11 @@ public class ReactiveReflectorUtil {
 		return state;
 	}
 
+	/**
+	 * Resolves all fields depending on @ReactiveResolution
+	 * @param type the type to scan
+	 * @return the fields as array
+	 */
 	public static Field[] loadRelevantFields(Class<?> type) {
 		Field[] fields;
 		if (type.isAnnotationPresent(ReactivResolution.class) && type.getDeclaredAnnotation(
@@ -60,6 +77,7 @@ public class ReactiveReflectorUtil {
 		}
 		return fields;
 	}
+
 
 	public static void readState(Object model, Field[] fields, Map<String, Object> state)
 	throws IllegalAccessException {
@@ -74,11 +92,23 @@ public class ReactiveReflectorUtil {
 		}
 	}
 
+	/**
+	 * Resolves the name by @Reactive
+	 * @param f the field to get the name from
+	 * @return the name to be used for this field
+	 */
 	public static String getReactiveName(Field f) {
 		return f.isAnnotationPresent(Reactive.class) ? f.getAnnotation(Reactive.class)
 		                                                .value() : f.getName();
 	}
 
+	/**
+	 * Update the field of an object without triggering react()
+	 * @param model the object to update the field
+	 * @param property the name of the field to update regarding to @Reactive
+	 * @param value the value to set the property to
+	 * @throws Throwable if anything goes wrong for example when using a wrong type for value
+	 */
 	public static void updateField(Object model, String property, Object value) throws Throwable {
 		Class<?> type     = model.getClass();
 		String   typeName = type.getName();

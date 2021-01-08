@@ -2,6 +2,7 @@ package com.niton.reactj;
 
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.util.ReactiveReflectorUtil;
 import javassist.util.proxy.ProxyFactory;
 
 import java.lang.invoke.MethodType;
@@ -67,7 +68,7 @@ public class ReactiveObject implements Reactable {
 	                                    Class<?>[] unboxedParamTypes,
 	                                    ReactiveProxy<C> model,
 	                                    Object[] constructorParameters) {
-		C wrapped;
+		C wrapped = null;
 
 		ProxyFactory factory = new ProxyFactory();
 		factory.setSuperclass(type);
@@ -81,16 +82,20 @@ public class ReactiveObject implements Reactable {
 				IllegalAccessException | InstantiationException |
 						InvocationTargetException | NoSuchMethodException e
 		) {
-			return handle(type, unboxedParamTypes, e);
+			handle(type, unboxedParamTypes, e);
 		}
 		return wrapped;
 	}
 
-	private static <C> C handle(
+	/**
+	 * Deal with the error
+	 * @param exception the exception to deal with
+	 */
+	private static <C> void handle (
 			Class<C> type,
 			Class<?>[] types,
 			Exception exception
-	) {
+	) throws ReactiveException {
 		if (exception instanceof NoSuchMethodException) {
 			throw constructorNotFound(type, types);
 		} else {
@@ -122,8 +127,10 @@ public class ReactiveObject implements Reactable {
 		} catch (
 				InstantiationException | InvocationTargetException |
 						IllegalAccessException | NoSuchMethodException e) {
-			return handle(type, unboxedParamTypes, e);
+			handle(type, unboxedParamTypes, e);
 		}
+		//should not be reached
+		return null;
 	}
 
 	private static <C> ReactiveException constructorNotFound(Class<C> type, Class<?>[] paramTypes) {
@@ -164,7 +171,8 @@ public class ReactiveObject implements Reactable {
 				.toArray(Class[]::new);
 	}
 
-	public void bind(com.niton.reactj.Observer<?> observer) {
+	@Override
+	public void bind(Observer<?> observer) {
 		listeners.add(observer);
 	}
 
@@ -173,14 +181,17 @@ public class ReactiveObject implements Reactable {
 		return ReactiveReflectorUtil.getState(store);
 	}
 
+	@Override
 	public void unbind(com.niton.reactj.Observer<?> observer) {
 		listeners.remove(observer);
 	}
 
+	@Override
 	public void react() {
 		listeners.forEach(Observer::update);
 	}
 
+	@Override
 	public void react(String name, Object obj) {
 		listeners.forEach(l -> l.update(Collections.singletonMap(name, obj)));
 	}

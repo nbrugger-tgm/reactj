@@ -1,6 +1,7 @@
 package com.niton.reactj;
 
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.util.ReactiveComponentUtil;
 
 import java.util.*;
 
@@ -25,7 +26,7 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 		                                           displayBindings,
 		                                           editBindings);
 		view.createBindings(binder);
-		ReactiveComponent.createAnnotatedBindings(view,binder);
+		ReactiveComponentUtil.createAnnotatedBindings(view, binder);
 	}
 
 	/**
