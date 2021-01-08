@@ -1,28 +1,24 @@
 package com.niton.reactj.special;
 
-import com.niton.reactj.Identity;
 import com.niton.reactj.Reactable;
-import com.niton.reactj.mvc.ReactiveBinder;
-import com.niton.reactj.ReactiveView;
+import com.niton.reactj.ReactiveBinder;
+import com.niton.reactj.mvc.ReactiveView;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @param <L> Custom controller class
+ * A class for List with reactive Objects in it
  * @param <V> The component used as view (eg. JPanel/JList)
  * @param <C> Entry component type (eg JPanel/JLabel)
  * @param <E> the data type of the list (eg. Person)
  */
 public abstract class ReactiveListView
-		<L, V, C, E extends Reactable & Identity<?>>
-		extends ReactiveView<L, V, ReactiveList<E>> {
+		<V, C, E extends Reactable & Identity<?>>
+		extends ReactiveView<V, ReactiveList<E>> {
 
 	private final Map<Object, C> viewMap = new HashMap<>();
 
-	public ReactiveListView(L controller) {
-		super(controller);
-	}
 
 	@Override
 	public void createBindings(ReactiveBinder binder) {
@@ -35,10 +31,9 @@ public abstract class ReactiveListView
 		);
 		model.bind(binder);
 	}
-
 	private void addElement(int index, E element) {
-		ReactiveView<?, C, E> view = createElement(element);
-		C                     subV = view.getView();
+		ReactiveView<C,E> view = createElement(element);
+		C               subV = view.getView();
 		viewMap.put(element.getID(), subV);
 		addAt(subV, index);
 		refresh();
@@ -57,7 +52,7 @@ public abstract class ReactiveListView
 
 	public abstract void remove(C child);
 
-	public abstract ReactiveView<?, C, E> createElement(E element);
+	public abstract ReactiveView<C, E> createElement(E element);
 
 	public abstract void addAt(C subView, int index);
 

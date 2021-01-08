@@ -1,15 +1,10 @@
 package com.niton.reactj.test;
 
-import com.niton.reactj.Observer;
-import com.niton.reactj.ReactiveComponent;
-import com.niton.reactj.ReactiveProxy;
+import com.niton.reactj.*;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
-import com.niton.reactj.mvc.ReactiveBinder;
-import com.niton.reactj.mvc.ReactiveController;
-import com.niton.reactj.mvc.ReactiveObject;
 import org.junit.jupiter.api.Test;
 
 import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.*;
@@ -18,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AnnotationTest {
 	private boolean aCalled = false,bCalled = false,cCalled = false,testCalled = false;
 	public ReactiveProxy<DeepBase> deepProxy = ReactiveObject.create(DeepBase.class);
-	public DeepBase                deep        = deepProxy.object;
+	public DeepBase                deep        = deepProxy.getObject();
 
 	public ReactiveProxy<FlatBase> flatProxy = ReactiveObject.create(FlatBase.class);
-	public FlatBase                flat        = flatProxy.object;
+	public FlatBase                flat        = flatProxy.getObject();
 
 	public static final int SET1 = 12, SET2 = 22, SET3 = 83;
 
@@ -29,7 +24,7 @@ public class AnnotationTest {
 
 	private int testDeposit;
 	void testBiBinding() throws Throwable {
-		ReactiveComponent<AnnotationTest> deepComponent = new ReactiveComponent<AnnotationTest>() {
+		ReactiveComponent deepComponent = new ReactiveComponent() {
 			@Override
 			public void createBindings(ReactiveBinder binder) {
 				binder.bind("c", v -> cCalled = true);
@@ -38,12 +33,9 @@ public class AnnotationTest {
 				binder.bindBi("c", v -> stringDeposit = v,()->stringDeposit,Integer::parseInt,String::valueOf);
 				binder.bindBi("test",v->testDeposit = v,()->testDeposit);
 			}
-
-			@Override
-			public void registerListeners(AnnotationTest controller) {}
 		};
 
-		ReactiveController<AnnotationTest,ReactiveProxy<DeepBase>> controller = new ReactiveController<>(deepComponent,this);
+		ReactiveController<ReactiveProxy<DeepBase>> controller = new ReactiveController<>(deepComponent);
 		deep.setA(0);
 		deep.setB(0);
 		deep.setC(0);
@@ -69,7 +61,7 @@ public class AnnotationTest {
 	}
 
 	<M extends Base> void test(ReactiveProxy<M> proxy,boolean a,boolean b,boolean test){
-		ReactiveComponent<AnnotationTest> deepComponent = new ReactiveComponent<AnnotationTest>() {
+		ReactiveComponent deepComponent = new ReactiveComponent() {
 			@Override
 			public void createBindings(ReactiveBinder binder) {
 				binder.bind("c",v -> cCalled = true);
@@ -77,9 +69,6 @@ public class AnnotationTest {
 				binder.bind("b",v -> bCalled = true);
 				binder.bind("test",v->testCalled = true);
 			}
-
-			@Override
-			public void registerListeners(AnnotationTest controller) {}
 
 			@Reactive("a")
 			void aListener(){
@@ -115,17 +104,17 @@ public class AnnotationTest {
 					assertEquals(SET3,val);
 			}
 		};
-		ReactiveController<AnnotationTest,ReactiveProxy<M>> controller = new ReactiveController<>(deepComponent,this);
+		ReactiveController<ReactiveProxy<M>> controller = new ReactiveController<>(deepComponent);
 		controller.bind(proxy);
 
 		aCalled = false;
 		bCalled = false;
 		cCalled = false;
 		testCalled = false;
-		proxy.object.setA(SET1);
+		proxy.getObject().setA(SET1);
 		assertEquals(a,aCalled);
 		assertEquals(test,testCalled);
-		proxy.object.setB(SET2);
+		proxy.getObject().setB(SET2);
 		assertEquals(b,bCalled);
 	}
 
@@ -148,56 +137,49 @@ public class AnnotationTest {
 	@Test
 	void errorTesting(){
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveProxy<FailBase> flatProxy = ReactiveObject.create(FailBase.class);
+			ReactiveObject.create(FailBase.class);
 		});
 
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveProxy<FlatBase> flatProxy = ReactiveObject.create(FlatBase.class,"Wrong type");
-			FlatBase                flat        = flatProxy.object;
+			ReactiveObject.create(FlatBase.class,"Wrong type");
 		});
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveComponent<AnnotationTest> deepComponent = new ReactiveComponent<AnnotationTest>() {
+			ReactiveComponent deepComponent = new ReactiveComponent() {
 				@Override
 				public void createBindings(ReactiveBinder binder) {}
 
-				@Override
-				public void registerListeners(AnnotationTest controller) {}
 
 				@Reactive("a")
 				void wrong(int too,int many){}
 			};
-			ReactiveController controller = new ReactiveController(deepComponent,null);
+			ReactiveController<ReactiveProxy<DeepBase>> controller = new ReactiveController<>(deepComponent);
 		});
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveComponent<AnnotationTest> deepComponent = new ReactiveComponent<AnnotationTest>() {
+			ReactiveComponent deepComponent = new ReactiveComponent() {
 				@Override
 				public void createBindings(ReactiveBinder binder) {}
 
-				@Override
-				public void registerListeners(AnnotationTest controller) {}
 
 				@Reactive("test")
 				void wrong(String badArgument){}
 			};
-			ReactiveController<AnnotationTest,ReactiveProxy<DeepBase>> cont = new ReactiveController<>(deepComponent,this);
+			ReactiveController<ReactiveProxy<DeepBase>> cont = new ReactiveController<>(deepComponent);
 			cont.bind(deepProxy);
 			deepProxy.unbind(cont);
 		});
 
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveComponent<AnnotationTest> deepComponent = new ReactiveComponent<AnnotationTest>() {
+			ReactiveComponent deepComponent = new ReactiveComponent() {
 				@Override
 				public void createBindings(ReactiveBinder binder) {}
 
-				@Override
-				public void registerListeners(AnnotationTest controller) {}
 
 				@Reactive("test")
 				void errorProne(int value){
 					throw new NullPointerException("Intentional error");
 				}
 			};
-			ReactiveController<AnnotationTest,ReactiveProxy<DeepBase>> cont = new ReactiveController<>(deepComponent,this);
+			ReactiveController<ReactiveProxy<DeepBase>> cont = new ReactiveController<>(deepComponent);
 			cont.bind(deepProxy);
 			deepProxy.unbind(cont);
 		});

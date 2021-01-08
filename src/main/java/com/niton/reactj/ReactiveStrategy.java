@@ -2,9 +2,21 @@ package com.niton.reactj;
 
 import java.util.Arrays;
 
+/**
+ * This strategies defining the methods that should be reacted to
+ */
 public enum ReactiveStrategy {
+	/**
+	 * Only react to methods that start with "set"
+	 */
 	REACT_ON_SETTER((a, b) -> a.startsWith("set")),
+	/**
+	 * Reacts to all method calls
+	 */
 	REACT_ON_ALL((a, b) -> true),
+	/**
+	 * Reacts to a list of custom definable method names
+	 */
 	REACT_ON_CUSTOM((a, b) -> Arrays.asList(b).contains(a));
 	private final ReactionDecider decider;
 
@@ -17,6 +29,12 @@ public enum ReactiveStrategy {
 		this.decider = decider;
 	}
 
+	/**
+	 * Returns true if the given method name is covered by the strategy.<br>
+	 * @param name the name of the method to check
+	 * @param reactTo only used for REACT_ON_CUSTOM elswhile can be empty or null
+	 * @return true if this strategy reacts to the given method name
+	 */
 	public boolean reactTo(String name, String[] reactTo) {
 		return decider.decideReaction(name, reactTo);
 	}

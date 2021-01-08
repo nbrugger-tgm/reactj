@@ -10,8 +10,6 @@ public class StringListApp {
 	public static void main(String[] args) throws InterruptedException {
 		ReactiveList<String> someArray = ReactiveList.create(new ArrayList<>());
 
-
-
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setLayout(new GridLayout());

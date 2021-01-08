@@ -1,8 +1,7 @@
 package com.niton.reactj.examples;
 
 import com.niton.reactj.*;
-import com.niton.reactj.mvc.ReactiveModel;
-import com.niton.reactj.mvc.ReactiveObject;
+import com.niton.reactj.ReactiveObject;
 
 import java.awt.*;
 
@@ -28,15 +27,15 @@ public class ObserverExample {
 
 	public static void main(String[] args) {
 		ReactiveProxy<Data> model = ReactiveObject.create(Data.class);
-		Data d = model.object;
+		Data d = model.getObject();
 
-		Observer<ReactiveModel<Data>> observer = new Observer<ReactiveModel<Data>>() {
+		Observer<ReactiveProxy<Data>> observer = new Observer<ReactiveProxy<Data>>() {
 			@Override
 			public void onChange(String property, Object value) {
 				System.out.println("Property "+property+" changed to "+value);
 			}
 		};
-		observer.bind(model.reactive);
+		observer.bind(model);
 
 		d.setA(10);
 		d.setB(20);

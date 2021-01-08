@@ -1,18 +1,15 @@
 package com.niton.reactj.examples.swing;
 
+import com.niton.reactj.mvc.Listener;
+
 import java.awt.event.ActionEvent;
 
-public class PersonController {
-	private final Person information;
-
-	public PersonController(Person information) {
-		this.information = information;
-	}
-
-	public void reset(ActionEvent actionEvent) {
-		information.setAge(19);
-		information.setName("Niton");
-		information.setIq(0);
-		information.setGender(Gender.OTHER);
+public class PersonController implements Listener<Person> {
+	@Override
+	public void onAction(Person event) {
+		event.setAge(19);
+		event.setGender(Gender.MALE);
+		event.setName("NitonFx");
+		event.setIq(95);
 	}
 }

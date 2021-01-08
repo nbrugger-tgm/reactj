@@ -1,7 +1,9 @@
 package com.niton.reactj.exceptions;
 
-public class
-ReactiveException extends RuntimeException {
+/**
+ * The general exception that is thrown when a known error occurs
+ */
+public class ReactiveException extends RuntimeException {
 
 	public ReactiveException(String message) {
 		super(message);

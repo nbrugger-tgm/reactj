@@ -1,41 +1,49 @@
-package com.niton.reactj.mvc;
+package com.niton.reactj;
 
-import com.niton.reactj.Observer;
-import com.niton.reactj.Reactable;
-import com.niton.reactj.ReactiveComponent;
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.util.ReactiveComponentUtil;
 
 import java.util.*;
 
 /**
- * @param <C> Custom controller
- * @param <M> Model Type (might be a proxy type)
+ * A reactive controller is responsible to communicate changes between ReactableObjects and ReactiveComponents.<br>
+ * Use this to connect a View and a Model
+ *
+ * @param <M> Model Type (might be a {@link ReactiveProxy})
  */
-public final class ReactiveController<C, M extends Reactable> extends Observer<M> {
+public final class ReactiveController<M extends Reactable> extends Observer<M> {
 
 	private final Map<String, List<ReactiveBinder.Binding<?, ?>>>   displayBindings = new HashMap<>();
 	private final Map<String, List<ReactiveBinder.BiBinding<?, ?>>> editBindings    = new HashMap<>();
 	private       boolean                                           blockReactions  = false;
 
 	/**
-	 * @param view the view or component to controll. Most likely a UI element
-	 * @param customController
+	 * @param view the view or component to control. Most likely a UI element
 	 */
-	public ReactiveController(ReactiveComponent<C> view, C customController) {
+	public ReactiveController(ReactiveComponent view) {
 		//Maybe in the future it is needed to ass the view as field
 		ReactiveBinder binder = new ReactiveBinder(this::updateModel,
 		                                           displayBindings,
 		                                           editBindings);
 		view.createBindings(binder);
-		view.createAnnotatedBindings(binder);
-		view.registerListeners(customController);
+		ReactiveComponentUtil.createAnnotatedBindings(view, binder);
 	}
 
+	/**
+	 * Pulls all changes from the ReactiveComponent (connected by {@link ReactiveBinder#bindBi(String, ReactiveBinder.DisplayFunction, ReactiveBinder.ValueReceiver)}) and applies them to the model.
+	 * If everything is done right this method is called automatically, and there is no need to call this by yourself
+	 * @throws Throwable if there is some reflection problems
+	 */
 	public void updateModel() throws Throwable {
 		updateModel(null);
 	}
 
-	private void updateModel(EventObject actionEvent) throws Throwable {
+	/**
+	 * Pulls changes from the Component to the Model
+	 * @param actionEvent
+	 * @throws Throwable
+	 */
+	private void updateModel(Object actionEvent) throws Throwable {
 		if (blockReactions) {
 			return;
 		}
@@ -104,6 +112,12 @@ public final class ReactiveController<C, M extends Reactable> extends Observer<M
 		blockReactions = false;
 	}
 
+	/**
+	 * Triggers a binding
+	 * @param key the name of the binding to trigger
+	 * @param value the value to pass to the binding
+	 * @param binding the binding to call
+	 */
 	private void updateBinding(String key, Object value, ReactiveBinder.Binding<?, ?> binding) {
 		Object converted;
 		try {
