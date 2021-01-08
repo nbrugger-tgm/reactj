@@ -20,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Serves several methods for reflective access specifically for @Annotations
  */
 public final class ReactiveReflectorUtil {
-	public ReactiveReflectorUtil(){}
 	private static final Map<String, Field[]> FIELD_CACHE = new ConcurrentHashMap<>();
+	private ReactiveReflectorUtil(){}
 
 	/**
 	 * @param val       the object to check the type of
