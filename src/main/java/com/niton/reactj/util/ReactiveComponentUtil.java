@@ -17,6 +17,7 @@ import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.
 public class ReactiveComponentUtil {
 	/**
 	 * Registers all @Reactive annotated methods in component to the binder
+	 *
 	 * @param binder the binder to register the bindings to
 	 */
 	public static void createAnnotatedBindings(ReactiveComponent component, ReactiveBinder binder) {
@@ -29,13 +30,13 @@ public class ReactiveComponentUtil {
 						viewClass.getAnnotation(ReactivResolution.class).value() == DEEP,
 				true);
 		for (Method method : methods) {
-			processAnnotatedMethod(component,binder, method);
+			processAnnotatedMethod(component, binder, method);
 		}
 	}
 
 	private static void processAnnotatedMethod(ReactiveComponent component,
-	                                   ReactiveBinder binder,
-	                                   Method method) {
+	                                           ReactiveBinder binder,
+	                                           Method method) {
 		if (method.getParameterTypes().length > 1) {
 			throw new ReactiveException(
 					String.format("@Reactive method %s has more than one parameter", method)
@@ -60,7 +61,7 @@ public class ReactiveComponentUtil {
 			}
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new ReactiveException(
-					String.format("Failed to call automatic binding (%s): %s",method,e)
+					String.format("Failed to call automatic binding (%s): %s", method, e)
 			);
 		}
 	}

@@ -22,26 +22,6 @@ public class ReactiveListModel<E> {
 	private       DefaultListModel<E> swingModel = null;
 	private       int                 index;
 
-	@FunctionalInterface
-	public interface Adder<E> {
-		void add(E element);
-	}
-
-	@FunctionalInterface
-	public interface Remover<E> {
-		void remove(E element);
-	}
-
-	@FunctionalInterface
-	public interface IndexAdder<E> {
-		void add(int index, E element);
-	}
-
-	@FunctionalInterface
-	public interface IndexRemover {
-		void remove(int index);
-	}
-
 	/**
 	 * Creates a list model that does supports index based adding
 	 */
@@ -110,5 +90,25 @@ public class ReactiveListModel<E> {
 
 	public ListModel<E> swing() {
 		return swingModel;
+	}
+
+	@FunctionalInterface
+	public interface Adder<E> {
+		void add(E element);
+	}
+
+	@FunctionalInterface
+	public interface Remover<E> {
+		void remove(E element);
+	}
+
+	@FunctionalInterface
+	public interface IndexAdder<E> {
+		void add(int index, E element);
+	}
+
+	@FunctionalInterface
+	public interface IndexRemover {
+		void remove(int index);
 	}
 }

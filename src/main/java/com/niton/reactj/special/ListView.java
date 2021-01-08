@@ -16,8 +16,8 @@ import java.util.function.Function;
  * @param <C> The container component class eg. JPanel
  */
 public abstract class ListView<M, E, C> implements ReactiveComponent {
-	private final Function<M, E>                            elementCreator;
-	private final Map<M, E>                                 componentCache = new HashMap<>();
+	private final Function<M, E>                      elementCreator;
+	private final Map<M, E>                           componentCache = new HashMap<>();
 	private final ReactiveController<ReactiveList<M>> controller;
 
 	protected ListView(Function<M, E> elementCreator) {

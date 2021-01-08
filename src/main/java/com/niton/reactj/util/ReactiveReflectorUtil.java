@@ -14,15 +14,15 @@ import java.util.Map;
 
 /**
  * This class is intended for internal use only
- *
+ * <p>
  * Serves several methods for reflective access specifically for @Annotations
  */
 public class ReactiveReflectorUtil {
 	private static final Map<String, Field[]> fieldCache = new HashMap<>();
 
 	/**
-	 * @param val the object to check the type of
- 	 * @param paramType
+	 * @param val       the object to check the type of
+	 * @param paramType
 	 * @return true if val is usable as method parameter with type paramType
 	 */
 	public static boolean isFitting(Object val, Class<?> paramType) {
@@ -43,6 +43,7 @@ public class ReactiveReflectorUtil {
 
 	/**
 	 * Returns the object as Map, by applying @Reactive and @Unreactive annotations
+	 *
 	 * @param model the object to convert
 	 * @return the map containing all (renamed) properties
 	 */
@@ -64,6 +65,7 @@ public class ReactiveReflectorUtil {
 
 	/**
 	 * Resolves all fields depending on @ReactiveResolution
+	 *
 	 * @param type the type to scan
 	 * @return the fields as array
 	 */
@@ -94,6 +96,7 @@ public class ReactiveReflectorUtil {
 
 	/**
 	 * Resolves the name by @Reactive
+	 *
 	 * @param f the field to get the name from
 	 * @return the name to be used for this field
 	 */
@@ -104,9 +107,10 @@ public class ReactiveReflectorUtil {
 
 	/**
 	 * Update the field of an object without triggering react()
-	 * @param model the object to update the field
+	 *
+	 * @param model    the object to update the field
 	 * @param property the name of the field to update regarding to @Reactive
-	 * @param value the value to set the property to
+	 * @param value    the value to set the property to
 	 * @throws Throwable if anything goes wrong for example when using a wrong type for value
 	 */
 	public static void updateField(Object model, String property, Object value) throws Throwable {

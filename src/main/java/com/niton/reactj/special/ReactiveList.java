@@ -19,6 +19,15 @@ import static com.niton.reactj.special.ListActions.*;
 public interface ReactiveList<E> extends Reactable, List<E> {
 
 
+	static <E, T> ReactiveList<E> create(List<E> list) {
+		return (ReactiveList<E>) Proxy.newProxyInstance(
+				ReactiveList.class.getClassLoader(),
+				new Class[]{ReactiveList.class},
+				new ReactiveListHandler<>(list));
+	}
+
+	void removeById(Object id);
+
 	class ReactiveListHandler<E, T> implements InvocationHandler {
 		private static String addMethod;
 		private static String intAddMethod;
@@ -141,13 +150,4 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 			}
 		}
 	}
-
-	static <E, T> ReactiveList<E> create(List<E> list) {
-		return (ReactiveList<E>) Proxy.newProxyInstance(
-				ReactiveList.class.getClassLoader(),
-				new Class[]{ReactiveList.class},
-				new ReactiveListHandler<>(list));
-	}
-
-	void removeById(Object id);
 }
