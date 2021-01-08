@@ -22,8 +22,8 @@ public abstract class ReactiveView<V, M extends Reactable> implements ReactiveCo
 
 	protected void registerListeners(){};
 	/**
-	 * Create the view and the layout
-	 *
+	 * Create the view and the layout.
+	 * <b>Do not try to display anything from the model here. Just create the layout</b>
 	 * @return the completed view
 	 */
 	protected abstract V createView();

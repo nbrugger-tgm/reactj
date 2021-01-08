@@ -10,19 +10,35 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The base class to make a Object reactive (usable in ReactiveComponents).
+ *
+ * The most common way to use this component is by extending it and call {@link ReactiveObject#react()} whenever needed
+ */
 public class ReactiveObject implements Reactable {
 	private final Object store;
 
 	@Unreactive
 	protected final List<com.niton.reactj.Observer<?>> listeners = new ArrayList<>();
 
+	/**
+	 * Creates a Reactive Object that forwards calls to the given object
+	 * @param obj the object to forward calls to
+	 */
 	public ReactiveObject(Object obj) {
 		store = obj;
 	}
+
+	/**
+	 * Only use this constructor when extending from this class
+	 */
 	public ReactiveObject(){
 		store = this;
 	}
 
+	/**
+	 * its the same as {@link ReactiveProxy#create(Class, Object...)}
+	 */
 	public static <C> ReactiveProxy<C> create(Class<C> type, Object... constructorParameters)
 	throws
 	ReactiveException {

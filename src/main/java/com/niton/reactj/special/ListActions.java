@@ -1,5 +1,8 @@
 package com.niton.reactj.special;
 
+/**
+ * For internal use only
+ */
 public enum ListActions {
 	ADD("add"),
 	ADD_INDEX("add_index"),
