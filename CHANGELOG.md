@@ -1,3 +1,14 @@
+## v3.0.0 (2021-01-08)
+
+### Refactor
+
+- **codestyle**: apply PWD rules
+
+### Feat
+
+- **style**: extract util methods from ReactiveComponent
+- **structure**: reworked listener model and structure
+
 ## v2.4.0 (2021-01-08)
 
 ### Fix
