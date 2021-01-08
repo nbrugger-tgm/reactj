@@ -148,8 +148,7 @@ public class AnnotationTest {
 	@Test
 	void errorTesting(){
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveProxy<FlatBase> flatProxy = ReactiveObject.create(FlatBase.class);
-			FlatBase                flat        = flatProxy.object;
+			ReactiveProxy<FailBase> flatProxy = ReactiveObject.create(FailBase.class);
 		});
 
 		assertThrows(ReactiveException.class, () -> {
@@ -167,6 +166,7 @@ public class AnnotationTest {
 				@Reactive("a")
 				void wrong(int too,int many){}
 			};
+			ReactiveController controller = new ReactiveController(deepComponent,null);
 		});
 		assertThrows(ReactiveException.class, () -> {
 			ReactiveComponent<AnnotationTest> deepComponent = new ReactiveComponent<AnnotationTest>() {
