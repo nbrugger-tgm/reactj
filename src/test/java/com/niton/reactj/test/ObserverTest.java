@@ -1,16 +1,6 @@
 package com.niton.reactj.test;
 
-import com.niton.reactj.Observer;
-import com.niton.reactj.Reactable;
-import com.niton.reactj.ReactiveComponent;
-import com.niton.reactj.ReactiveProxy;
-import com.niton.reactj.annotation.Reactive;
-import com.niton.reactj.mvc.ReactiveBinder;
-import com.niton.reactj.mvc.ReactiveController;
-import com.niton.reactj.mvc.ReactiveModel;
-import com.niton.reactj.mvc.ReactiveObject;
-import jdk.nashorn.internal.objects.annotations.Setter;
-import org.junit.jupiter.api.Assertions;
+import com.niton.reactj.*;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -18,12 +8,12 @@ import java.awt.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ObserverTest {
-	public String lastChanged;
-	public Object lastValue;
-	public String converted;
-	public int changeCounter = 0;
-	public ReactiveProxy<TestData> personProxy = ReactiveObject.create(TestData.class);
-	public TestData                td          = personProxy.object;
+	public String                  lastChanged;
+	public Object                  lastValue;
+	public String                  converted;
+	public int                     changeCounter = 0;
+	public ReactiveProxy<TestData> personProxy   = ReactiveObject.create(TestData.class);
+	public TestData                td            = personProxy.getObject();
 
 	@Test
 	public void testObserving(){
@@ -48,7 +38,7 @@ public class ObserverTest {
 		try {
 			personProxy.set("id",12);
 			assertNull(lastChanged,"set(param,val) should not trigger observer");
-		} catch (Throwable throwable) {
+		} catch (Exception throwable) {
 			fail("ID should be set-able");
 		}
 
@@ -89,20 +79,17 @@ public class ObserverTest {
 	@Test
 	public void bindingTest(){
 		ReactiveProxy<TestData> proxy = ReactiveObject.create(TestData.class);
-		TestData                td          = proxy.object;
+		TestData                td          = proxy.getObject();
 
-		ReactiveComponent<ReactiveProxy<TestData>> testComponent = new ReactiveComponent<ReactiveProxy<TestData>>() {
+		ReactiveComponent testComponent = new ReactiveComponent() {
 			@Override
 			public void createBindings(ReactiveBinder binder) {
 				binder.bind("id", val -> lastValue = val);
 				binder.bind("c",val -> lastValue = val);
 				binder.bind("c",val -> converted = val,(Color c) -> String.valueOf(c.getRed()));
 			}
-
-			@Override
-			public void registerListeners(ReactiveProxy<TestData> controller) {}
 		};
-		ReactiveController<?,ReactiveProxy<TestData>> controller = new ReactiveController<>(testComponent,null);
+		ReactiveController<ReactiveProxy<TestData>> controller = new ReactiveController<>(testComponent);
 		controller.bind(proxy);
 
 		td.setColor(Color.GREEN);

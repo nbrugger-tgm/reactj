@@ -1,4 +1,4 @@
-package com.niton.reactj;
+package com.niton.reactj.special;
 
 /**
  * With this interface present the objects can be called appart by a single method ("like a primary key")

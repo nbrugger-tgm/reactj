@@ -1,6 +1,6 @@
 package com.niton.reactj.special;
 
-import com.niton.reactj.mvc.ReactiveBinder;
+import com.niton.reactj.ReactiveBinder;
 
 import javax.swing.*;
 import java.util.List;
@@ -19,28 +19,8 @@ public class ReactiveListModel<E> {
 	private final IndexAdder<E>       intAdder;
 	private final IndexRemover        intRemover;
 	private final IntSupplier         size;
-	private       DefaultListModel<E> swingModel = null;
+	private       DefaultListModel<E> swingModel;
 	private       int                 index;
-
-	@FunctionalInterface
-	public interface Adder<E> {
-		void add(E element);
-	}
-
-	@FunctionalInterface
-	public interface Remover<E> {
-		void remove(E element);
-	}
-
-	@FunctionalInterface
-	public interface IndexAdder<E> {
-		void add(int index, E element);
-	}
-
-	@FunctionalInterface
-	public interface IndexRemover {
-		void remove(int index);
-	}
 
 	/**
 	 * Creates a list model that does supports index based adding
@@ -110,5 +90,25 @@ public class ReactiveListModel<E> {
 
 	public ListModel<E> swing() {
 		return swingModel;
+	}
+
+	@FunctionalInterface
+	public interface Adder<E> {
+		void add(E element);
+	}
+
+	@FunctionalInterface
+	public interface Remover<E> {
+		void remove(E element);
+	}
+
+	@FunctionalInterface
+	public interface IndexAdder<E> {
+		void add(int index, E element);
+	}
+
+	@FunctionalInterface
+	public interface IndexRemover {
+		void remove(int index);
 	}
 }

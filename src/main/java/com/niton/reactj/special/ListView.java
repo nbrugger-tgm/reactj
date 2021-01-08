@@ -1,11 +1,12 @@
 package com.niton.reactj.special;
 
-import com.niton.reactj.mvc.ReactiveBinder;
+import com.niton.reactj.ReactiveBinder;
 import com.niton.reactj.ReactiveComponent;
-import com.niton.reactj.mvc.ReactiveController;
+import com.niton.reactj.ReactiveController;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
@@ -15,14 +16,14 @@ import java.util.function.Function;
  * @param <E> the component class eg. JLabel
  * @param <C> The container component class eg. JPanel
  */
-public abstract class ListView<M, E, C> implements ReactiveComponent<Void> {
-	private final Function<M, E>                            elementCreator;
-	private final Map<M, E>                                 componentCache = new HashMap<>();
-	private final ReactiveController<Void, ReactiveList<M>> controller;
+public abstract class ListView<M, E, C> implements ReactiveComponent {
+	private final Function<M, E>                      elementCreator;
+	private final Map<M, E>                           componentCache = new ConcurrentHashMap<>();
+	private final ReactiveController<ReactiveList<M>> controller;
 
 	protected ListView(Function<M, E> elementCreator) {
 		this.elementCreator = elementCreator;
-		controller          = new ReactiveController<>(this, null);
+		controller          = new ReactiveController<>(this);
 	}
 
 	@Override
@@ -38,9 +39,9 @@ public abstract class ListView<M, E, C> implements ReactiveComponent<Void> {
 	}
 
 	private void convertingAdd(int index, M element) {
-		E el = elementCreator.apply(element);
-		add(index, el);
-		componentCache.put(element, el);
+		E convertedElement = elementCreator.apply(element);
+		add(index, convertedElement);
+		componentCache.put(element, convertedElement);
 	}
 
 	public abstract void remove(int index);
@@ -54,12 +55,6 @@ public abstract class ListView<M, E, C> implements ReactiveComponent<Void> {
 	}
 
 	public abstract void add(int index, E model);
-
-
-	@Override
-	public void registerListeners(Void controller) {
-		//Simple lists are immutable therefore there are no listeners
-	}
 
 	public abstract C getView();
 

@@ -1,6 +1,6 @@
 package com.niton.reactj.examples.swing;
 
-import com.niton.reactj.mvc.ReactiveObject;
+import com.niton.reactj.ReactiveObject;
 import com.niton.reactj.ReactiveProxy;
 import com.niton.reactj.ReactiveStrategy;
 
@@ -10,13 +10,13 @@ import java.awt.*;
 public class PersonApp {
 	public static void main(String[] args) throws InterruptedException {
 		ReactiveProxy<Person> proxy = ReactiveObject.create(Person.class, 12, "Niton");
+		proxy.setStrategy(ReactiveStrategy.REACT_ON_ALL);
 
-		Person information = proxy.object;
-		proxy.reactive.setStrategy(ReactiveStrategy.REACT_ON_ALL);
-		PersonController controller = new PersonController(information);
-		PersonView component = new PersonView(controller);
-		PersonView component1 = new PersonView(controller);
-		PersonView component2 = new PersonView(controller);
+		Person information = proxy.getObject();
+		PersonView component = new PersonView();
+		PersonView component1 = new PersonView();
+		PersonView component2 = new PersonView();
+		component.resetEvent.listen(new PersonController());
 
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

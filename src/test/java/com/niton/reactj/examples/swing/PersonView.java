@@ -1,14 +1,15 @@
 package com.niton.reactj.examples.swing;
 
-import com.niton.reactj.mvc.ReactiveBinder;
+import com.niton.reactj.ReactiveBinder;
 import com.niton.reactj.ReactiveProxy;
-import com.niton.reactj.ReactiveView;
+import com.niton.reactj.mvc.EventManager;
+import com.niton.reactj.mvc.ReactiveView;
 import com.niton.reactj.annotation.Reactive;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class PersonView extends ReactiveView<PersonController, JPanel, ReactiveProxy<Person>> {
+public class PersonView extends ReactiveView< JPanel, ReactiveProxy<Person>> {
 
 	private JPanel panel;
 
@@ -17,10 +18,7 @@ public class PersonView extends ReactiveView<PersonController, JPanel, ReactiveP
 	private JTextField        iqField;
 	private JComboBox<Gender> genderJComboBox;
 	private JButton           selectButton;
-
-	public PersonView(PersonController controller) {
-		super(controller);
-	}
+	public final EventManager<Person> resetEvent = new EventManager<>();
 
 
 	@Override
@@ -71,14 +69,15 @@ public class PersonView extends ReactiveView<PersonController, JPanel, ReactiveP
 		ageInput.addActionListener(binder::react);
 	}
 
-	@Override
-	public void registerListeners(PersonController controller) {
-		selectButton.addActionListener(controller::reset);
-	}
 
 	public void adaptColorToGender(Gender g) {
 		panel.setBackground(g == Gender.MALE ? Color.BLUE : (g == Gender.FEMALE ? Color.PINK : Color.WHITE));
 		//repaint();
+	}
+
+	@Override
+	protected void registerListeners() {
+		selectButton.addActionListener(e -> resetEvent.fire(getController().getModel().getObject()));
 	}
 
 	@Reactive("age")

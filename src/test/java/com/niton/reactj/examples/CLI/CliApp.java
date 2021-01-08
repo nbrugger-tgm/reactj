@@ -2,24 +2,22 @@ package com.niton.reactj.examples.CLI;
 
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.Reactive;
-import com.niton.reactj.mvc.ReactiveBinder;
-import com.niton.reactj.mvc.ReactiveController;
-import com.niton.reactj.mvc.ReactiveModel;
-import com.niton.reactj.mvc.ReactiveObject;
 
 public class CliApp {
 
 	public static void main(String[] args) throws InterruptedException {
 		ReactiveProxy<Progress> proxy = ReactiveObject.create(Progress.class);
-		Progress progress = proxy.object;
+		Progress progress = proxy.getObject();
 
-		ReactiveController<CliController,ReactiveModel<Progress>> controller;
-		controller = new ReactiveController<>(new ProgressCli(), null);
-		controller.bind(proxy.reactive);
+		ReactiveController<ReactiveProxy<Progress>> controller;
+		controller = new ReactiveController<>(new ProgressCli());
+		controller.bind(proxy);
 
 		while (true) {
-			Thread.sleep((long) (Math.random()*90));
-			progress.setProgress((progress.getProgress() + 0.002) % 1);
+			Thread.sleep((long) (Math.random()*70));
+			progress.setProgress((progress.getProgress() + 0.001));
+			if(progress.getProgress() >= 1)
+				return;
 		}
 	}
 
@@ -38,7 +36,7 @@ public class CliApp {
 }
 
 
-class ProgressCli implements ReactiveComponent<CliController> {
+class ProgressCli implements ReactiveComponent {
 
 	@Override
 	public void createBindings(ReactiveBinder binder) {
@@ -52,7 +50,7 @@ class ProgressCli implements ReactiveComponent<CliController> {
 	}
 
 	private void renderProgress(double percent) {
-		int width = 30;
+		int width = 70;
 		int done = (int) (percent * width);
 		System.out.print("\r");
 		System.out.print('[');
@@ -62,12 +60,4 @@ class ProgressCli implements ReactiveComponent<CliController> {
 		System.out.print(']');
 		System.out.print((int) (percent * 100) + "%");
 	}
-
-	@Override
-	public void registerListeners(CliController controller) {
-	}
-}
-
-class CliController {
-
 }
