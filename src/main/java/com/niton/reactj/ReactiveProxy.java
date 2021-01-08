@@ -42,4 +42,9 @@ public class ReactiveProxy<C> implements Reactable {
 	public void set(String property, Object value) throws Throwable {
 		reactive.set(property, value);
 	}
+
+	@Override
+	public void unbindAll() {
+		reactive.unbindAll();
+	}
 }

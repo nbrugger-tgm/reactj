@@ -47,15 +47,19 @@ public interface ReactiveComponent<C> {
 		try {
 			if (method.getParameterTypes().length == 1) {
 				Class<?> paramType = method.getParameterTypes()[0];
-				if (ReactiveReflectorUtil.isFitting(val, paramType)) {
+				if (!ReactiveReflectorUtil.isFitting(val, paramType)) {
 					throw invalidMethodParameterException(method, val);
 				}
+				method.setAccessible(true);
 				method.invoke(this, val);
 			} else {
+				method.setAccessible(true);
 				method.invoke(this);
 			}
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new ReactiveException("Failed to call automatic binding : " + e);
+			throw new ReactiveException(
+					String.format("Failed to call automatic binding (%s): %s",method,e)
+			);
 		}
 	}
 

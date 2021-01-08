@@ -24,4 +24,6 @@ public interface Reactable {
 			set(change.getKey(), change.getValue());
 		}
 	}
+
+	void unbindAll();
 }
