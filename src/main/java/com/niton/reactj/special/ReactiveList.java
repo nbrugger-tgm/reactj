@@ -61,7 +61,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 				                  .toGenericString();
 			} catch (NoSuchMethodException e) {
 				//will not be reached. If reached only because java radicaly changed
-				throw new Error("Expected methods not found in java.lang.List class",e);
+				throw new LinkageError("Expected methods not found in java.lang.List class",e);
 			}
 		}
 
