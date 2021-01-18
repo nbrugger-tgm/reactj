@@ -1,3 +1,15 @@
+## v3.0.2 (2021-01-18)
+
+### Fix
+
+- missing "removeById" reaction
+
+## v3.0.1 (2021-01-18)
+
+### Fix
+
+- reactive list ID check
+
 ## v3.0.0 (2021-01-08)
 
 ### Refactor
