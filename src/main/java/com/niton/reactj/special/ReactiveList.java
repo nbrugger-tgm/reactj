@@ -128,7 +128,10 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 		private boolean isSameIdentity(E element, Object arg) {
 			if (element instanceof Identity) {
 				Identity<?> identity = (Identity<?>) element;
-				return identity.getID().equals(arg);
+				if(arg instanceof Identity)
+					return identity.getID().equals(((Identity<?>) arg).getID());
+				else
+					return identity.getID().equals(arg);
 			}
 			return element.equals(arg);
 		}
