@@ -1,4 +1,3 @@
-
 <center>
 	<h1 align="center">React J</h1>
 </center>
@@ -6,19 +5,30 @@
 <img src="media/logo.png" alt="Unbenannt" height="180pt"><br/>
 </p>
 <p align="center">
-<a href="https://app.codacy.com/gh/nbrugger-tgm/reactj?utm_source=github.com&utm_medium=referral&utm_content=nbrugger-tgm/reactj&utm_campaign=Badge_Grade_Settings"><img src="https://api.codacy.com/project/badge/Grade/f0aa98c14a794c419f8400de14e3dbc8"></a>
+<a href="https://app.codacy.com/gh/nbrugger-tgm/reactj?utm_source=github.com&utm_medium=referral&utm_content=nbrugger-tgm/reactj&utm_campaign=Badge_Grade_Settings"><img src="https://api.codacy.com/project/badge/Grade/f0aa98c14a794c419f8400de14e3dbc8"></a><br/>
+    <a href="https://www.conventionalcommits.org/en/v1.0.0/"><img src="https://img.shields.io/badge/conventional%20commits-✔-brightgreen"/></a>
 </p>
-
 <p align="center">
 This library introduces <b>easy</b> reactive Bindings in Java, very useful to create a MVC UI without backdraws.<br>
 Its just like <b>Vue js</b> for java
 </p>
+Documentation: [Wiki](https://github.com/nbrugger-tgm/reactj/wiki), [JavaDoc](https://niton.jfrog.io/artifactory/java-libs/com/niton/reactj/3.0.2/reactj-3.0.2-javadoc.jar!/index.html), [Changelog](Changelog.md)
 
-[Wiki](https://github.com/nbrugger-tgm/reactj/wiki)
+## Framework support implementation
 
-### Usage [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fniton.jfrog.io%2Fartifactory%2Fjava-libs%2Fcom%2Fniton%2Freactj%2Fmaven-metadata.xml)](https://niton.jfrog.io/ui/packages/gav:%2F%2Fcom.niton:reactj?name=react&type=packages)
+- [x] Swing : [reactj-swing](swing)
+- [ ] JavaFx
+- [ ] Qt
 
-#### Gradle
+> Feel free to contribute custom implementations (they are not hard to create)
+
+*Note* : You can use ReactJ with any UI framework without doing the implementation, its just a little more code
+
+## Usage
+
+*Version* : [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fniton.jfrog.io%2Fartifactory%2Fjava-libs%2Fcom%2Fniton%2Freactj%2Fmaven-metadata.xml)](https://niton.jfrog.io/ui/packages/gav:%2F%2Fcom.niton:reactj?name=react&type=packages)
+
+### Gradle
 
 ```groovy
 repositories {
@@ -31,10 +41,10 @@ repositories {
 Adding the dependency
 
 ```groovy
-implementation 'com.niton:reactj:2.0.1'
+implementation 'com.niton:reactj:3.0.2'
 ```
 
-#### Maven
+### Maven
 
 ```xml
 <repositories>
@@ -52,13 +62,13 @@ Adding the dependency
 <dependency>
   <groupId>com.niton</groupId>
   <artifactId>reactj</artifactId>
-  <version>2.0.1</version>
+  <version>3.0.2</version>
 </dependency>
 ```
 
 ### Example
 
-> All functional examples can be found at https://github.com/nbrugger-tgm/reactj/tree/master/src/test/java/com/niton/reactj/examples
+> All functional examples can be found at https://github.com/nbrugger-tgm/reactj-swing/tree/master/src/test/java/com/niton/reactj/examples
 
 Create a View
 
@@ -146,7 +156,3 @@ view.setData(proxy);
 ### Full runnable example
 
 https://github.com/nbrugger-tgm/todo-list
-
-### Getting Started
-
-I have a wiki ready to be read

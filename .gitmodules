@@ -1,0 +1,3 @@
+[submodule "swing"]
+	path = swing
+	url = https://github.com/nbrugger/reactj-swing
