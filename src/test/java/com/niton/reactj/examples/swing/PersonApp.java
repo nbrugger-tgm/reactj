@@ -12,18 +12,26 @@ public class PersonApp {
 		ReactiveProxy<Person> proxy = ReactiveObject.create(Person.class, 12, "Niton");
 		proxy.setStrategy(ReactiveStrategy.REACT_ON_ALL);
 
+		//A controller for custom events
+		PersonController ownController = new PersonController();
+
 		Person information = proxy.getObject();
 		PersonView component = new PersonView();
 		PersonView component1 = new PersonView();
 		PersonView component2 = new PersonView();
-		component.resetEvent.listen(new PersonController());
+
+		component.resetEvent.listen(ownController);
+		component1.resetEvent.listen(ownController);
+		component2.resetEvent.listen(ownController);
 
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setLayout(new GridLayout());
+
 		frame.add(component.getView());
 		frame.add(component1.getView());
 		frame.add(component2.getView());
+
 		frame.pack();
 		frame.setVisible(true);
 
@@ -36,7 +44,7 @@ public class PersonApp {
 		information.setIq(120);
 		information.setName("Niton");
 
-		for (; ; ) {
+		while (true) {
 			Thread.sleep(1000);
 			System.out.println(information);
 			information.setAge(information.getAge() + 1);

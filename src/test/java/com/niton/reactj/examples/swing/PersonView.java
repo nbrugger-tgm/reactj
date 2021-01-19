@@ -9,7 +9,8 @@ import com.niton.reactj.annotation.Reactive;
 import javax.swing.*;
 import java.awt.*;
 
-public class PersonView extends ReactiveView< JPanel, ReactiveProxy<Person>> {
+//For swing components we recommend the com.niton.reactj:swing implementation
+public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 
 	private JPanel panel;
 
@@ -72,7 +73,6 @@ public class PersonView extends ReactiveView< JPanel, ReactiveProxy<Person>> {
 
 	public void adaptColorToGender(Gender g) {
 		panel.setBackground(g == Gender.MALE ? Color.BLUE : (g == Gender.FEMALE ? Color.PINK : Color.WHITE));
-		//repaint();
 	}
 
 	@Override
