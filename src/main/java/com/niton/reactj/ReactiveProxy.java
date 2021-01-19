@@ -19,8 +19,8 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
  */
 public class ReactiveProxy<M> implements MethodHandler, Reactable {
 	protected final List<Observer<?>> listeners = new ArrayList<>();
-	private final    M                backend;
-	private     M                     proxy;
+	private final   M                 backend;
+	private         M                 proxy;
 	private         ReactiveStrategy  strategy  = REACT_ON_SETTER;
 	private         String[]          reactToList;
 
