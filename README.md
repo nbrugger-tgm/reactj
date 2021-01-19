@@ -12,7 +12,7 @@
 This library introduces <b>easy</b> reactive Bindings in Java, very useful to create a MVC UI without backdraws.<br>
 Its just like <b>Vue js</b> for java
 </p>
-Documentation: [Wiki](https://github.com/nbrugger-tgm/reactj/wiki), [JavaDoc](https://niton.jfrog.io/artifactory/java-libs/com/niton/reactj/3.0.2/reactj-3.0.2-javadoc.jar!/index.html), [Changelog](Changelog.md)
+Documentation: [Wiki](https://github.com/nbrugger-tgm/reactj/wiki) [JavaDoc](https://niton.jfrog.io/artifactory/java-libs/com/niton/reactj/3.0.2/reactj-3.0.2-javadoc.jar!/index.html) [Changelog](CHANGELOG.md)
 
 ## Framework support implementation
 
