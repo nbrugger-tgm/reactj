@@ -70,19 +70,18 @@ Adding the dependency
 
 > All functional examples can be found at https://github.com/nbrugger-tgm/reactj-swing/tree/master/src/test/java/com/niton/reactj/examples
 
-Create a View
+Create a View (Component)
 
 ```java
-public class DataView extends ReactiveView<DataController, JPanel, ReactiveModel<Data>> {
-    private JPanel            panel;
+public class DataView extends ReactiveView<JPanel, ReactiveProxy<Data>> {
+    private JPanel            panel; // the panel itself
     
     private JTextField        nameInput;
     private JComboBox<Gender> genderJComboBox;
     private JButton           selectButton ;
     
-    public DataView(DataController controller) {
-        super(controller);
-    }
+    //Events this view can emitt
+    public final EventManager<Person> resetEvent = new EventManager<>();
     
     @Override
     protected JPanel createView() {
@@ -92,15 +91,14 @@ public class DataView extends ReactiveView<DataController, JPanel, ReactiveModel
         genderJComboBox = new JComboBox<>(Gender.values());
         selectButton    = new JButton("Reset");
         
-        nameInput.setColumns(10);
-        
         panel.add(nameInput);
         panel.add(genderJComboBox);
         panel.add(selectButton);
         
         return panel;
     }
-    
+
+    //the reactj swing implementation makes this method a lot easier
     @Override
     public void createBindings(ReactiveBinder bindings) {
         bindings.bindBi("name", nameInput::setText, nameInput::getText);
@@ -109,11 +107,8 @@ public class DataView extends ReactiveView<DataController, JPanel, ReactiveModel
         //add actions to react to
         nameInput.getDocument().addUndoableEditListener(bindings::react);
         genderJComboBox.addActionListener(bindings::react);
-    }
-    
-    @Override
-    public void registerListeners(PersonController controller) {
-        selectButton.addActionListener(controller::reset);
+        
+        selectButton.addActionListener(()->resetEvemt.fire(getModel()))
     }
 }
 ```
@@ -146,11 +141,14 @@ Now we need to bind the view to a Person object
 ```java
 ReactiveProxy<Data> proxy = ReactiveObject.create(Data.class);
 Data model = proxy.object;
-DataController controller = new DataController(model);
+
 DataView view = new DataView();
 view.setData(proxy);
 
 //now you just need to display the view on a JFrame
+
+//this will cause the UI to update
+model.setGender(FEMALE);
 ```
 
 ### Full runnable example
