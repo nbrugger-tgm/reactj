@@ -16,10 +16,10 @@ public class AnnotationTest {
 			bCalled = false,
 			cCalled = false,
 			testCalled = false;
-	public ReactiveProxy<DeepBase> deepProxy = ReactiveObject.create(DeepBase.class);
+	public ReactiveProxy<DeepBase> deepProxy = ReactiveObject.createProxy(DeepBase.class);
 	public DeepBase                deep        = deepProxy.getObject();
 
-	public ReactiveProxy<FlatBase> flatProxy = ReactiveObject.create(FlatBase.class);
+	public ReactiveProxy<FlatBase> flatProxy = ReactiveObject.createProxy(FlatBase.class);
 	public FlatBase                flat        = flatProxy.getObject();
 
 	public static final int
@@ -144,11 +144,11 @@ public class AnnotationTest {
 	@Test
 	void errorTesting(){
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveObject.create(FailBase.class);
+			ReactiveObject.createProxy(FailBase.class);
 		});
 
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveObject.create(FlatBase.class,"Wrong type");
+			ReactiveObject.createProxy(FlatBase.class, "Wrong type");
 		});
 		assertThrows(ReactiveException.class, () -> {
 			ReactiveComponent deepComponent = new ReactiveComponent() {

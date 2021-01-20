@@ -59,7 +59,7 @@ public final class ReactiveReflectorUtil {
 			FIELD_CACHE.put(typeName, fields = loadRelevantFields(type));
 		}
 		try {
-			ReactiveReflectorUtil.readState(model, fields, state);
+			readState(model, fields, state);
 		} catch (IllegalAccessException e) {
 			throw new ReactiveException("Cannot read field of model", e);
 		}
@@ -120,6 +120,9 @@ public final class ReactiveReflectorUtil {
 		Class<?> type     = model.getClass();
 		String   typeName = type.getName();
 		Field[]  fields   = FIELD_CACHE.get(typeName);
+		if (fields == null) {
+			FIELD_CACHE.put(typeName, fields = loadRelevantFields(type));
+		}
 		for (Field f : fields) {
 			if (getReactiveName(f).equals(property)) {
 				try {
