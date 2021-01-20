@@ -1,10 +1,12 @@
 package com.niton.reactj.test;
 
 import com.niton.reactj.*;
+import com.niton.reactj.annotation.ReactivResolution;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 
+import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.DEEP;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ObserverTest {
@@ -12,12 +14,30 @@ public class ObserverTest {
 	public Object                  lastValue;
 	public String                  converted;
 	public int                     changeCounter = 0;
-	public ReactiveProxy<TestData> personProxy   = ReactiveObject.create(TestData.class);
-	public TestData                td            = personProxy.getObject();
+	public ReactiveProxy<TestData> personProxy   = ReactiveObject.createProxy(TestData.class);
 
 	@Test
-	public void testObserving(){
-		Observer<ReactiveProxy<TestData>> testDataObserver = new Observer<ReactiveProxy<TestData>>() {
+	public void testProxyObserving() {
+		observerTest(personProxy,ReactiveObject.createProxy(TestData.class));
+	}
+
+	@Test
+	public void testReactiveSubjectObserving(){
+		SubjectTestData d1 = ReactiveObject.create(SubjectTestData.class);
+		SubjectTestData d2 = ReactiveObject.create(SubjectTestData.class);
+		observerTest(d1,d2);
+	}
+
+
+	@Test
+	public void testNoEqualsReactiveSubjectObserving(){
+		NonEqualSubjectTestData d1 = ReactiveObject.create(NonEqualSubjectTestData.class);
+		NonEqualSubjectTestData d2 = ReactiveObject.create(NonEqualSubjectTestData.class);
+		observerTest(d1,d2);
+	}
+
+	public <M extends Reactable>void observerTest(M obj,M newObj){
+		Observer<M> testDataObserver = new Observer<M>() {
 			@Override
 			public void onChange(String property, Object value) {
 				System.out.println(property+" changed to "+value);
@@ -27,24 +47,28 @@ public class ObserverTest {
 			}
 		};
 
-		testDataObserver.bind(personProxy);
+		testDataObserver.bind(obj);
 
 		lastValue = null;
 		lastChanged = null;
+		changeCounter = 0;
+
+		TestData td = obj instanceof TestData ? (TestData) obj : (obj instanceof ReactiveProxy ? ((ReactiveProxy<? extends TestData>) obj).getObject() : null);
+		assert td != null;
 		td.id = 0;
 		assertNull(lastChanged,"Observer should not be triggered from assigment");
 		assertNull(lastValue, "Observer should not be triggered from assigment");
 
 		try {
-			personProxy.set("id",12);
+			obj.set("id",12);
 			assertNull(lastChanged,"set(param,val) should not trigger observer");
 		} catch (Exception throwable) {
-			fail("ID should be set-able");
+			fail("ID should be set-able",throwable);
 		}
 
-		personProxy.react();
+		obj.react();
 		assertEquals("id",lastChanged);
-
+		assertEquals(12, lastValue);
 
 		td.setC(Color.GREEN);
 		assertNotNull(lastValue);
@@ -55,15 +79,14 @@ public class ObserverTest {
 		td.setColor(Color.WHITE);
 		assertEquals(Color.WHITE,lastValue);
 		int oldCounter = changeCounter;
-		testDataObserver.bind(personProxy);
+		testDataObserver.bind(obj);
 		assertEquals(oldCounter, changeCounter,"Rebinding the same object should not create changes");
-		personProxy.unbind(testDataObserver);
+		obj.unbind(testDataObserver);
 		td.setId(9999);
 		assertEquals(oldCounter, changeCounter,"Unbound is not working");
 
-		ReactiveProxy<TestData> newProxy = ReactiveObject.create(TestData.class);
-		testDataObserver.bind(newProxy);
-		assertEquals(testDataObserver.getModel(),newProxy);
+		testDataObserver.bind(newObj);
+		assertEquals(testDataObserver.getModel(),newObj);
 	}
 
 	@Test
@@ -78,7 +101,7 @@ public class ObserverTest {
 
 	@Test
 	public void bindingTest(){
-		ReactiveProxy<TestData> proxy = ReactiveObject.create(TestData.class);
+		ReactiveProxy<TestData> proxy = ReactiveObject.createProxy(TestData.class);
 		TestData                td          = proxy.getObject();
 
 		ReactiveComponent testComponent = new ReactiveComponent() {
@@ -116,6 +139,19 @@ public class ObserverTest {
 		public void setId(int id) {
 			this.id = id;
 		}
+	}
+	@ReactivResolution(DEEP)
+	public static class SubjectTestData extends TestData implements ProxySubject{
+		@Override
+		public boolean equals(Object obj) {
+			if(!(obj instanceof TestData))
+				return false;
+			return ((TestData) obj).c.equals(c) && ((TestData) obj).id == id;
+		}
+	}
+	@ReactivResolution(DEEP)
+	public static class NonEqualSubjectTestData extends TestData implements ProxySubject{
+
 	}
 
 }

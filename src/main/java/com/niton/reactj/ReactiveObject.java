@@ -41,7 +41,7 @@ public class ReactiveObject implements Reactable {
 	/**
 	 * its the same as {@link ReactiveProxy#create(Class, Object...)}
 	 */
-	public static <C> ReactiveProxy<C> create(Class<C> type, Object... constructorParams)
+	public static <C> ReactiveProxy<C> createProxy(Class<C> type, Object... constructorParams)
 	throws
 	ReactiveException {
 		Class<?>[] paramTypes = Arrays.stream(constructorParams)
@@ -62,6 +62,12 @@ public class ReactiveObject implements Reactable {
 		                           constructorParams);
 		model.setProxy(wrapped);
 		return model;
+	}
+
+	public static <C extends ProxySubject> C create(Class<C> type, Object... constructorParams)
+	throws
+	ReactiveException {
+		return (C) createProxy((Class<? extends Object>) type, constructorParams).getObject();
 	}
 
 	private static <C> C constructProxy(Class<C> type,
