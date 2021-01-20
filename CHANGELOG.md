@@ -1,3 +1,17 @@
+## v3.1.0b0 (2021-01-20)
+
+### Fix
+
+- possible NullPointerException for FIELD_CACHE
+
+### Feat
+
+- add pseudo proxy
+
+### Refactor
+
+- **swing**: extract swing to different libary
+
 ## v3.0.2 (2021-01-18)
 
 ### Fix
