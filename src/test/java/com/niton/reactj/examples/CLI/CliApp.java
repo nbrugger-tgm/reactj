@@ -6,7 +6,7 @@ import com.niton.reactj.annotation.Reactive;
 public class CliApp {
 
 	public static void main(String[] args) throws InterruptedException {
-		ReactiveProxy<Progress> proxy = ReactiveObject.create(Progress.class);
+		ReactiveProxy<Progress> proxy = ReactiveObject.createProxy(Progress.class);
 		Progress progress = proxy.getObject();
 
 		ReactiveController<ReactiveProxy<Progress>> controller;
