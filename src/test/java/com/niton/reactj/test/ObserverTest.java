@@ -12,7 +12,7 @@ public class ObserverTest {
 	public Object                  lastValue;
 	public String                  converted;
 	public int                     changeCounter = 0;
-	public ReactiveProxy<TestData> personProxy   = ReactiveObject.create(TestData.class);
+	public ReactiveProxy<TestData> personProxy   = ReactiveObject.createProxy(TestData.class);
 	public TestData                td            = personProxy.getObject();
 
 	@Test
@@ -78,7 +78,7 @@ public class ObserverTest {
 
 	@Test
 	public void bindingTest(){
-		ReactiveProxy<TestData> proxy = ReactiveObject.create(TestData.class);
+		ReactiveProxy<TestData> proxy = ReactiveObject.createProxy(TestData.class);
 		TestData                td          = proxy.getObject();
 
 		ReactiveComponent testComponent = new ReactiveComponent() {

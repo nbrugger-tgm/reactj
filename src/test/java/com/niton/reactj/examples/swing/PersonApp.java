@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class PersonApp {
 	public static void main(String[] args) throws InterruptedException {
-		ReactiveProxy<Person> proxy = ReactiveObject.create(Person.class, 12, "Niton");
+		ReactiveProxy<Person> proxy = ReactiveObject.createProxy(Person.class, 12, "Niton");
 		proxy.setStrategy(ReactiveStrategy.REACT_ON_ALL);
 
 		//A controller for custom events

@@ -1,7 +1,6 @@
 package com.niton.reactj.examples;
 
 import com.niton.reactj.*;
-import com.niton.reactj.annotation.Reactive;
 
 import java.awt.*;
 
@@ -26,7 +25,7 @@ public class ObserverExample {
 	}
 
 	public static void main(String[] args) {
-		ReactiveProxy<Data> model = ReactiveObject.create(Data.class);
+		ReactiveProxy<Data> model = ReactiveObject.createProxy(Data.class);
 		Data d = model.getObject();
 
 		Observer<ReactiveProxy<Data>> observer = new Observer<ReactiveProxy<Data>>() {
