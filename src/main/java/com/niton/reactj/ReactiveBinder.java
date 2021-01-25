@@ -83,7 +83,7 @@ public class ReactiveBinder {
 	}
 
 	public static class BiBinding<M, D> extends Binding<D, M> {
-		private final ValueReceiver<D> reciver;
+		private final ValueReceiver<D> receiver;
 		private final Converter<D, M>  toModelConverter;
 
 		public M convertToModel(Object value) {
@@ -91,7 +91,7 @@ public class ReactiveBinder {
 		}
 
 		public D get() {
-			return reciver.get();
+			return receiver.get();
 		}
 
 		public BiBinding(
@@ -101,7 +101,7 @@ public class ReactiveBinder {
 				Converter<D, M> toModelConverter
 		) {
 			super(display, toDisplayConverter);
-			this.reciver          = reciver;
+			this.receiver         = reciver;
 			this.toModelConverter = toModelConverter;
 		}
 
@@ -109,8 +109,8 @@ public class ReactiveBinder {
 			return toModelConverter;
 		}
 
-		public ValueReceiver<D> getReciver() {
-			return reciver;
+		public ValueReceiver<D> getReceiver() {
+			return receiver;
 		}
 
 		/**

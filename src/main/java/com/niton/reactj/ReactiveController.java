@@ -135,7 +135,7 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 
 		if (binding instanceof BiBinding) {
 			//ignore change when the value is already present
-			Object present = ((BiBinding<?, ?>) binding).getReciver().get();
+			Object present = ((BiBinding<?, ?>) binding).getReceiver().get();
 			if (present.equals(value)) {
 				return;
 			}
