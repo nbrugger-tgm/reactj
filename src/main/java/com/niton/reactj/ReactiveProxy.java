@@ -46,7 +46,7 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 	 * @param real the real model behind. will be used as storage and not be directly accessible anymore
 	 */
 	public ReactiveProxy(M real) {
-		this.backend = real;
+		backend = real;
 	}
 
 	public ReactiveStrategy getStrategy() {
@@ -93,13 +93,7 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 		}
 		//When methods originates from Proxy Subject
 		if(thisMethod.getDeclaringClass().equals(ProxySubject.class)) {
-			try {
-				return ReactiveProxy.class.getMethod(thisMethod.getName(),thisMethod.getParameterTypes()).invoke(this, args);
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-				System.err.println("This should never be executed, contact the developer");
-				//No way this happens
-			}
+			return forwardProxySubjectCallToMyself(thisMethod, args);
 		}
 		Object  ret   = thisMethod.invoke(backend, args);
 		boolean react = strategy.reactTo(thisMethod.getName(), reactToList);
@@ -107,6 +101,18 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 			react();
 		}
 		return ret;
+	}
+
+	private Object forwardProxySubjectCallToMyself(Method thisMethod, Object[] args)
+	throws InvocationTargetException, IllegalAccessException {
+		try {
+			return ReactiveProxy.class.getMethod(thisMethod.getName(),thisMethod.getParameterTypes()).invoke(this, args);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			System.err.println("This should never be executed, contact the developer");
+			return null;
+			//No way this happens
+		}
 	}
 
 	@Override
