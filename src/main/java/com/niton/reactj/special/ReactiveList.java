@@ -14,12 +14,31 @@ import static com.niton.reactj.special.ListActions.*;
 /**
  * Proxy creating interface. There are no implementations! You have to use ReactiveList.create
  *
+ * This class wraps a list, it isnt a list implementation it just makes a list implementation (for example ArrayList) reactive
+ *
  * @param <E> Type of the list as specified in {@link List}
  */
 public interface ReactiveList<E> extends Reactable, List<E> {
 
 
-	static <E, T> ReactiveList<E> create(List<E> list) {
+	/**
+	 * Creates an reactive list from an existing list.
+	 * The new reactive list is returned.
+	 *
+	 * After creating a reactive version of a list, DO NOT use the old list reference
+	 *
+	 * {@code
+	 *      ArrayList<int> lst = new ArrayList<>();
+	 *      lst.add(value1);//This is allowed
+	 *      ReactiveList<int> reactive = ReactiveList.create(lst);
+	 *      lst.add(value2);//DONT! do this
+	 * }
+	 *
+	 * @param list the list to make reactive
+	 * @param <E> the type of the list
+	 * @return the reactive list
+	 */
+	static <E> ReactiveList<E> create(List<E> list) {
 		return (ReactiveList<E>) Proxy.newProxyInstance(
 				Thread.currentThread().getContextClassLoader(),
 				new Class[]{ReactiveList.class},
@@ -28,7 +47,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 	void removeById(Object id);
 
-	class ReactiveListHandler<E, T> implements InvocationHandler {
+	class ReactiveListHandler<E> implements InvocationHandler {
 		private static final String ADD_METHOD;
 		private static final String INT_ADD_METHOD;
 		private static final String REMOVE_OBJECT;
@@ -100,7 +119,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 				delegate = model;
 			} else {
 				throw new ReactiveException(
-						"Proxy doesnt know how to call " + method.getDeclaringClass()
+						"List Proxy doesnt know how to call " + method.getDeclaringClass()
 				);
 			}
 			return delegate;

@@ -1,5 +1,6 @@
 package com.niton.reactj;
 
+import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
 import com.niton.reactj.util.ReactiveReflectorUtil;
 import javassist.util.proxy.MethodHandler;
@@ -18,11 +19,16 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
  *
  * @param <M> The type this Model is going to wrap
  */
-public class ReactiveProxy<M> implements MethodHandler, Reactable {
+public final class ReactiveProxy<M> implements MethodHandler, Reactable {
+	@Unreactive
 	protected final List<Observer<?>> listeners = new ArrayList<>();
+	@Unreactive
 	private final   M                 backend;
+	@Unreactive
 	private         M                 proxy;
+	@Unreactive
 	private         ReactiveStrategy  strategy  = REACT_ON_SETTER;
+	@Unreactive
 	private         String[]          reactToList;
 
 	/**
@@ -45,7 +51,7 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 	 * @param real the real model behind. will be used as storage and not be directly accessible anymore
 	 */
 	public ReactiveProxy(M real) {
-		this.backend = real;
+		backend = real;
 	}
 
 	public ReactiveStrategy getStrategy() {
@@ -76,26 +82,23 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 	public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args)
 	throws InvocationTargetException, IllegalAccessException {
 		thisMethod.setAccessible(true);
+		//When equals is called with ProxySubject as parameter and called on a subject proxy -> ps.equals(otherPs)
 		if(thisMethod.getName().equals("equals") && args[0] instanceof ProxySubject && self instanceof ProxySubject){
-			if( thisMethod.getDeclaringClass().equals(Object.class)){
-				System.err.println("[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result");
+			//only prevent the default Object implemetation. If the user overwrote `equals` this should not kick in
+			if(thisMethod.getDeclaringClass().equals(Object.class)){
+				System.err.println("[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result. Consider writing a custom equals for \""+self.getClass().getSimpleName()+"\"");
 				return ((ProxySubject) args[0]).getState().equals(((ProxySubject) self).getState());
 			}
 			else if( thisMethod.getDeclaringClass().equals(backend.getClass())){
 				Object res = thisMethod.invoke(backend,args);
-				if(!(boolean)res)
-					System.err.println("[WARNING] "+backend.getClass().getTypeName()+".equals() implementation should also support subclasses of "+backend.getClass().getTypeName());
+				//if(!(boolean)res) removed because the warning is printed to often and theere was no way to verify if is true (the message)
+				//	System.err.println("[WARNING] "+backend.getClass().getTypeName()+".equals() implementation should also support subclasses of "+backend.getClass().getTypeName());
 				return res;
 			}
 		}
+		//When methods originates from Proxy Subject
 		if(thisMethod.getDeclaringClass().equals(ProxySubject.class)) {
-			try {
-				return ReactiveProxy.class.getMethod(thisMethod.getName(),thisMethod.getParameterTypes()).invoke(this, args);
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-				System.err.println("This should never be executed, contact the developer");
-				//No way this happens
-			}
+			return forwardProxySubjectCallToMyself(thisMethod, args);
 		}
 		Object  ret   = thisMethod.invoke(backend, args);
 		boolean react = strategy.reactTo(thisMethod.getName(), reactToList);
@@ -103,6 +106,18 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 			react();
 		}
 		return ret;
+	}
+
+	private Object forwardProxySubjectCallToMyself(Method thisMethod, Object[] args)
+	throws InvocationTargetException, IllegalAccessException {
+		try {
+			return ReactiveProxy.class.getMethod(thisMethod.getName(),thisMethod.getParameterTypes()).invoke(this, args);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			System.err.println("This should never be executed, contact the developer");
+			return null;
+			//No way this happens
+		}
 	}
 
 	@Override

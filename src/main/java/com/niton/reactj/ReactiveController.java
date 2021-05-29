@@ -47,7 +47,7 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 
 	/**
 	 * Pulls changes from the Component to the Model
-	 * @param unused not used
+	 * @param unused not used, only present so one can use this method as method reference as listener
 	 */
 	private void updateModel(Object unused) {
 		if (blockReactions) {
