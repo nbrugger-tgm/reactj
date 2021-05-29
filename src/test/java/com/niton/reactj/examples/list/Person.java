@@ -7,17 +7,21 @@ import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.examples.swing.Gender;
 
+import java.util.Objects;
+
 import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.FLAT;
 
 //optional
 @ReactivResolution(FLAT)
 public class Person extends ReactiveObject implements Identity<String> {
+	public static int ID = 0;
+	private final int id = ID++;
 	private int    age;
 	//change reactive name
 	@Reactive("surename")
 	private String name;
 	private int    iq;
-	private Gender gender;
+	private Gender gender = Gender.OTHER;
 	//This will not be reacted to
 	@Unreactive
 	private String address;
@@ -78,5 +82,19 @@ public class Person extends ReactiveObject implements Identity<String> {
 	@Override
 	public String getID() {
 		return name+address;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Person)) return false;
+		Person person = (Person) o;
+		return age == person.age && iq == person.iq && name.equals(person.name) && gender == person.gender && Objects
+				.equals(address, person.address) && Objects.equals(id,person.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(age, name, iq, gender, address,id);
 	}
 }
