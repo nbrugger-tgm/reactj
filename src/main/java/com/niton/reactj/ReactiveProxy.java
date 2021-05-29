@@ -19,11 +19,16 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
  *
  * @param <M> The type this Model is going to wrap
  */
-public class ReactiveProxy<M> implements MethodHandler, Reactable {
+public final class ReactiveProxy<M> implements MethodHandler, Reactable {
+	@Unreactive
 	protected final List<Observer<?>> listeners = new ArrayList<>();
+	@Unreactive
 	private final   M                 backend;
+	@Unreactive
 	private         M                 proxy;
+	@Unreactive
 	private         ReactiveStrategy  strategy  = REACT_ON_SETTER;
+	@Unreactive
 	private         String[]          reactToList;
 
 	/**
