@@ -18,6 +18,7 @@ import static com.niton.reactj.exceptions.ReactiveException.constructorNotFound;
  * The most common way to use this component is by extending it and call {@link ReactiveObject#react()} whenever needed
  */
 public class ReactiveObject implements Reactable {
+	@Unreactive
 	private final Object store;
 
 	@Unreactive
