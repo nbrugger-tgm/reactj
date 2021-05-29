@@ -118,7 +118,7 @@ public class ReactiveObject implements Reactable {
 			Class<?>[] paramTypes,
 			Class<?>[] unboxedParamTypes,
 			Object... parameters
-	) {
+	) throws ReactiveException{
 		try {
 			if (parameters.length == 0) {
 				return type.newInstance();
@@ -136,10 +136,8 @@ public class ReactiveObject implements Reactable {
 		} catch (
 				InstantiationException | InvocationTargetException |
 						IllegalAccessException | NoSuchMethodException e) {
-			handle(type, unboxedParamTypes, e);
+			throw handle(type, unboxedParamTypes, e);
 		}
-		//should not be reached
-		return null;
 	}
 
 
