@@ -1,5 +1,6 @@
 package com.niton.reactj;
 
+import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
 import com.niton.reactj.util.ReactiveReflectorUtil;
 import javassist.util.proxy.MethodHandler;
@@ -76,18 +77,21 @@ public class ReactiveProxy<M> implements MethodHandler, Reactable {
 	public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args)
 	throws InvocationTargetException, IllegalAccessException {
 		thisMethod.setAccessible(true);
+		//When equals is called with ProxySubject as parameter and called on a subject proxy -> ps.equals(otherPs)
 		if(thisMethod.getName().equals("equals") && args[0] instanceof ProxySubject && self instanceof ProxySubject){
-			if( thisMethod.getDeclaringClass().equals(Object.class)){
-				System.err.println("[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result");
+			//only prevent the default Object implemetation. If the user overwrote `equals` this should not kick in
+			if(thisMethod.getDeclaringClass().equals(Object.class)){
+				System.err.println("[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result. Consider writing a custom equals for \""+self.getClass().getSimpleName()+"\"");
 				return ((ProxySubject) args[0]).getState().equals(((ProxySubject) self).getState());
 			}
 			else if( thisMethod.getDeclaringClass().equals(backend.getClass())){
 				Object res = thisMethod.invoke(backend,args);
-				if(!(boolean)res)
-					System.err.println("[WARNING] "+backend.getClass().getTypeName()+".equals() implementation should also support subclasses of "+backend.getClass().getTypeName());
+				//if(!(boolean)res) removed because the warning is printed to often and theere was no way to verify if is true (the message)
+				//	System.err.println("[WARNING] "+backend.getClass().getTypeName()+".equals() implementation should also support subclasses of "+backend.getClass().getTypeName());
 				return res;
 			}
 		}
+		//When methods originates from Proxy Subject
 		if(thisMethod.getDeclaringClass().equals(ProxySubject.class)) {
 			try {
 				return ReactiveProxy.class.getMethod(thisMethod.getName(),thisMethod.getParameterTypes()).invoke(this, args);
