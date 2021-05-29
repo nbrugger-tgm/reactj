@@ -104,13 +104,10 @@ public class ObserverTest {
 		ReactiveProxy<TestData> proxy = ReactiveObject.createProxy(TestData.class);
 		TestData                td          = proxy.getObject();
 
-		ReactiveComponent testComponent = new ReactiveComponent() {
-			@Override
-			public void createBindings(ReactiveBinder binder) {
-				binder.bind("id", val -> lastValue = val);
-				binder.bind("c",val -> lastValue = val);
-				binder.bind("c",val -> converted = val,(Color c) -> String.valueOf(c.getRed()));
-			}
+		ReactiveComponent testComponent = binder -> {
+			binder.bind("id", val -> lastValue = val);
+			binder.bind("c",val -> lastValue = val);
+			binder.bind("c",val -> converted = val,(Color c) -> String.valueOf(c.getRed()));
 		};
 		ReactiveController<ReactiveProxy<TestData>> controller = new ReactiveController<>(testComponent);
 		controller.bind(proxy);
