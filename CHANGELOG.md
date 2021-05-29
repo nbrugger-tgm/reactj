@@ -1,3 +1,25 @@
+## v3.1.0b1 (2021-05-29)
+
+### Feat
+
+- super bindings
+- add delete button in list example
+
+### Fix
+
+- deleting issue in `person list example`
+- returning null on instanciation instead of throwing exception
+- theoretical possible wrong react call
+- Observer reporting changes on rebinding
+
+### Refactor
+
+- make properties of internal classes unreactive
+
+### Perf
+
+- change default listener capacity
+
 ## v3.1.0b0 (2021-01-20)
 
 ### Fix
@@ -62,7 +84,7 @@
 
 ## v2.1.2 (2020-11-23)
 
-## v2.1.1-SNAPSHOT (2020-11-19)
+## v2.1.1 (2020-11-19)
 
 ## v2.0.1 (2020-11-17)
 
