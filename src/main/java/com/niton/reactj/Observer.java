@@ -106,9 +106,6 @@ public abstract class Observer<M extends Reactable> {
 		}
 		model.bind(this);
 		this.model = model;
-		valueCache.clear();
-		valueCache.putAll(model.getState());
-
 
 		//This is kind of propritary and is subject to change
 		if (model instanceof ReactiveList) {
