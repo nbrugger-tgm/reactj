@@ -68,15 +68,15 @@ public class ReactiveListModel<E> {
 		size       = swingModel::size;
 	}
 
-	public void bind(ReactiveBinder binder) {
+	public void bind(ReactiveBinder<? extends ReactiveList> binder) {
 		binder.bind(ADD.id(), adder::add);
 		binder.bind(ADD_INDEX.id(), e -> intAdder.add(index, (E) e));
 		binder.bind(SET_INDEX.id(), i -> index = (int) i);
 		binder.bind(REMOVE_INDEX.id(), intRemover::remove);
 		binder.bind(REMOVE_OBJECT.id(), remover::remove);
-		binder.bind(REPLACE.id(), o -> {
+		binder.bind(REPLACE.id(), (E o) -> {
 			intRemover.remove(index);
-			intAdder.add(index, (E) o);
+			intAdder.add(index, o);
 		});
 		binder.bind(CLEAR.id(),
 		            e -> {
@@ -85,7 +85,7 @@ public class ReactiveListModel<E> {
 			            }
 		            }
 		);
-		binder.bind(INIT.id(), l -> ((List<E>) l).forEach(adder::add));
+		binder.bind(INIT.id(), (List<E> l) -> l.forEach(adder::add));
 	}
 
 	public ListModel<E> swing() {

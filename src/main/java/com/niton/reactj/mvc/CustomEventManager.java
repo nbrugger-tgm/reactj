@@ -10,7 +10,7 @@ import java.util.List;
  * @param <L> the type to be used for listeners
  */
 public abstract class CustomEventManager<E, L> {
-	private final List<L> listeners = new ArrayList<>(5);
+	private final List<L> listeners = new ArrayList<>(1);
 
 	public void listen(L listener) {
 		listeners.add(listener);

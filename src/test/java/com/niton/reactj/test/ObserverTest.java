@@ -2,6 +2,7 @@ package com.niton.reactj.test;
 
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.ReactivResolution;
+import com.niton.reactj.annotation.Reactive;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -55,6 +56,8 @@ public class ObserverTest {
 
 		TestData td = obj instanceof TestData ? (TestData) obj : (obj instanceof ReactiveProxy ? ((ReactiveProxy<? extends TestData>) obj).getObject() : null);
 		assert td != null;
+
+
 		td.id = 0;
 		assertNull(lastChanged,"Observer should not be triggered from assigment");
 		assertNull(lastValue, "Observer should not be triggered from assigment");
@@ -104,13 +107,10 @@ public class ObserverTest {
 		ReactiveProxy<TestData> proxy = ReactiveObject.createProxy(TestData.class);
 		TestData                td          = proxy.getObject();
 
-		ReactiveComponent testComponent = new ReactiveComponent() {
-			@Override
-			public void createBindings(ReactiveBinder binder) {
-				binder.bind("id", val -> lastValue = val);
-				binder.bind("c",val -> lastValue = val);
-				binder.bind("c",val -> converted = val,(Color c) -> String.valueOf(c.getRed()));
-			}
+		ReactiveComponent<ReactiveProxy<TestData>> testComponent = binder -> {
+			binder.bind("id", val -> lastValue = val);
+			binder.bind("c",val -> lastValue = val);
+			binder.bind("c",val -> converted = val,(Color c) -> String.valueOf(c.getRed()));
 		};
 		ReactiveController<ReactiveProxy<TestData>> controller = new ReactiveController<>(testComponent);
 		controller.bind(proxy);

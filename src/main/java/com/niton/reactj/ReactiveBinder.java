@@ -6,10 +6,14 @@ import java.util.Map;
 
 /**
  * This class is used to bind properties to reactive componnents
+ *
+ * @param <L> the type of the reactive model to bind to
  */
-public class ReactiveBinder {
+public class ReactiveBinder<L> {
 	private final UpdateFunction                     update;
 	private final Map<String, List<Binding<?, ?>>>   displayBindings;
+	private final Map<String, List<SuperBinding<?, L>>>   displaySuperBindings;
+	private final List<SuperBinding<?, L>>   globalDisplaySuperBindings;
 	private final Map<String, List<BiBinding<?, ?>>> editBindings;
 
 	@FunctionalInterface
@@ -52,7 +56,10 @@ public class ReactiveBinder {
 	public interface ValueReceiver<R> {
 		R get();
 	}
-
+	@FunctionalInterface
+	public interface SuperValueReceiver<R,B> {
+		R get(B obj);
+	}
 	public static class Binding<D, F> {
 		private final DisplayFunction<D> displayFunction;
 		private final Converter<F, D>    toDisplayConverter;
@@ -82,8 +89,23 @@ public class ReactiveBinder {
 		}
 	}
 
+	public static class SuperBinding<T,M>{
+		private final SuperValueReceiver<T,M> getter;
+		private final DisplayFunction<T> display;
+
+		public SuperBinding(SuperValueReceiver<T, M> getter,
+		                    DisplayFunction<T> display) {
+			this.getter  = getter;
+			this.display = display;
+		}
+
+		public void display(M model){
+			display.displayTypesave(getter.get(model));
+		}
+	}
+
 	public static class BiBinding<M, D> extends Binding<D, M> {
-		private final ValueReceiver<D> reciver;
+		private final ValueReceiver<D> receiver;
 		private final Converter<D, M>  toModelConverter;
 
 		public M convertToModel(Object value) {
@@ -91,7 +113,7 @@ public class ReactiveBinder {
 		}
 
 		public D get() {
-			return reciver.get();
+			return receiver.get();
 		}
 
 		public BiBinding(
@@ -101,7 +123,7 @@ public class ReactiveBinder {
 				Converter<D, M> toModelConverter
 		) {
 			super(display, toDisplayConverter);
-			this.reciver          = reciver;
+			this.receiver         = reciver;
 			this.toModelConverter = toModelConverter;
 		}
 
@@ -109,8 +131,8 @@ public class ReactiveBinder {
 			return toModelConverter;
 		}
 
-		public ValueReceiver<D> getReciver() {
-			return reciver;
+		public ValueReceiver<D> getReceiver() {
+			return receiver;
 		}
 
 		/**
@@ -125,11 +147,15 @@ public class ReactiveBinder {
 	public ReactiveBinder(
 			UpdateFunction update,
 			Map<String, List<Binding<?, ?>>> displayBindings,
+			Map<String, List<SuperBinding<?, L>>> displaySuperBindings,
+			List<SuperBinding<?, L>> globalDisplaySuperBindings,
 			Map<String, List<BiBinding<?, ?>>> editBindings
 	) {
-		this.update          = update;
-		this.displayBindings = displayBindings;
-		this.editBindings    = editBindings;
+		this.update                     = update;
+		this.displayBindings            = displayBindings;
+		this.displaySuperBindings       = displaySuperBindings;
+		this.globalDisplaySuperBindings = globalDisplaySuperBindings;
+		this.editBindings               = editBindings;
 	}
 
 	/**
@@ -182,7 +208,7 @@ public class ReactiveBinder {
 	}
 
 	public <R> void bind(String view, DisplayFunction<R> displayFunction) {
-		bind(view, displayFunction, arg -> (R) arg);
+		bind(view, displayFunction, (R arg) -> arg);
 	}
 
 	/**
@@ -201,6 +227,43 @@ public class ReactiveBinder {
 		List<Binding<?, ?>> funcs = displayBindings.getOrDefault(property, new ArrayList<>());
 		funcs.add(new Binding<>(displayFunction, transformer));
 		displayBindings.put(property, funcs);
+	}
+
+
+	/**
+	 * Binds a getter function to a display function. This getter is supplied with the whole model and therefore can assemble a value.
+	 * <br/>
+	 * For example if the class Person has a name and surename the getter could be {@code (Person p)->p.getName()+p.getSurename()}<br/>
+	 *
+	 * This binding is executed on EVERY change to the model! Due to this being the case, this method is more resource expensive than {@link #bind(SuperValueReceiver, DisplayFunction, String...)} so consider using it instead.
+	 * @param getter a function calculating a value from a reactive object
+	 * @param displayFunction the function to display the value
+	 * @param <D> the type to display
+	 */
+	public <D> void bind(
+			SuperValueReceiver<D,L> getter,
+			DisplayFunction<D> displayFunction
+	){
+		globalDisplaySuperBindings.add(new SuperBinding<>(getter,displayFunction));
+	}
+
+	/**
+	 * Works the same as {@link #bind(SuperValueReceiver, DisplayFunction)} with the minor difference that it only reacts on the change of certain properties
+	 * @param getter the function used to contruct a value from the model
+	 * @param displayFunction the function to display the value
+	 * @param triggers the names of the properties, when changed triggering this binding
+	 * @param <D> the type of the displayed values
+	 */
+	public <D> void bind(
+			SuperValueReceiver<D,L> getter,
+			DisplayFunction<D> displayFunction,
+			String... triggers
+	){
+		for(String trigger : triggers) {
+			List<SuperBinding<?,L>> bindings = displaySuperBindings.getOrDefault(trigger,new ArrayList<>());
+			bindings.add(new SuperBinding<>(getter, displayFunction));
+			displaySuperBindings.put(trigger,bindings);
+		}
 	}
 
 	/**

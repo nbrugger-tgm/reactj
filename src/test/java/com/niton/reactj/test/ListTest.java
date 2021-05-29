@@ -56,6 +56,7 @@ public class ListTest {
 		view.setList(test);
 		assertTrue(test.stream().map(String::valueOf).allMatch(stringList::contains));
 		test.add(9);
+		assertTrue(test.stream().map(String::valueOf).allMatch(stringList::contains));
 		assertEquals(4,stringList.size());
 		assertEquals("9",stringList.get(stringList.size()-1));
 		test.clear();
