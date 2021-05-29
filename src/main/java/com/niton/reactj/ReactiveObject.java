@@ -68,7 +68,7 @@ public class ReactiveObject implements Reactable {
 	public static <C extends ProxySubject> C create(Class<C> type, Object... constructorParams)
 	throws
 	ReactiveException {
-		return (C) createProxy((Class<? extends Object>) type, constructorParams).getObject();
+		return createProxy((Class<? extends C>) type, constructorParams).getObject();
 	}
 
 	private static <C> C constructProxy(Class<C> type,

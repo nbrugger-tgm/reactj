@@ -54,7 +54,7 @@ public class PersonView extends ReactiveView<JPanel, Person> {
 	}
 
 	@Override
-	public void createBindings(ReactiveBinder binder) {
+	public void createBindings(ReactiveBinder<Person> binder) {
 		binder.bindBi("surename", surnameInput::setText, surnameInput::getText);
 		surnameInput.getDocument().addUndoableEditListener(binder::react);
 		//surnameInput.addActionListener(bindings::react);

@@ -31,15 +31,12 @@ public class AnnotationTest {
 
 	private int testDeposit;
 	void testBiBinding() throws Throwable {
-		ReactiveComponent deepComponent = new ReactiveComponent() {
-			@Override
-			public void createBindings(ReactiveBinder binder) {
-				binder.bind("c", v -> cCalled = true);
-				binder.bind("test",v->testCalled = true);
+		ReactiveComponent<ReactiveProxy<DeepBase>> deepComponent = binder -> {
+			binder.bind("c", v -> cCalled = true);
+			binder.bind("test",v->testCalled = true);
 
-				binder.bindBi("c", v -> stringDeposit = v,()->stringDeposit,Integer::parseInt,String::valueOf);
-				binder.bindBi("test",v->testDeposit = v,()->testDeposit);
-			}
+			binder.bindBi("c", v -> stringDeposit = v,()->stringDeposit,Integer::parseInt,String::valueOf);
+			binder.bindBi("test",v->testDeposit = v,()->testDeposit);
 		};
 
 		ReactiveController<ReactiveProxy<DeepBase>> controller = new ReactiveController<>(deepComponent);
@@ -68,9 +65,9 @@ public class AnnotationTest {
 	}
 
 	<M extends Base> void test(ReactiveProxy<M> proxy,boolean a,boolean b,boolean test){
-		ReactiveComponent deepComponent = new ReactiveComponent() {
+		ReactiveComponent<ReactiveProxy<M>> deepComponent = new ReactiveComponent<ReactiveProxy<M>>() {
 			@Override
-			public void createBindings(ReactiveBinder binder) {
+			public void createBindings(ReactiveBinder<ReactiveProxy<M>> binder) {
 				binder.bind("c",v -> cCalled = true);
 				binder.bind("a", v -> aCalled = true);
 				binder.bind("b",v -> bCalled = true);

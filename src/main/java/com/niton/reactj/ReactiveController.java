@@ -2,12 +2,10 @@ package com.niton.reactj;
 
 import com.niton.reactj.ReactiveBinder.BiBinding;
 import com.niton.reactj.ReactiveBinder.Binding;
+import com.niton.reactj.ReactiveBinder.SuperBinding;
 import com.niton.reactj.util.ReactiveComponentUtil;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.niton.reactj.exceptions.ReactiveException.*;
@@ -20,17 +18,21 @@ import static com.niton.reactj.exceptions.ReactiveException.*;
  */
 public final class ReactiveController<M extends Reactable> extends Observer<M> {
 
-	private final Map<String, List<Binding<?, ?>>>   displayBindings = new ConcurrentHashMap<>();
-	private final Map<String, List<BiBinding<?, ?>>> editBindings    = new ConcurrentHashMap<>();
-	private       boolean                            blockReactions;
+	private final Map<String, List<Binding<?, ?>>>               displayBindings            = new ConcurrentHashMap<>();
+	private final Map<String, List<BiBinding<?, ?>>>             editBindings               = new ConcurrentHashMap<>();
+	private final Map<String, List<SuperBinding<?,M>>> displaySuperBindings       = new ConcurrentHashMap<>();
+	private final List<SuperBinding<?,M>>              globalDisplaySuperBindings = new LinkedList<>();
+	private       boolean                                        blockReactions;
 
 	/**
 	 * @param view the view or component to control. Most likely a UI element
 	 */
-	public ReactiveController(ReactiveComponent view) {
+	public ReactiveController(ReactiveComponent<M> view) {
 		//Maybe in the future it is needed to add the view as field
-		ReactiveBinder binder = new ReactiveBinder(this::updateModel,
+		ReactiveBinder<M> binder = new ReactiveBinder<>(this::updateModel,
 		                                           displayBindings,
+		                                           displaySuperBindings,
+		                                           globalDisplaySuperBindings,
 		                                           editBindings);
 		view.createBindings(binder);
 		ReactiveComponentUtil.createAnnotatedBindings(view, binder);
@@ -110,11 +112,12 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 	 * @param value the value the event carries
 	 */
 	private void updateView(final String key, final Object value) {
-		List<Binding<?, ?>> bindings = displayBindings.get(key);
-		if (bindings == null || bindings.isEmpty()) {
-			return;
-		}
+		List<Binding<?, ?>> bindings = displayBindings.getOrDefault(key,Collections.emptyList());
+		List<SuperBinding<?,M>> superBindings = displaySuperBindings.getOrDefault(key,Collections.emptyList());
+		
 		blockReactions = true;
+		superBindings.forEach(e->e.display(getModel()));
+		globalDisplaySuperBindings.forEach(e->e.display(getModel()));
 		bindings.forEach(e -> updateBinding(key, value, e));
 		blockReactions = false;
 	}
