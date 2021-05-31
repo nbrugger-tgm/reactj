@@ -5,6 +5,7 @@ import com.niton.reactj.exceptions.ReactiveException;
 import com.niton.reactj.util.ReactiveReflectorUtil;
 import javassist.util.proxy.MethodHandler;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -19,7 +20,7 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
  *
  * @param <M> The type this Model is going to wrap
  */
-public final class ReactiveProxy<M> implements MethodHandler, Reactable {
+public final class ReactiveProxy<M> implements MethodHandler, Reactable, Serializable {
 	@Unreactive
 	protected final List<Observer<?>> listeners = new ArrayList<>();
 	@Unreactive
