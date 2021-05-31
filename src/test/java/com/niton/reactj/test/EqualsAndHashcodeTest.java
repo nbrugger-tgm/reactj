@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("equals(), hashCod() and serialization")
 public class EqualsAndHashcodeTest {
 	/**
 	 * If this is true also classes without a {@code equals} or {@code hashCode} implementation will be tested

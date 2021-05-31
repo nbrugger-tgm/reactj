@@ -2,6 +2,7 @@ package com.niton.reactj.test;
 
 import com.niton.reactj.special.ListView;
 import com.niton.reactj.special.ReactiveList;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("Reactive Lists")
 public class ListTest {
 	public static class MyListComponent extends ListView<Integer,String,List<String>> {
 		public final List<String> view = new ArrayList<>();
@@ -46,6 +48,7 @@ public class ListTest {
 	}
 
 	@Test
+	@DisplayName("Use Case")
 	void useCase(){
 		ReactiveList<Integer> test = ReactiveList.create(new ArrayList<>());
 		test.add(1);
