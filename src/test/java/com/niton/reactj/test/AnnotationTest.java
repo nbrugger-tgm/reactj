@@ -5,11 +5,13 @@ import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("Annotations")
 public class AnnotationTest {
 	private boolean
 			aCalled = false,
@@ -125,6 +127,7 @@ public class AnnotationTest {
 
 
 	@Test
+	@DisplayName("@ReactiveResolution FLAT")
 	void testFlat(){
 		test(flatProxy,false,false,false);
 		flat.setC(SET3);
@@ -132,6 +135,7 @@ public class AnnotationTest {
 	}
 
 	@Test
+	@DisplayName("@ReactiveResolution DEEP")
 	void testDeep(){
 		test(deepProxy,false,false,true);
 		deep.setC(SET3);
@@ -139,6 +143,7 @@ public class AnnotationTest {
 	}
 
 	@Test
+	@DisplayName("Exception throwing")
 	void errorTesting(){
 		assertThrows(ReactiveException.class, () -> {
 			ReactiveObject.createProxy(FailBase.class);

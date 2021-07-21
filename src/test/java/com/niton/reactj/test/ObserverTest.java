@@ -3,13 +3,16 @@ package com.niton.reactj.test;
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
+import java.util.Collections;
 
 import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.DEEP;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("Observer")
 public class ObserverTest {
 	public String                  lastChanged;
 	public Object                  lastValue;
@@ -18,19 +21,35 @@ public class ObserverTest {
 	public ReactiveProxy<TestData> personProxy   = ReactiveObject.createProxy(TestData.class);
 
 	@Test
+	@DisplayName("Reactive Proxy")
 	public void testProxyObserving() {
 		observerTest(personProxy,ReactiveObject.createProxy(TestData.class));
 	}
 
 	@Test
+	@DisplayName("Reactive Subject Proxy")
 	public void testReactiveSubjectObserving(){
 		SubjectTestData d1 = ReactiveObject.create(SubjectTestData.class);
 		SubjectTestData d2 = ReactiveObject.create(SubjectTestData.class);
 		observerTest(d1,d2);
 	}
 
+	@Test
+	@DisplayName("Reactive Subject method forwarding")
+	public void testReactiveSubjectForwardDomain() throws Exception {
+		SubjectTestData d1 = ReactiveObject.create(SubjectTestData.class);
+		Reactable reactive = d1;
+		reactive.set("id",12);
+		assertEquals(12,d1.getId(),"Call to the reactive part of a Subject should be forwarded");
+		reactive.set("id",15);
+		assertEquals(15,d1.getId(),"Call to the reactive part of a Subject should be forwarded");
+		reactive.set(Collections.singletonMap("c", Color.CYAN));
+		assertEquals(Color.CYAN,d1.getC(),"Call to the reactive part of a Subject should be forwarded");
+	}
+
 
 	@Test
+	@DisplayName("Reactive Subject Proxy (no equals imp.)")
 	public void testNoEqualsReactiveSubjectObserving(){
 		NonEqualSubjectTestData d1 = ReactiveObject.create(NonEqualSubjectTestData.class);
 		NonEqualSubjectTestData d2 = ReactiveObject.create(NonEqualSubjectTestData.class);
@@ -93,6 +112,7 @@ public class ObserverTest {
 	}
 
 	@Test
+	@DisplayName("Argument verification")
 	public void testArgumentVerification(){
 		Observer<ReactiveProxy<TestData>> observer = new Observer<ReactiveProxy<TestData>>() {
 			@Override
@@ -103,6 +123,7 @@ public class ObserverTest {
 	}
 
 	@Test
+	@DisplayName("binding")
 	public void bindingTest(){
 		ReactiveProxy<TestData> proxy = ReactiveObject.createProxy(TestData.class);
 		TestData                td          = proxy.getObject();
@@ -125,8 +146,17 @@ public class ObserverTest {
 	}
 
 	public static class TestData {
-		public int   id;
-		public Color c = Color.RED;
+		protected int id;
+		protected Color c = Color.RED;
+
+		public Color getC() {
+			return c;
+		}
+
+
+		public int getId() {
+			return id;
+		}
 
 		public void setColor(Color c) {
 			this.c = c;
