@@ -90,15 +90,16 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 				System.err.println("[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result. Consider writing a custom equals for \""+self.getClass().getSimpleName()+"\"");
 				return ((ProxySubject) args[0]).getState().equals(((ProxySubject) self).getState());
 			}
+			//if call is not "mocked" by the proxy, just forward to the actual object
 			else if( thisMethod.getDeclaringClass().equals(backend.getClass())){
 				Object res = thisMethod.invoke(backend,args);
-				//if(!(boolean)res) removed because the warning is printed to often and theere was no way to verify if is true (the message)
+				//if(!(boolean)res) removed because the warning is printed to often and there was no way to verify if is true (the message)
 				//	System.err.println("[WARNING] "+backend.getClass().getTypeName()+".equals() implementation should also support subclasses of "+backend.getClass().getTypeName());
 				return res;
 			}
 		}
 		//When methods originates from Proxy Subject
-		if(thisMethod.getDeclaringClass().equals(ProxySubject.class)) {
+		if(methodFromProxySubject(thisMethod,self)) {
 			return forwardProxySubjectCallToMyself(thisMethod, args);
 		}
 		Object  ret   = thisMethod.invoke(backend, args);
@@ -107,6 +108,13 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 			react();
 		}
 		return ret;
+	}
+
+	private boolean methodFromProxySubject(Method thisMethod, Object self) {
+		return  thisMethod.getDeclaringClass().equals(ProxySubject.class)
+				|| (thisMethod.getDeclaringClass().equals(Reactable.class)
+				    && self instanceof ProxySubject
+		        );
 	}
 
 	private Object forwardProxySubjectCallToMyself(Method thisMethod, Object[] args)
