@@ -19,6 +19,8 @@ public class PersonView extends ReactiveView<JPanel, Person> {
 	private JComboBox<Gender> genderJComboBox;
 	private JButton           selectButton;
 	public final EventManager<Person> resetEvent = new EventManager<>();
+	public final EventManager<Person> removeEvent = new EventManager<>();
+	private JButton removeButton;
 
 	public PersonView(Person person) {
 		setData(person);
@@ -33,7 +35,7 @@ public class PersonView extends ReactiveView<JPanel, Person> {
 		iqField = new JTextField();
 		genderJComboBox = new JComboBox<>(Gender.values());
 		selectButton = new JButton("Reset");
-
+		removeButton = new JButton("X");
 
 		panel.add(surnameInput);
 		surnameInput.setColumns(10);
@@ -45,14 +47,14 @@ public class PersonView extends ReactiveView<JPanel, Person> {
 		iqField.setColumns(10);
 
 		panel.add(genderJComboBox);
-
 		panel.add(selectButton);
+		panel.add(removeButton);
 
 		return panel;
 	}
 
 	@Override
-	public void createBindings(ReactiveBinder binder) {
+	public void createBindings(ReactiveBinder<Person> binder) {
 		binder.bindBi("surename", surnameInput::setText, surnameInput::getText);
 		surnameInput.getDocument().addUndoableEditListener(binder::react);
 		//surnameInput.addActionListener(bindings::react);
@@ -80,5 +82,6 @@ public class PersonView extends ReactiveView<JPanel, Person> {
 	@Override
 	protected void registerListeners() {
 		selectButton.addActionListener(e->resetEvent.fire(getModel()));
+		removeButton.addActionListener(e->removeEvent.fire(getModel()));
 	}
 }

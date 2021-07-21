@@ -3,14 +3,15 @@ package com.niton.reactj.examples.CLI;
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.Reactive;
 
+import static com.niton.reactj.examples.CLI.CliApp.*;
+
 public class CliApp {
 
 	public static void main(String[] args) throws InterruptedException {
 		ReactiveProxy<Progress> proxy = ReactiveObject.createProxy(Progress.class);
 		Progress progress = proxy.getObject();
 
-		ReactiveController<ReactiveProxy<Progress>> controller;
-		controller = new ReactiveController<>(new ProgressCli());
+		ReactiveController<ReactiveProxy<Progress>> controller = new ReactiveController<>(new ProgressCli());
 		controller.bind(proxy);
 
 		while (true) {
@@ -36,10 +37,10 @@ public class CliApp {
 }
 
 
-class ProgressCli implements ReactiveComponent {
+class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 
 	@Override
-	public void createBindings(ReactiveBinder binder) {
+	public void createBindings(ReactiveBinder<ReactiveProxy<Progress>> binder) {
 		binder.bind("percent", this::renderProgress);
 		binder.<Double>showIf("percent",this::displayNearlyDone,p -> p>=0.8);
 	}

@@ -10,7 +10,7 @@ import com.niton.reactj.ReactiveController;
  * @param <V> The base class of the view (eg. JPanel)
  * @param <M> The model class for this view
  */
-public abstract class ReactiveView<V, M extends Reactable> implements ReactiveComponent {
+public abstract class ReactiveView<V, M extends Reactable> implements ReactiveComponent<M> {
 	private final ReactiveController<M> controller;
 	private final V                     view;
 

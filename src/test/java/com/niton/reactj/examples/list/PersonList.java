@@ -42,6 +42,7 @@ public class PersonList extends ReactiveListView<JPanel,JPanel, Person> {
 			p.setIq(99);
 			p.setGender(Gender.MALE);
 		});
+		view.removeEvent.listen(getModel()::remove);
 		return view;
 	}
 
