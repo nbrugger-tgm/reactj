@@ -118,21 +118,36 @@ public final class ReactiveReflectorUtil {
 	 */
 	public static void updateField(Object model, String property, Object value) throws Exception {
 		Class<?> type     = model.getClass();
+		Field[]  fields   = getFields(type);
+		Field propField   = findField(property, fields);
+		try {
+			FieldUtils.writeField(propField, model, value, true);
+		} catch (IllegalAccessException e) {
+			throw new ReactiveException("Updating model failed",e);
+		}
+	}
+
+	private static Field[] getFields(Class<?> type) {
 		String   typeName = type.getName();
 		Field[]  fields   = FIELD_CACHE.get(typeName);
-		if (fields == null) {
-			FIELD_CACHE.put(typeName, fields = loadRelevantFields(type));
+		if(fields == null) {
+			fields = loadRelevantFields(type);
+			FIELD_CACHE.put(typeName, fields);
 		}
+		return fields;
+	}
+
+	private static Field findField(String property, Field[] fields) {
+		Field propField = null;
 		for (Field f : fields) {
 			if (getReactiveName(f).equals(property)) {
-				try {
-					FieldUtils.writeField(f, model, value, true);
-				} catch (IllegalAccessException e) {
-					throw new ReactiveException("Updating model failed",e);
-				}
-				return;
+				propField = f;
+				break;
 			}
 		}
+		if(propField == null)
+			throw new NullPointerException("no field with name \""+property+"\" found");
+		return propField;
 	}
 
 	public static Class<?>[] unboxTypes(Class<?>... paramTypes) {
