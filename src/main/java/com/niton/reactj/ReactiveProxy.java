@@ -51,7 +51,7 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 	 *
 	 * @param real the real model behind. will be used as storage and not be directly accessible anymore
 	 */
-	private ReactiveProxy(M real) {
+	public ReactiveProxy(M real) {
 		backend = real;
 	}
 
