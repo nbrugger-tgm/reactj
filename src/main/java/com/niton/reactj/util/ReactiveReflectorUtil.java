@@ -104,8 +104,9 @@ public final class ReactiveReflectorUtil {
 	 * @return the name to be used for this field
 	 */
 	public static String getReactiveName(Field field) {
-		return field.isAnnotationPresent(Reactive.class) ? field.getAnnotation(Reactive.class)
-		                                                .value() : field.getName();
+		return field.isAnnotationPresent(Reactive.class) ?
+				field.getAnnotation(Reactive.class).value() :
+				field.getName();
 	}
 
 	/**
