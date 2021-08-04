@@ -44,18 +44,18 @@ jobs:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
-          
+
       - run:
           name: Setup Code Climate test-reporter
           command: |
             ./cc-test-reporter before-build
-            
+
       # run tests!
       - run:
           name: Run testcases (Gradle)
           command: |
             gradle test
-            
+
       - run:
           name: commit-code-coverage
           command: |

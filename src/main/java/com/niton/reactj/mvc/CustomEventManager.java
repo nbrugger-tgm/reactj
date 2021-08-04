@@ -39,8 +39,8 @@ public abstract class CustomEventManager<E, L> {
 	/**
 	 * Call the listener with the given event
 	 *
-	 * @param listener     the listener to call
-	 * @param event the event to carry over to the listener
+	 * @param listener the listener to call
+	 * @param event    the event to carry over to the listener
 	 */
 	protected abstract void call(L listener, E event);
 }

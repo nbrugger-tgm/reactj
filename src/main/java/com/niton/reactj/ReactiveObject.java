@@ -14,18 +14,18 @@ import static com.niton.reactj.exceptions.ReactiveException.constructorNotFound;
 
 /**
  * The base class to make a Object reactive (usable in ReactiveComponents).
- *
+ * <p>
  * The most common way to use this component is by extending it and call {@link ReactiveObject#react()} whenever needed
  */
 public class ReactiveObject implements Reactable {
 	@Unreactive
-	private final Object store;
-
-	@Unreactive
 	protected final List<Observer<?>> listeners = new ArrayList<>();
+	@Unreactive
+	private final   Object            store;
 
 	/**
 	 * Creates a Reactive Object that forwards calls to the given object
+	 *
 	 * @param obj the object to forward calls to
 	 */
 	public ReactiveObject(Object obj) {
@@ -35,7 +35,7 @@ public class ReactiveObject implements Reactable {
 	/**
 	 * Only use this constructor when extending from this class
 	 */
-	public ReactiveObject(){
+	public ReactiveObject() {
 		store = this;
 	}
 
@@ -84,13 +84,13 @@ public class ReactiveObject implements Reactable {
 			C wrapped;
 			try {
 				wrapped = (C) factory.create(paramTypes, constructorParams, model);
-			} catch (NoSuchMethodException e) {
+			} catch(NoSuchMethodException e) {
 				wrapped = (C) factory.create(unboxedParamTypes, constructorParams, model);
 			}
 			return wrapped;
-		} catch (
-				IllegalAccessException | InstantiationException |
-						InvocationTargetException | NoSuchMethodException e
+		} catch(
+			IllegalAccessException | InstantiationException |
+				InvocationTargetException | NoSuchMethodException e
 		) {
 			throw handle(type, unboxedParamTypes, e);
 		}
@@ -98,14 +98,15 @@ public class ReactiveObject implements Reactable {
 
 	/**
 	 * Deal with the error
+	 *
 	 * @param exception the exception to deal with
 	 */
-	private static <C> ReactiveException handle (
-			Class<C> type,
-			Class<?>[] types,
-			Exception exception
+	private static <C> ReactiveException handle(
+		Class<C> type,
+		Class<?>[] types,
+		Exception exception
 	) throws ReactiveException {
-		if (exception instanceof NoSuchMethodException) {
+		if(exception instanceof NoSuchMethodException) {
 			return constructorNotFound(type, types);
 		} else {
 			return constructionException(type, exception);
@@ -114,32 +115,29 @@ public class ReactiveObject implements Reactable {
 
 
 	private static <C> C tryInstantiation(
-			Class<C> type,
-			Class<?>[] paramTypes,
-			Class<?>[] unboxedParamTypes,
-			Object... parameters
-	) throws ReactiveException{
+		Class<C> type,
+		Class<?>[] paramTypes,
+		Class<?>[] unboxedParamTypes,
+		Object... parameters
+	) throws ReactiveException {
 		try {
-			if (parameters.length == 0) {
+			if(parameters.length == 0) {
 				return type.newInstance();
 			}
 
 			C real;
 			try {
 				real = instanciate(type, paramTypes, parameters);
-			} catch (NoSuchMethodException e) {
+			} catch(NoSuchMethodException e) {
 				//try again with unboxed types
 				real = instanciate(type, unboxedParamTypes, parameters);
 			}
 
 			return real;
-		} catch (
-				InstantiationException | InvocationTargetException |
-						IllegalAccessException | NoSuchMethodException e) {
+		} catch(Exception e) {
 			throw handle(type, unboxedParamTypes, e);
 		}
 	}
-
 
 
 	private static <C> C instanciate(Class<C> type, Class<?>[] types, Object[] params)

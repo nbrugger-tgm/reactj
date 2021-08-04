@@ -28,11 +28,11 @@ public abstract class ListView<M, E, C> implements ReactiveComponent {
 	@Override
 	public void createBindings(ReactiveBinder binder) {
 		ReactiveListModel<M> list = new ReactiveListModel<>(
-				this::convertingAdd,
-				this::remove,
-				(e) -> convertingAdd(size(), e),
-				this::convertingRemove,
-				this::size
+			this::convertingAdd,
+			this::remove,
+			(e) -> convertingAdd(size(), e),
+			this::convertingRemove,
+			this::size
 		);
 		list.bind(binder);
 	}
