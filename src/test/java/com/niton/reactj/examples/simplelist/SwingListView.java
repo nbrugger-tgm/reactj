@@ -5,17 +5,18 @@ import com.niton.reactj.special.ListView;
 import javax.swing.*;
 import java.util.function.Function;
 
-public class SwingListView<M> extends ListView<M, JLabel,JPanel> {
+public class SwingListView<M> extends ListView<M, JLabel, JPanel> {
 	private final DefaultListModel<M> model = new DefaultListModel<>();
 	private final JPanel              view  = new JPanel();
+
 	protected SwingListView(Function<M, JLabel> elementCreator) {
 		super(elementCreator);
 		view.setLayout(new BoxLayout(view, BoxLayout.Y_AXIS));
 	}
 
 	@Override
-	public void add(int index,JLabel model) {
-		view.add(model,index);
+	public void add(int index, JLabel model) {
+		view.add(model, index);
 		view.repaint();
 		view.validate();
 	}

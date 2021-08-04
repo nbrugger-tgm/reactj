@@ -7,15 +7,15 @@ import javax.swing.*;
 
 import static javax.swing.BoxLayout.Y_AXIS;
 
-public class PersonList extends ReactiveListView<JPanel,JPanel, Person> {
-	private JButton                      addButton;
-	private JButton                      removeButton;
-	private JPanel                       list;
+public class PersonList extends ReactiveListView<JPanel, JPanel, Person> {
+	private JButton addButton;
+	private JButton removeButton;
+	private JPanel  list;
 
 	@Override
 	protected void registerListeners() {
 		removeButton.addActionListener(e -> getModel().remove(0));
-		addButton.addActionListener(e -> getModel().add(new Person(12,"Max Musterman")));
+		addButton.addActionListener(e -> getModel().add(new Person(12, "Max Musterman")));
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class PersonList extends ReactiveListView<JPanel,JPanel, Person> {
 		panel.setLayout(new BoxLayout(panel, Y_AXIS));
 		JScrollPane pane = new JScrollPane();
 
-		addButton = new JButton("Add");
+		addButton    = new JButton("Add");
 		removeButton = new JButton("Remove");
 		panel.add(addButton);
 		panel.add(removeButton);

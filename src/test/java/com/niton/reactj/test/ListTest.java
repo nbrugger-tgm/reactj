@@ -10,11 +10,31 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Reactive Lists")
 public class ListTest {
-	public static class MyListComponent extends ListView<Integer,String,List<String>> {
+	@Test
+	@DisplayName("Use Case")
+	void useCase() {
+		ReactiveList<Integer> test = ReactiveList.create(new ArrayList<>());
+		test.add(1);
+		test.add(2);
+		test.add(97);
+		MyListComponent view       = new MyListComponent(Objects::toString);
+		List<String>    stringList = view.getView();
+		view.setList(test);
+		assertTrue(test.stream().map(String::valueOf).allMatch(stringList::contains));
+		test.add(9);
+		assertTrue(test.stream().map(String::valueOf).allMatch(stringList::contains));
+		assertEquals(4, stringList.size());
+		assertEquals("9", stringList.get(stringList.size() - 1));
+		test.clear();
+		assertEquals(0, stringList.size());
+	}
+
+	public static class MyListComponent extends ListView<Integer, String, List<String>> {
 		public final List<String> view = new ArrayList<>();
 
 		protected MyListComponent(Function<Integer, String> elementCreator) {
@@ -38,31 +58,12 @@ public class ListTest {
 
 		@Override
 		public void add(int index, String model) {
-			view.add(index,model);
+			view.add(index, model);
 		}
 
 		@Override
 		public List<String> getView() {
 			return view;
 		}
-	}
-
-	@Test
-	@DisplayName("Use Case")
-	void useCase(){
-		ReactiveList<Integer> test = ReactiveList.create(new ArrayList<>());
-		test.add(1);
-		test.add(2);
-		test.add(97);
-		MyListComponent view = new MyListComponent(Objects::toString);
-		List<String> stringList = view.getView();
-		view.setList(test);
-		assertTrue(test.stream().map(String::valueOf).allMatch(stringList::contains));
-		test.add(9);
-		assertTrue(test.stream().map(String::valueOf).allMatch(stringList::contains));
-		assertEquals(4,stringList.size());
-		assertEquals("9",stringList.get(stringList.size()-1));
-		test.clear();
-		assertEquals(0,stringList.size());
 	}
 }

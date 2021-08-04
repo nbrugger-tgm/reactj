@@ -8,7 +8,8 @@ import com.niton.reactj.util.ReactiveComponentUtil;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.niton.reactj.exceptions.ReactiveException.*;
+import static com.niton.reactj.exceptions.ReactiveException.badConverterException;
+import static com.niton.reactj.exceptions.ReactiveException.bindingException;
 
 /**
  * A reactive controller is responsible to communicate changes between ReactableObjects and ReactiveComponents.<br>
@@ -18,11 +19,11 @@ import static com.niton.reactj.exceptions.ReactiveException.*;
  */
 public final class ReactiveController<M extends Reactable> extends Observer<M> {
 
-	private final Map<String, List<Binding<?, ?>>>               displayBindings            = new ConcurrentHashMap<>();
-	private final Map<String, List<BiBinding<?, ?>>>             editBindings               = new ConcurrentHashMap<>();
-	private final Map<String, List<SuperBinding<?,M>>> displaySuperBindings       = new ConcurrentHashMap<>();
-	private final List<SuperBinding<?,M>>              globalDisplaySuperBindings = new LinkedList<>();
-	private       boolean                                        blockReactions;
+	private final Map<String, List<Binding<?, ?>>>      displayBindings            = new ConcurrentHashMap<>();
+	private final Map<String, List<BiBinding<?, ?>>>    editBindings               = new ConcurrentHashMap<>();
+	private final Map<String, List<SuperBinding<?, M>>> displaySuperBindings       = new ConcurrentHashMap<>();
+	private final List<SuperBinding<?, M>>              globalDisplaySuperBindings = new LinkedList<>();
+	private       boolean                               blockReactions;
 
 	/**
 	 * @param view the view or component to control. Most likely a UI element
@@ -30,17 +31,47 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 	public ReactiveController(ReactiveComponent<M> view) {
 		//Maybe in the future it is needed to add the view as field
 		ReactiveBinder<M> binder = new ReactiveBinder<>(this::updateModel,
-		                                           displayBindings,
-		                                           displaySuperBindings,
-		                                           globalDisplaySuperBindings,
-		                                           editBindings);
+		                                                displayBindings,
+		                                                displaySuperBindings,
+		                                                globalDisplaySuperBindings,
+		                                                editBindings);
 		view.createBindings(binder);
 		ReactiveComponentUtil.createAnnotatedBindings(view, binder);
 	}
 
 	/**
+	 * Triggers a binding
+	 *
+	 * @param key     the name of the binding to trigger
+	 * @param value   the value to pass to the binding
+	 * @param binding the binding to call
+	 */
+	private static void updateBinding(String key, Object value, Binding<?, ?> binding) {
+		Object converted;
+		try {
+			converted = binding.getToDisplayConverter().convert(value);
+		} catch(ClassCastException ex) {
+			throw badConverterException(key, value.getClass());
+		}
+
+		if(binding instanceof BiBinding) {
+			//ignore change when the value is already present
+			Object present = ((BiBinding<?, ?>) binding).getReceiver().get();
+			if(present.equals(value)) {
+				return;
+			}
+		}
+		try {
+			binding.getDisplayFunction().display(converted);
+		} catch(ClassCastException ex) {
+			throw bindingException(key, value, converted, ex);
+		}
+	}
+
+	/**
 	 * Pulls all changes from the ReactiveComponent (connected by {@link ReactiveBinder#bindBi(String, ReactiveBinder.DisplayFunction, ReactiveBinder.ValueReceiver)}) and applies them to the model.
 	 * If everything is done right this method is called automatically, and there is no need to call this by yourself
+	 *
 	 * @throws Throwable if there is some reflection problems
 	 */
 	public void updateModel() throws Throwable {
@@ -49,15 +80,16 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 
 	/**
 	 * Pulls changes from the Component to the Model
+	 *
 	 * @param unused not used, only present so one can use this method as method reference as listener
 	 */
 	private void updateModel(Object unused) {
-		if (blockReactions) {
+		if(blockReactions) {
 			return;
 		}
 		Map<String, Object> changed = findUiChanges();
 
-		if (!changed.isEmpty()) {
+		if(!changed.isEmpty()) {
 			M model = getModel();
 			model.set(changed);
 			model.react();
@@ -73,8 +105,8 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 	private Map<String, Object> findUiChanges() {
 		Map<String, Object> changed = new HashMap<>();
 		Map<String, Object> state   = getModel().getState();
-		for (Map.Entry<String, Object> field : state.entrySet()) {
-			if (!editBindings.containsKey(field.getKey())) {
+		for(Map.Entry<String, Object> field : state.entrySet()) {
+			if(!editBindings.containsKey(field.getKey())) {
 				continue;
 			}
 			findBindingChanges(changed, field.getKey(), field.getValue());
@@ -90,20 +122,19 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 	 * @param oldValue the value to compare against to find a change
 	 */
 	private void findBindingChanges(
-			Map<String, Object> changed,
-			String field,
-			Object oldValue
+		Map<String, Object> changed,
+		String field,
+		Object oldValue
 	) {
 		List<BiBinding<?, ?>> editBind = editBindings.get(field);
-		for (BiBinding<?, ?> biBinding : editBind) {
+		for(BiBinding<?, ?> biBinding : editBind) {
 			Object bindingVal = biBinding.getModelConverted();
-			if (!Objects.equals(bindingVal, oldValue)) {
+			if(!Objects.equals(bindingVal, oldValue)) {
 				changed.put(field, bindingVal);
 				break;
 			}
 		}
 	}
-
 
 	/**
 	 * Sends a signal to all bindings with the regarding key
@@ -112,44 +143,17 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 	 * @param value the value the event carries
 	 */
 	private void updateView(final String key, final Object value) {
-		List<Binding<?, ?>> bindings = displayBindings.getOrDefault(key,Collections.emptyList());
-		List<SuperBinding<?,M>> superBindings = displaySuperBindings.getOrDefault(key,Collections.emptyList());
-		
+		List<Binding<?, ?>> bindings = displayBindings.getOrDefault(key,
+		                                                            Collections.emptyList());
+		List<SuperBinding<?, M>> superBindings = displaySuperBindings.getOrDefault(key,
+		                                                                           Collections.emptyList());
+
 		blockReactions = true;
-		superBindings.forEach(e->e.display(getModel()));
-		globalDisplaySuperBindings.forEach(e->e.display(getModel()));
+		superBindings.forEach(e -> e.display(getModel()));
+		globalDisplaySuperBindings.forEach(e -> e.display(getModel()));
 		bindings.forEach(e -> updateBinding(key, value, e));
 		blockReactions = false;
 	}
-
-	/**
-	 * Triggers a binding
-	 * @param key the name of the binding to trigger
-	 * @param value the value to pass to the binding
-	 * @param binding the binding to call
-	 */
-	private static void updateBinding(String key, Object value, Binding<?, ?> binding) {
-		Object converted;
-		try {
-			converted = binding.getToDisplayConverter().convert(value);
-		} catch (ClassCastException ex) {
-			throw badConverterException(key, value.getClass());
-		}
-
-		if (binding instanceof BiBinding) {
-			//ignore change when the value is already present
-			Object present = ((BiBinding<?, ?>) binding).getReceiver().get();
-			if (present.equals(value)) {
-				return;
-			}
-		}
-		try {
-			binding.getDisplayFunction().display(converted);
-		} catch (ClassCastException ex) {
-			throw bindingException(key, value, converted, ex);
-		}
-	}
-
 
 	@Override
 	public void onChange(String property, Object value) {

@@ -4,7 +4,6 @@ import com.niton.reactj.Reactable;
 import com.niton.reactj.ReactiveBinder;
 import com.niton.reactj.mvc.ReactiveView;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,8 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <E> the data type of the list (eg. Person)
  */
 public abstract class ReactiveListView
-		<V, C, E extends Reactable & Identity<?>>
-		extends ReactiveView<V, ReactiveList<E>> {
+	<V, C, E extends Reactable & Identity<?>>
+	extends ReactiveView<V, ReactiveList<E>> {
 
 	private final Map<Object, C> viewMap = new ConcurrentHashMap<>();
 
@@ -25,11 +24,11 @@ public abstract class ReactiveListView
 	@Override
 	public void createBindings(ReactiveBinder binder) {
 		ReactiveListModel<E> model = new ReactiveListModel<>(
-				this::addElement,
-				this::removeFromIndex,
-				(e) -> addElement(size(), e),
-				this::remove,
-				this::size
+			this::addElement,
+			this::removeFromIndex,
+			(e) -> addElement(size(), e),
+			this::remove,
+			this::size
 		);
 		model.bind(binder);
 	}

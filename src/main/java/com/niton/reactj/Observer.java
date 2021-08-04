@@ -57,7 +57,7 @@ public abstract class Observer<M extends Reactable> {
 	 * @param changed the values that changed and will be changed on the UI
 	 */
 	public void update(Map<String, Object> changed) {
-		for (Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
+		for(Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
 			onChange(stringObjectEntry.getKey(), stringObjectEntry.getValue());
 		}
 	}
@@ -70,7 +70,7 @@ public abstract class Observer<M extends Reactable> {
 	private Map<String, Object> getChanges() {
 		final Map<String, Object> changed = new ConcurrentHashMap<>();
 		final Map<String, Object> state   = model.getState();
-		for (String property : state.keySet()) {
+		for(String property : state.keySet()) {
 			detectChange(changed, property, state.get(property));
 		}
 		return changed;
@@ -85,7 +85,7 @@ public abstract class Observer<M extends Reactable> {
 	 */
 	private void detectChange(Map<String, Object> changed, String property, Object currentValue) {
 		Object oldValue = valueCache.get(property);
-		if (!Objects.equals(currentValue, oldValue)) {
+		if(!Objects.equals(currentValue, oldValue)) {
 			valueCache.put(property, currentValue);
 			changed.put(property, currentValue);
 		}
@@ -98,17 +98,17 @@ public abstract class Observer<M extends Reactable> {
 	 * @param model the model to display for this controller (its UI)
 	 */
 	public void bind(M model) {
-		if (model == null) {
+		if(model == null) {
 			throw new IllegalArgumentException("Cannot bind to null");
 		}
-		if (this.model != null) {
+		if(this.model != null) {
 			this.model.unbind(this);
 		}
 		model.bind(this);
 		this.model = model;
 
 		//This is kind of propritary and is subject to change
-		if (model instanceof ReactiveList) {
+		if(model instanceof ReactiveList) {
 			model.react(ListActions.INIT.id(), model);
 		} else {
 			update();

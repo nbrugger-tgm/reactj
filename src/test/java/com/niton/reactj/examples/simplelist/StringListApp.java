@@ -15,7 +15,7 @@ public class StringListApp {
 		frame.setLayout(new GridLayout());
 
 		SwingListView<String> view = new SwingListView<>(
-				(s) -> new ClickableListEntry(s,someArray::remove)
+			(s) -> new ClickableListEntry(s, someArray::remove)
 		);
 		view.setList(someArray);
 
@@ -25,7 +25,7 @@ public class StringListApp {
 
 		//Modifiying List to see change
 		int i = 0;
-		while (true){
+		while(true) {
 			Thread.sleep(1000);
 			someArray.add(Integer.toString(i++));
 		}

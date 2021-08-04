@@ -14,37 +14,24 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
 
 /**
  * A proxy providing automatic reacting to method calls.
- *
+ * <p>
  * This is used to make objects reactive that are not reactive by default and therefore be able
  * to use them in ReactiveComponents
  *
  * @param <M> The type this Model is going to wrap
  */
 public final class ReactiveProxy<M> implements MethodHandler, Reactable, Serializable {
+	private static final String            equalsWarning = "[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result. Consider writing a custom equals for \"%s\"";
 	@Unreactive
-	protected final List<Observer<?>> listeners = new ArrayList<>();
+	protected final      List<Observer<?>> listeners     = new ArrayList<>();
 	@Unreactive
-	private final   M                 backend;
+	private final        M                 backend;
 	@Unreactive
-	private         M                 proxy;
+	private              M                 proxy;
 	@Unreactive
-	private         ReactiveStrategy  strategy  = REACT_ON_SETTER;
+	private              ReactiveStrategy  strategy      = REACT_ON_SETTER;
 	@Unreactive
-	private         String[]          reactToList;
-
-	/**
-	 * This returns the mutable Objects.
-	 *
-	 * <br/><b>Calls to this object will be reacted to!</b>
-	 * @return the reactive object
-	 */
-	public M getObject() {
-		return proxy;
-	}
-
-	void setProxy(M proxy){
-		this.proxy = proxy;
-	}
+	private              String[]          reactToList;
 
 	/**
 	 * Creates a proxy forwarding Reactive calls to 'real'
@@ -55,12 +42,49 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 		backend = real;
 	}
 
+	/**
+	 * Create a new ReactiveProxy from a certain class.
+	 * <p>
+	 * A Proxy manages reactivity automatically. So no need to extend ReactiveObject.<br>
+	 * This function uses the constructor of the given type. So the type <b>MUST</b> have an accessible constructor. The constructor is allowed to have arguments
+	 *
+	 * @param type            The type the ReactiveProxy should emulate (eg. Person.class)
+	 * @param constructorArgs the arguments to pass to the constructor
+	 * @param <M>             the type the Proxy will emulate
+	 * @return the created proxy
+	 */
+	public static <M> ReactiveProxy<M> createProxy(Class<M> type, Object... constructorArgs) {
+		return ReactiveObject.createProxy(type, constructorArgs);
+	}
+
+	public static <C extends ProxySubject> C create(Class<C> type, Object... constructorParams)
+	throws
+	ReactiveException {
+		return ReactiveObject.create(type, constructorParams);
+	}
+
+	/**
+	 * This returns the mutable Objects.
+	 * <p>
+	 * <br/><b>Calls to this object will be reacted to!</b>
+	 *
+	 * @return the reactive object
+	 */
+	public M getObject() {
+		return proxy;
+	}
+
+	void setProxy(M proxy) {
+		this.proxy = proxy;
+	}
+
 	public ReactiveStrategy getStrategy() {
 		return strategy;
 	}
 
 	/**
 	 * Set the strategy on how to react to method changes (only has an effect on proxies created by {@link #create(Class, Object...)})
+	 *
 	 * @param strategy the startegy to use
 	 */
 	public void setStrategy(ReactiveStrategy strategy) {
@@ -73,6 +97,7 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 
 	/**
 	 * Set the methods names to react to when using {@link ReactiveStrategy#REACT_ON_CUSTOM}
+	 *
 	 * @param reactTo a list of method names to react to
 	 */
 	public void reactTo(String... reactTo) {
@@ -84,48 +109,61 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 	throws InvocationTargetException, IllegalAccessException {
 		thisMethod.setAccessible(true);
 		//When equals is called with ProxySubject as parameter and called on a subject proxy -> ps.equals(otherPs)
-		if(thisMethod.getName().equals("equals") && args[0] instanceof ProxySubject && self instanceof ProxySubject){
-			//only prevent the default Object implemetation. If the user overwrote `equals` this should not kick in
-			if(thisMethod.getDeclaringClass().equals(Object.class)){
-				System.err.println("[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result. Consider writing a custom equals for \""+self.getClass().getSimpleName()+"\"");
-				return ((ProxySubject) args[0]).getState().equals(((ProxySubject) self).getState());
-			}
-			//if call is not "mocked" by the proxy, just forward to the actual object
-			else if( thisMethod.getDeclaringClass().equals(backend.getClass())){
-				Object res = thisMethod.invoke(backend,args);
-				//if(!(boolean)res) removed because the warning is printed to often and there was no way to verify if is true (the message)
-				//	System.err.println("[WARNING] "+backend.getClass().getTypeName()+".equals() implementation should also support subclasses of "+backend.getClass().getTypeName());
-				return res;
+		if(
+			thisMethod.getName().equals("equals") &&
+				args[0] instanceof ProxySubject &&
+				self instanceof ProxySubject
+		) {
+			Object o = handleEquals(self, thisMethod, args);
+			if(o != null) {
+				return o;
 			}
 		}
 		//When methods originates from Proxy Subject
-		if(methodFromProxySubject(thisMethod,self)) {
-			return forwardProxySubjectCallToMyself(thisMethod, args);
+		if(originatesFromPSubject(thisMethod, self)) {
+			return forwardPSubjectCallToMyself(thisMethod, args);
 		}
-		Object  ret   = thisMethod.invoke(backend, args);
-		boolean react = strategy.reactTo(thisMethod.getName(), reactToList);
-		if (react) {
+		Object returnValue = thisMethod.invoke(backend, args);
+
+		if(strategy.reactTo(thisMethod.getName(), reactToList)) {
 			react();
 		}
-		return ret;
+
+		return returnValue;
 	}
 
-	private boolean methodFromProxySubject(Method thisMethod, Object self) {
-		return  thisMethod.getDeclaringClass().equals(ProxySubject.class)
-				|| (thisMethod.getDeclaringClass().equals(Reactable.class)
-				    && self instanceof ProxySubject
-		        );
+	private Object handleEquals(Object self, Method thisMethod, Object[] args)
+	throws IllegalAccessException, InvocationTargetException {
+		// only prevent the default Object implemetation.
+		// If the user overwrote `equals` this should not kick in
+		if(thisMethod.getDeclaringClass().equals(Object.class)) {
+			System.err.printf(equalsWarning + "%n", self.getClass().getSimpleName());
+			return ((ProxySubject) args[0]).getState().equals(((ProxySubject) self).getState());
+		}
+		//if call is not "mocked" by the proxy, just forward to the actual object
+		if(thisMethod.getDeclaringClass().equals(backend.getClass())) {
+			// System.err.println("[WARNING] "+backend.getClass().getTypeName()+".equals()
+			// implementation should also support subclasses of "+backend.getClass().getTypeName());
+			return thisMethod.invoke(backend, args);
+		}
+		return null;
 	}
 
-	private Object forwardProxySubjectCallToMyself(Method thisMethod, Object[] args)
+	private boolean originatesFromPSubject(Method thisMethod, Object self) {
+		return thisMethod.getDeclaringClass().equals(ProxySubject.class)
+			|| (thisMethod.getDeclaringClass().equals(Reactable.class)
+			&& self instanceof ProxySubject
+		);
+	}
+
+	private Object forwardPSubjectCallToMyself(Method thisMethod, Object[] args)
 	throws InvocationTargetException, IllegalAccessException {
 		try {
-			return ReactiveProxy.class.getMethod(thisMethod.getName(),thisMethod.getParameterTypes()).invoke(this, args);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-			System.err.println("This should never be executed, contact the developer");
-			return null;
+			return ReactiveProxy.class.getMethod(thisMethod.getName(),
+			                                     thisMethod.getParameterTypes()).invoke(this, args);
+		} catch(NoSuchMethodException e) {
 			//No way this happens
+			throw new ReactiveException("unexpected failure", e);
 		}
 	}
 
@@ -162,26 +200,5 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 	@Override
 	public void unbindAll() {
 		listeners.clear();
-	}
-
-	/**
-	 * Create a new ReactiveProxy from a certain class.
-	 *
-	 * A Proxy manages reactivity automatically. So no need to extend ReactiveObject.<br>
-	 *     This function uses the constructor of the given type. So the type <b>MUST</b> have an accessible constructor. The constructor is allowed to have arguments
-	 *
-	 * @param type The type the ReactiveProxy should emulate (eg. Person.class)
-	 * @param constructorArgs the arguments to pass to the constructor
-	 * @param <M> the type the Proxy will emulate
-	 * @return the created proxy
-	 */
-	public static<M> ReactiveProxy<M> createProxy(Class<M> type, Object... constructorArgs){
-		return ReactiveObject.createProxy(type, constructorArgs);
-	}
-
-	public static <C extends ProxySubject> C create(Class<C> type, Object... constructorParams)
-	throws
-	ReactiveException {
-		return ReactiveObject.create(type,constructorParams);
 	}
 }

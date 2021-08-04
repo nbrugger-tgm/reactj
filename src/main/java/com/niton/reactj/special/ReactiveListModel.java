@@ -26,11 +26,11 @@ public class ReactiveListModel<E> {
 	 * Creates a list model that does supports index based adding
 	 */
 	public ReactiveListModel(
-			IndexAdder<E> intAdder,
-			IndexRemover intRemover,
-			Adder<E> adder,
-			Remover<E> remover,
-			IntSupplier size
+		IndexAdder<E> intAdder,
+		IndexRemover intRemover,
+		Adder<E> adder,
+		Remover<E> remover,
+		IntSupplier size
 	) {
 		this.adder      = adder;
 		this.remover    = remover;
@@ -80,7 +80,7 @@ public class ReactiveListModel<E> {
 		});
 		binder.bind(CLEAR.id(),
 		            e -> {
-			            while (size.getAsInt() > 0) {
+			            while(size.getAsInt() > 0) {
 				            intRemover.remove(0);
 			            }
 		            }

@@ -3,22 +3,23 @@ package com.niton.reactj.examples.CLI;
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.Reactive;
 
-import static com.niton.reactj.examples.CLI.CliApp.*;
+import static com.niton.reactj.examples.CLI.CliApp.Progress;
 
 public class CliApp {
 
 	public static void main(String[] args) throws InterruptedException {
-		ReactiveProxy<Progress> proxy = ReactiveObject.createProxy(Progress.class);
-		Progress progress = proxy.getObject();
+		ReactiveProxy<Progress> proxy    = ReactiveObject.createProxy(Progress.class);
+		Progress                progress = proxy.getObject();
 
 		ReactiveController<ReactiveProxy<Progress>> controller = new ReactiveController<>(new ProgressCli());
 		controller.bind(proxy);
 
-		while (true) {
-			Thread.sleep((long) (Math.random()*70));
+		while(true) {
+			Thread.sleep((long) (Math.random() * 70));
 			progress.setProgress((progress.getProgress() + 0.001));
-			if(progress.getProgress() >= 1)
+			if(progress.getProgress() >= 1) {
 				return;
+			}
 		}
 	}
 
@@ -42,20 +43,21 @@ class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 	@Override
 	public void createBindings(ReactiveBinder<ReactiveProxy<Progress>> binder) {
 		binder.bind("percent", this::renderProgress);
-		binder.<Double>showIf("percent",this::displayNearlyDone,p -> p>=0.8);
+		binder.<Double>showIf("percent", this::displayNearlyDone, p -> p >= 0.8);
 	}
 
 	private void displayNearlyDone(Boolean condition) {
-		if(condition)
+		if(condition) {
 			System.out.print("  !Nearly done!");
+		}
 	}
 
 	private void renderProgress(double percent) {
 		int width = 70;
-		int done = (int) (percent * width);
+		int done  = (int) (percent * width);
 		System.out.print("\r");
 		System.out.print('[');
-		for (int i = 0; i < width; i++) {
+		for(int i = 0; i < width; i++) {
 			System.out.print(i < done ? "█" : (i == done ? '>' : ' '));
 		}
 		System.out.print(']');

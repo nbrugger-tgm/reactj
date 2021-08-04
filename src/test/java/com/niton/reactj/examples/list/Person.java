@@ -1,11 +1,11 @@
 package com.niton.reactj.examples.list;
 
-import com.niton.reactj.special.Identity;
 import com.niton.reactj.ReactiveObject;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.examples.swing.Gender;
+import com.niton.reactj.special.Identity;
 
 import java.util.Objects;
 
@@ -13,7 +13,8 @@ import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.
 
 
 @ReactivResolution(FLAT)//optional
-public class Person extends ReactiveObject implements Identity<String>{//Identity is needed for list items
+public class Person extends ReactiveObject
+	implements Identity<String> {//Identity is needed for list items
 	public static int ID = 0;
 	private final int id = ID++;
 
@@ -29,7 +30,7 @@ public class Person extends ReactiveObject implements Identity<String>{//Identit
 	private String address;
 
 	public Person(int age, String name) {
-		this.age = age;
+		this.age  = age;
 		this.name = name;
 	}
 
@@ -83,20 +84,20 @@ public class Person extends ReactiveObject implements Identity<String>{//Identit
 
 	@Override
 	public String getID() {
-		return name+address;
+		return name + address;
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Person)) return false;
+		if(this == o) return true;
+		if(!(o instanceof Person)) return false;
 		Person person = (Person) o;
 		return age == person.age && iq == person.iq && name.equals(person.name) && gender == person.gender && Objects
-				.equals(address, person.address) && Objects.equals(id,person.id);
+			.equals(address, person.address) && Objects.equals(id, person.id);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(age, name, iq, gender, address,id);
+		return Objects.hash(age, name, iq, gender, address, id);
 	}
 }
