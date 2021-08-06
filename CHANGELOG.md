@@ -1,3 +1,9 @@
+## v3.1.0b3 (2021-08-06)
+
+### Feat
+
+- implement "live object proxies"
+
 ## v3.1.0b2 (2021-07-21)
 
 ### Fix
