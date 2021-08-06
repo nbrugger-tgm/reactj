@@ -227,8 +227,8 @@ public class ReactiveBinder<L> {
 			DisplayFunction<D> displayFunctions,
 			Converter<F, D> convertToDisplay
 		) {
-			this.displayFunction = displayFunctions;
-			toDisplayConverter   = convertToDisplay;
+			displayFunction    = displayFunctions;
+			toDisplayConverter = convertToDisplay;
 		}
 
 		public D convertToDisplay(Object value) {
@@ -274,7 +274,7 @@ public class ReactiveBinder<L> {
 			Converter<D, M> toModelConverter
 		) {
 			super(display, toDisplayConverter);
-			this.receiver         = reciver;
+			receiver              = reciver;
 			this.toModelConverter = toModelConverter;
 		}
 

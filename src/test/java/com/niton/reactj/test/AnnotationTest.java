@@ -29,7 +29,7 @@ public class AnnotationTest {
 		bCalled    = false,
 		cCalled    = false,
 		testCalled = false;
-	
+
 	private String stringDeposit;
 
 	private int testDeposit;
@@ -254,6 +254,5 @@ public class AnnotationTest {
 		private FailBase(int wrong) {
 		}
 
-		;
 	}
 }

@@ -65,21 +65,24 @@ public class ReactiveObject implements Reactable {
 	 * @throws IllegalArgumentException if {@code type} is abstract or an interface
 	 */
 	private static <C> void checkInstantiatable(Class<C> type) {
-		if(type.isInterface())
+		if(type.isInterface()) {
 			throw new IllegalArgumentException(
 				String.format("\"%s\" is an interface and not instantiatable", type.getSimpleName())
 			);
-		if(Modifier.isAbstract(type.getModifiers()))
+		}
+		if(Modifier.isAbstract(type.getModifiers())) {
 			throw new IllegalArgumentException(
 				String.format(
 					"\"%s\" is an abstract class and therefore not instantiatable",
 					type.getSimpleName()
 				)
 			);
+		}
 	}
 
 	/**
 	 * alias to {@link ReactiveProxy#create(Class, Object...)}
+	 *
 	 * @see ReactiveProxy#create(Class, Object...)
 	 */
 	public static <C extends ProxySubject> C create(Class<C> type, Object... constructorParams)
@@ -90,6 +93,7 @@ public class ReactiveObject implements Reactable {
 
 	/**
 	 * Creates a proxy similar to {@link ReactiveProxy#create(Class, Object...)} but from a "live" object
+	 *
 	 * @param original the object to create the proxy for
 	 * @return the wrapped object
 	 */
@@ -99,9 +103,10 @@ public class ReactiveObject implements Reactable {
 
 	/**
 	 * Creates a proxy similar to {@link ReactiveProxy#createProxy(Class, Object...)} but from a "live object instead of creating a new one
-	 * @param original the object to wrap with the proxy
+	 *
+	 * @param original          the object to wrap with the proxy
 	 * @param constructorParams the parameters for the construction of the proxy. (must match a constructor from {@code <C>}
-	 * @param <C> the type to create the proxy for
+	 * @param <C>               the type to create the proxy for
 	 * @return a reactive proxy covering the original object
 	 */
 	public static <C> ReactiveProxy<C> wrap(C original, Object... constructorParams) {
@@ -110,9 +115,10 @@ public class ReactiveObject implements Reactable {
 
 	/**
 	 * tries to wrap a live object
-	 * @param original the object to wrap
+	 *
+	 * @param original          the object to wrap
 	 * @param constructorParams parameters used to create proxy
-	 * @param <C> the type of the object to wrap
+	 * @param <C>               the type of the object to wrap
 	 * @return the wraped object as proxy
 	 */
 	private static <C> ReactiveProxy<C> innerWrap(C original, Object... constructorParams) {
@@ -141,7 +147,6 @@ public class ReactiveObject implements Reactable {
 		model.setProxy(wrapped);
 		return model;
 	}
-
 
 
 	private static <C> C constructProxy(Class<C> type,
