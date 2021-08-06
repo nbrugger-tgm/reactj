@@ -57,10 +57,38 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 		return ReactiveObject.createProxy(type, constructorArgs);
 	}
 
+	/**
+	 * Works similar ro {@link #createProxy(Class, Object...)} but takes advantage over "Pseudo Proxies" (https://github.com/nbrugger-tgm/reactj/issues/31)<br>
+	 * Described more detailed here : https://github.com/nbrugger-tgm/reactj/wiki/Models#proxysubject
+	 * @param type the class to create a proxy for
+	 * @param constructorParams constructor parameters used to build the object
+	 * @param <C> the type of the object to create a proxy for
+	 * @return an instance of {@code <C>} but within a proxy
+	 * @throws ReactiveException if stuff goes wrong, many things can cause this. Mostly reflective missfunction
+	 */
 	public static <C extends ProxySubject> C create(Class<C> type, Object... constructorParams)
 	throws
 	ReactiveException {
 		return ReactiveObject.create(type, constructorParams);
+	}
+	/**
+	 * Creates a proxy similar to {@link ReactiveProxy#create(Class, Object...)} but from a "live" object
+	 * @param original the object to create the proxy for
+	 * @return the wrapped object
+	 */
+	public static <C extends ProxySubject> C wrap(C original, Object... constructorParams) {
+		return ReactiveObject.wrap(original, constructorParams);
+	}
+
+	/**
+	 * Creates a proxy similar to {@link ReactiveProxy#createProxy(Class, Object...)} but from a "live object instead of creating a new one
+	 * @param original the object to wrap with the proxy
+	 * @param constructorParams the parameters for the construction of the proxy. (must match a constructor from {@code <C>}
+	 * @param <C> the type to create the proxy for
+	 * @return a reactive proxy covering the original object
+	 */
+	public static <C> ReactiveProxy<C> wrap(C original, Object... constructorParams) {
+		return ReactiveObject.wrap(original, constructorParams);
 	}
 
 	/**
