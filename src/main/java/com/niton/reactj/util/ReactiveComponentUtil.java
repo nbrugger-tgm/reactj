@@ -4,9 +4,12 @@ import com.niton.reactj.ReactiveBinder;
 import com.niton.reactj.ReactiveComponent;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
+import com.niton.reactj.annotation.ReactiveListener;
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.special.ReactiveList;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -31,30 +34,39 @@ public final class ReactiveComponentUtil {
 		boolean searchSuperClasses = resolution != null && resolution.value() == DEEP;
 		Method[] methods = MethodUtils.getMethodsWithAnnotation(
 			viewClass,
-			Reactive.class,
+			ReactiveListener.class,
 			searchSuperClasses,
-			true);
+			true
+		);
+
 		for(Method method : methods) {
 			processAnnotatedMethod(component, binder, method);
 		}
 	}
 
+	/**
+	 * Attaches an annotated method to the reactive binder (uno-direction)
+	 * @param component the component instance the method originates from
+	 * @param binder the binder to bind the method to
+	 * @param method the method to bind
+	 */
 	private static void processAnnotatedMethod(ReactiveComponent<?> component,
 	                                           ReactiveBinder<?> binder,
 	                                           Method method) {
 		if(method.getParameterTypes().length > 1) {
 			throw new ReactiveException(
-				String.format("@Reactive method %s has more than one parameter", method)
+				String.format("@ReactiveListener method '%s' has more than one parameter", method)
 			);
 		}
 
-		String mapTarget = method.getAnnotation(Reactive.class).value();
+		String mapTarget = method.getAnnotation(ReactiveListener.class).value();
 		binder.bind(mapTarget, (val) -> dynamicCall(component, method, val));
 	}
 
-	private static void dynamicCall(ReactiveComponent component, Method method, Object val) {
+	private static void dynamicCall(ReactiveComponent<?> component, Method method, Object val) {
 		try {
-			method.setAccessible(true);
+			if(!method.isAccessible())
+				method.setAccessible(true);
 			if(method.getParameterTypes().length == 1) {
 				Class<?> paramType = method.getParameterTypes()[0];
 				if(!ReactiveReflectorUtil.isFitting(val, paramType)) {
