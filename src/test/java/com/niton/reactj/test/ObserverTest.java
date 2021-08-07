@@ -22,18 +22,18 @@ public class ObserverTest {
 	@Test
 	@DisplayName("Live Object Reactive Proxy")
 	public void testLiveProxyObserving() {
-		TestData td = new TestData();
-		TestData td2 = new TestData();
+		TestData                td   = new TestData();
+		TestData                td2  = new TestData();
 		ReactiveProxy<TestData> rtd1 = ReactiveObject.wrap(td);
 		ReactiveProxy<TestData> rtd2 = ReactiveObject.wrap(td2);
- 		observerTest(rtd1, rtd2);
+		observerTest(rtd1, rtd2);
 	}
 
 	@Test
 	@DisplayName("Live Object Subject Proxy")
 	public void testLiveProxySubjectObserving() {
-		SubjectTestData td = new SubjectTestData();
-		SubjectTestData td2 = new SubjectTestData();
+		SubjectTestData td   = new SubjectTestData();
+		SubjectTestData td2  = new SubjectTestData();
 		SubjectTestData rtd1 = ReactiveObject.wrap(td);
 		SubjectTestData rtd2 = ReactiveObject.wrap(td2);
 		observerTest(rtd1, rtd2);

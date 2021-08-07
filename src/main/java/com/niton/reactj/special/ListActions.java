@@ -16,7 +16,7 @@ public enum ListActions {
 	private final String id;
 
 	ListActions(String identifier) {
-		this.id = identifier;
+		id = identifier;
 	}
 
 	public String id() {

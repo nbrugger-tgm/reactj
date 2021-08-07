@@ -3,6 +3,7 @@ package com.niton.reactj.test;
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
+import com.niton.reactj.annotation.ReactiveListener;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +30,7 @@ public class AnnotationTest {
 		bCalled    = false,
 		cCalled    = false,
 		testCalled = false;
-	
+
 	private String stringDeposit;
 
 	private int testDeposit;
@@ -171,7 +172,7 @@ public class AnnotationTest {
 				}
 
 
-				@Reactive("a")
+				@ReactiveListener("a")
 				void wrong(int too, int many) {
 				}
 			};
@@ -179,18 +180,19 @@ public class AnnotationTest {
 				deepComponent);
 		});
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveComponent deepComponent = new ReactiveComponent() {
+			ReactiveComponent<ReactiveProxy<DeepBase>> deepComponent = new ReactiveComponent() {
 				@Override
 				public void createBindings(ReactiveBinder binder) {
 				}
 
 
-				@Reactive("test")
+				@ReactiveListener("test")
 				void wrong(String badArgument) {
 				}
 			};
 			ReactiveController<ReactiveProxy<DeepBase>> cont = new ReactiveController<>(
-				deepComponent);
+				deepComponent
+			);
 			cont.bind(deepProxy);
 			deepProxy.unbind(cont);
 		});
@@ -202,7 +204,7 @@ public class AnnotationTest {
 				}
 
 
-				@Reactive("test")
+				@ReactiveListener("test")
 				void errorProne(int value) {
 					throw new NullPointerException("Intentional error");
 				}
@@ -254,6 +256,5 @@ public class AnnotationTest {
 		private FailBase(int wrong) {
 		}
 
-		;
 	}
 }

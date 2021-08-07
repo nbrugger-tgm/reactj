@@ -70,10 +70,9 @@ public class ReactiveException extends RuntimeException {
 		Class<C> type,
 		Exception cause
 	) {
-		ReactiveException exception = new ReactiveException(
-			String.format("Couldn't construct %s",
-			              type.getSimpleName()));
-		exception.initCause(cause);
-		return exception;
+		return new ReactiveException(
+			String.format("Couldn't construct %s", type.getSimpleName()),
+			cause
+		);
 	}
 }

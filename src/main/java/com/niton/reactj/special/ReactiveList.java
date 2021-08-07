@@ -88,8 +88,8 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 		private final ReactiveProxy<List<E>> model;
 
 		public ReactiveListHandler(List<E> list) {
-			this.list  = list;
-			this.model = new ReactiveProxy<>(list);
+			this.list = list;
+			model     = new ReactiveProxy<>(list);
 			model.react(INIT.id(), list);
 		}
 
