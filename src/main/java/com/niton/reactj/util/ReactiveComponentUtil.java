@@ -20,26 +20,27 @@ public final class ReactiveComponentUtil {
 	}
 
 	/**
-	 * Registers all @Reactive annotated methods in component to the binder
+	 * Registers all @{@link com.niton.reactj.annotation.ReactiveListener} annotated methods in component to the binder
 	 *
 	 * @param binder the binder to register the bindings to
 	 */
-	public static void createAnnotatedBindings(ReactiveComponent component, ReactiveBinder binder) {
-		Class<? extends ReactiveComponent> viewClass = component.getClass();
+	public static void createAnnotatedBindings(ReactiveComponent<?> component, ReactiveBinder<?> binder) {
+		Class<?> viewClass = component.getClass();
+
+		ReactivResolution resolution = viewClass.getAnnotation(ReactivResolution.class);
+		boolean searchSuperClasses = resolution != null && resolution.value() == DEEP;
 		Method[] methods = MethodUtils.getMethodsWithAnnotation(
 			viewClass,
 			Reactive.class,
-			viewClass.isAnnotationPresent(ReactivResolution.class)
-				&&
-				viewClass.getAnnotation(ReactivResolution.class).value() == DEEP,
+			searchSuperClasses,
 			true);
 		for(Method method : methods) {
 			processAnnotatedMethod(component, binder, method);
 		}
 	}
 
-	private static void processAnnotatedMethod(ReactiveComponent component,
-	                                           ReactiveBinder binder,
+	private static void processAnnotatedMethod(ReactiveComponent<?> component,
+	                                           ReactiveBinder<?> binder,
 	                                           Method method) {
 		if(method.getParameterTypes().length > 1) {
 			throw new ReactiveException(
