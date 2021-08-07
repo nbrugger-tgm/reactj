@@ -45,7 +45,7 @@ repositories {
 Adding the dependency
 
 ```groovy
-implementation 'com.niton:reactj:3.1.0b3'
+implementation 'com.niton:reactj:3.1.0b4'
 ```
 
 ### Maven
@@ -66,7 +66,7 @@ Adding the dependency
 <dependency>
   <groupId>com.niton</groupId>
   <artifactId>reactj</artifactId>
-  <version>3.1.0b3</version>
+  <version>3.1.0b4</version>
 </dependency>
 ```
 

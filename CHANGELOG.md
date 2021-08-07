@@ -1,3 +1,9 @@
+## v3.1.0b4 (2021-08-07)
+
+### Feat
+
+- replace @Reactive in UI (#33)
+
 ## v3.1.0b3 (2021-08-06)
 
 ### Feat
