@@ -1,6 +1,7 @@
 package com.niton.reactj;
 
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.observers.ObjectObserver;
 
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public interface Reactable {
 	 *
 	 * @param observer the observer to bind to this object
 	 */
-	void bind(Observer<?> observer);
+	void bind(ObjectObserver<?> observer);
 
 	/**
 	 * Get a map of all properties and their values.<br>
@@ -29,7 +30,7 @@ public interface Reactable {
 	 *
 	 * @param observer the observer to unbind
 	 */
-	void unbind(Observer<?> observer);
+	void unbind(ObjectObserver<?> observer);
 
 	/**
 	 * Report a change in the state of the object (shoul be called after every setter and mutating method).
@@ -74,7 +75,7 @@ public interface Reactable {
 	/**
 	 * Unbind all Observers.
 	 *
-	 * @see #unbind(Observer)
+	 * @see #unbind(ObjectObserver)
 	 */
 	void unbindAll();
 }

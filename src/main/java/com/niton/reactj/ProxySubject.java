@@ -1,5 +1,7 @@
 package com.niton.reactj;
 
+import com.niton.reactj.observers.ObjectObserver;
+
 import java.util.Map;
 
 /**
@@ -15,7 +17,7 @@ public interface ProxySubject extends Reactable {
 	 *
 	 * @param observer the observer to bind to this object
 	 */
-	default void bind(Observer<?> observer) {
+	default void bind(ObjectObserver<?> observer) {
 	}
 
 	/**
@@ -33,7 +35,7 @@ public interface ProxySubject extends Reactable {
 	 *
 	 * @param observer the observer to unbind
 	 */
-	default void unbind(Observer<?> observer) {
+	default void unbind(ObjectObserver<?> observer) {
 	}
 
 	/**
@@ -67,7 +69,7 @@ public interface ProxySubject extends Reactable {
 	/**
 	 * Unbind all Observers.
 	 *
-	 * @see #unbind(Observer)
+	 * @see #unbind(ObjectObserver)
 	 */
 	default void unbindAll() {
 	}

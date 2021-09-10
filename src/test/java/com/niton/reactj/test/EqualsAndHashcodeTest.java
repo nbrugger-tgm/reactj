@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicContainer.dynamicContainer;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
-@DisplayName("equals(), hashCod() and serialization")
+@DisplayName("equals(), hashCode() and serialization")
 public class EqualsAndHashcodeTest {
 	/**
 	 * If this is true also classes without a {@code equals} or {@code hashCode} implementation will be tested
@@ -76,11 +76,11 @@ public class EqualsAndHashcodeTest {
 	}
 
 	public static <T> void equalsTest(T o1, T o2) {
-		assertEquals(o1, o2, "Two objects with the same conent should be equal->true");
+		assertEquals(o1, o2, "Two objects with the same content should be equal->true");
 	}
 
 	public static void unequalsTest(Object o1, Object o2) {
-		assertNotEquals(o1, o2, "Two objects with the same conent should be equal->true");
+		assertNotEquals(o1, o2, "Two objects with different content should be equal->false");
 	}
 
 	public static void serializeTest(Object o) {
@@ -274,17 +274,13 @@ class RObject {
 	static class WithoutHashEquals extends ReactiveObject implements Serializable {
 		public int i = 0;
 
-		public WithoutHashEquals() {
-
-		}
+		public WithoutHashEquals() {}
 	}
 
 	static class WithHashEquals extends ReactiveObject implements Serializable {
 		public int i = 0;
 
-		public WithHashEquals() {
-
-		}
+		public WithHashEquals() {}
 
 		public boolean equals(Object o) {
 			if(this == o) return true;

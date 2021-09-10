@@ -9,28 +9,27 @@ import static javax.swing.BoxLayout.Y_AXIS;
 
 public class PersonList extends ReactiveListView<JPanel, JPanel, Person> {
 	private JButton addButton;
-	private JButton removeButton;
-	private JPanel  list;
+	private JPanel      entryPanel;
+	private JScrollPane pane;
 
 	@Override
 	protected void registerListeners() {
-		removeButton.addActionListener(e -> getModel().remove(0));
-		addButton.addActionListener(e -> getModel().add(new Person(12, "Max Musterman")));
+		addButton.addActionListener(e -> getData().add(new Person(12, "Max Musterman")));
 	}
 
 	@Override
 	protected int size() {
-		return list.getComponentCount();
+		return entryPanel.getComponentCount();
 	}
 
 	@Override
 	public void removeFrom(int index) {
-		list.remove(index);
+		entryPanel.remove(index);
 	}
 
 	@Override
 	public void remove(JPanel child) {
-		list.remove(child);
+		entryPanel.remove(child);
 	}
 
 	@Override
@@ -42,36 +41,34 @@ public class PersonList extends ReactiveListView<JPanel, JPanel, Person> {
 			p.setIq(99);
 			p.setGender(Gender.MALE);
 		});
-		view.removeEvent.listen(getModel()::remove);
+		view.removeEvent.listen(getData()::remove);
 		return view;
 	}
 
 	@Override
 	public void addAt(JPanel subView, int index) {
-		list.add(subView, index);
+		entryPanel.add(subView, index);
 	}
 
 	@Override
 	public void refresh() {
 		//Just ..... swing
-		list.validate();
-		list.repaint();
+		entryPanel.validate();
+		pane.repaint();
 	}
 
 	@Override
 	protected JPanel createView() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, Y_AXIS));
-		JScrollPane pane = new JScrollPane();
+		pane = new JScrollPane();
 
-		addButton    = new JButton("Add");
-		removeButton = new JButton("Remove");
+		addButton    = new JButton("Add new Person");
 		panel.add(addButton);
-		panel.add(removeButton);
 
-		list = new JPanel();
-		list.setLayout(new BoxLayout(list, Y_AXIS));
-		pane.setViewportView(list);
+		entryPanel = new JPanel();
+		entryPanel.setLayout(new BoxLayout(entryPanel, Y_AXIS));
+		pane.setViewportView(entryPanel);
 
 		panel.add(pane);
 

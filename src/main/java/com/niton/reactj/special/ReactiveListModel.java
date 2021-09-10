@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.util.List;
 import java.util.function.IntSupplier;
 
-import static com.niton.reactj.special.ListActions.*;
+import static com.niton.reactj.special.ListAction.*;
 
 /**
  * Reactive model to react to a {@link ReactiveList}
@@ -49,9 +49,9 @@ public class ReactiveListModel<E> {
 	public ReactiveListModel(Adder<E> adder, Remover<E> remover, IntSupplier size) {
 		this.adder      = adder;
 		this.remover    = remover;
-		this.intAdder   = (i, o) -> adder.add(o);
+		intAdder   = (i, o) -> adder.add(o);
 		this.size       = size;
-		this.intRemover = i -> {
+		intRemover = i -> {
 			throw new UnsupportedOperationException();
 		};
 	}

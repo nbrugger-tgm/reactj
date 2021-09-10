@@ -2,6 +2,7 @@ package com.niton.reactj;
 
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.observers.ObjectObserver;
 import com.niton.reactj.util.ReactiveReflectorUtil;
 import javassist.util.proxy.MethodHandler;
 
@@ -21,11 +22,11 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
  * @param <M> The type this Model is going to wrap
  */
 public final class ReactiveProxy<M> implements MethodHandler, Reactable, Serializable {
-	private static final String            equalsWarning = "[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result. Consider writing a custom equals for \"%s\"";
+	private static final String                  equalsWarning = "[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result. Consider writing a custom equals for \"%s\"";
 	@Unreactive
-	protected final      List<Observer<?>> listeners     = new ArrayList<>();
+	protected final      List<ObjectObserver<?>> listeners     = new ArrayList<>();
 	@Unreactive
-	private final        M                 backend;
+	private final        M                       backend;
 	@Unreactive
 	private              M                 proxy;
 	@Unreactive
@@ -200,7 +201,7 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 	}
 
 	@Override
-	public void bind(Observer<?> observer) {
+	public void bind(ObjectObserver<?> observer) {
 		listeners.add(observer);
 	}
 
@@ -210,13 +211,13 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 	}
 
 	@Override
-	public void unbind(Observer<?> observer) {
+	public void unbind(ObjectObserver<?> observer) {
 		listeners.remove(observer);
 	}
 
 	@Override
 	public void react() {
-		listeners.forEach(Observer::update);
+		listeners.forEach(ObjectObserver::update);
 	}
 
 	@Override

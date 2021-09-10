@@ -54,7 +54,7 @@ public class AnnotationTest {
 		deep.setB(0);
 		deep.setC(0);
 		deepProxy.unbindAll();
-		controller.bind(deepProxy);
+		controller.setModel(deepProxy);
 
 		aCalled    = false;
 		bCalled    = false;
@@ -125,7 +125,7 @@ public class AnnotationTest {
 			}
 		};
 		ReactiveController<ReactiveProxy<M>> controller = new ReactiveController<>(deepComponent);
-		controller.bind(proxy);
+		controller.setModel(proxy);
 
 		aCalled    = false;
 		bCalled    = false;
@@ -193,8 +193,8 @@ public class AnnotationTest {
 			ReactiveController<ReactiveProxy<DeepBase>> cont = new ReactiveController<>(
 				deepComponent
 			);
-			cont.bind(deepProxy);
-			deepProxy.unbind(cont);
+			cont.setModel(deepProxy);
+			cont.stop();
 		});
 
 		assertThrows(ReactiveException.class, () -> {
@@ -211,8 +211,8 @@ public class AnnotationTest {
 			};
 			ReactiveController<ReactiveProxy<DeepBase>> cont = new ReactiveController<>(
 				deepComponent);
-			cont.bind(deepProxy);
-			deepProxy.unbind(cont);
+			cont.setModel(deepProxy);
+			cont.stop();
 		});
 
 	}

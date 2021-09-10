@@ -12,7 +12,7 @@ public class CliApp {
 		Progress                progress = proxy.getObject();
 
 		ReactiveController<ReactiveProxy<Progress>> controller = new ReactiveController<>(new ProgressCli());
-		controller.bind(proxy);
+		controller.setModel(proxy);
 
 		while(true) {
 			Thread.sleep((long) (Math.random() * 70));

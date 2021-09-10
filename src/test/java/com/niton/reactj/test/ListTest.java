@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Reactive Lists")
 public class ListTest {
@@ -25,7 +24,7 @@ public class ListTest {
 		MyListComponent view       = new MyListComponent(Objects::toString);
 		List<String>    stringList = view.getView();
 		view.setList(test);
-		assertTrue(test.stream().map(String::valueOf).allMatch(stringList::contains));
+		assertArrayEquals(test.stream().map(String::valueOf).toArray(),stringList.toArray());
 		test.add(9);
 		assertTrue(test.stream().map(String::valueOf).allMatch(stringList::contains));
 		assertEquals(4, stringList.size());

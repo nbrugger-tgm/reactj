@@ -1,6 +1,8 @@
 package com.niton.reactj.examples;
 
-import com.niton.reactj.Observer;
+import com.niton.reactj.ProxySubject;
+import com.niton.reactj.observers.AbstractObserver;
+import com.niton.reactj.observers.ObjectObserver;
 import com.niton.reactj.ReactiveObject;
 import com.niton.reactj.ReactiveProxy;
 
@@ -9,24 +11,22 @@ import java.awt.*;
 public class ObserverExample {
 
 	public static void main(String[] args) {
-		ReactiveProxy<Data> model = ReactiveObject.createProxy(Data.class);
-		Data                d     = model.getObject();
+		Data model = ReactiveObject.create(Data.class);
 
-		Observer<ReactiveProxy<Data>> observer = new Observer<ReactiveProxy<Data>>() {
-			@Override
-			public void onChange(String property, Object value) {
-				System.out.println("Property " + property + " changed to " + value);
-			}
-		};
-		observer.bind(model);
+		ObjectObserver<Data> observer = new ObjectObserver<>();
 
-		d.setA(10);
-		d.setB(20);
-		d.setD("Some value");
-		d.setD(Color.BLUE);
+		observer.addListener(
+				change -> System.out.println("Property " + change.propertyName + " changed to " + change.propertyName)
+		);
+		observer.observe(model);
+
+		model.setA(10);
+		model.setB(20);
+		model.setD("Some value");
+		model.setD(Color.BLUE);
 	}
 
-	public static class Data {
+	public static class Data implements ProxySubject {
 		int    a = 1;
 		int    b = 2;
 		Object d = (Runnable) () -> {};

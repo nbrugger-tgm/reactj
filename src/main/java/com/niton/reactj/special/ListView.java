@@ -15,7 +15,7 @@ import java.util.function.Function;
  * @param <E> the component class eg. JLabel
  * @param <C> The container component class eg. JPanel
  */
-public abstract class ListView<M, E, C> implements ReactiveComponent {
+public abstract class ListView<M, E, C> implements ReactiveComponent<ReactiveList<M>> {
 	private final Function<M, E>                      elementCreator;
 	private final Map<M, E>                           componentCache = new ConcurrentHashMap<>();
 	private final ReactiveController<ReactiveList<M>> controller;
@@ -26,7 +26,7 @@ public abstract class ListView<M, E, C> implements ReactiveComponent {
 	}
 
 	@Override
-	public void createBindings(ReactiveBinder binder) {
+	public void createBindings(ReactiveBinder<ReactiveList<M>> binder) {
 		ReactiveListModel<M> list = new ReactiveListModel<>(
 			this::convertingAdd,
 			this::remove,
@@ -58,6 +58,6 @@ public abstract class ListView<M, E, C> implements ReactiveComponent {
 	public abstract C getView();
 
 	public void setList(ReactiveList<M> someArray) {
-		controller.bind(someArray);
+		controller.setModel(someArray);
 	}
 }

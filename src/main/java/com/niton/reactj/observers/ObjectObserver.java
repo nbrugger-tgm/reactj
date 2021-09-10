@@ -1,8 +1,8 @@
-package com.niton.reactj;
+package com.niton.reactj.observers;
 
-import com.niton.reactj.special.ListActions;
-import com.niton.reactj.special.ReactiveList;
+import com.niton.reactj.Reactable;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,28 +10,16 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * An Observer is used to observe changes in the state of an Object,
  * eg. reports changes to the properties
+ *<p>Only works with {@link Reactable} classes. There are multiple ways to achieve this.</p>
+ *
  *
  * @param <M> The Model class to observe
  */
-public abstract class Observer<M extends Reactable> {
+public class ObjectObserver<M extends Reactable> extends AbstractObserver<ObjectObserver.PropertyObservation,M> {
+
 	private final     Map<String, Object> valueCache = new ConcurrentHashMap<>();
-	private transient M                   model;
-
-	/**
-	 * Listender-like<br>
-	 * Called when an property of the bound object changes
-	 *
-	 * @param property the name of the changed property as a String
-	 * @param value    the new assigned value
-	 */
-	public abstract void onChange(String property, Object value);
-
-	public M getModel() {
-		return model;
-	}
-
 	protected Map<String, Object> getValueCache() {
-		return valueCache;
+		return Collections.unmodifiableMap(valueCache);
 	}
 
 
@@ -40,7 +28,7 @@ public abstract class Observer<M extends Reactable> {
 	 *
 	 * @param changed the map to put into the cache
 	 */
-	protected void updateCache(Map<String, Object> changed) {
+	public void updateCache(Map<String, Object> changed) {
 		valueCache.putAll(changed);
 	}
 
@@ -51,14 +39,20 @@ public abstract class Observer<M extends Reactable> {
 		update(getChanges());
 	}
 
+	@Override
+	public void reset() {
+		valueCache.clear();
+	}
+
 	/**
-	 * Updates the UI to the given values
+	 * Reports all changes in the map to all listeners
 	 *
 	 * @param changed the values that changed and will be changed on the UI
 	 */
 	public void update(Map<String, Object> changed) {
-		for(Map.Entry<String, Object> stringObjectEntry : changed.entrySet()) {
-			onChange(stringObjectEntry.getKey(), stringObjectEntry.getValue());
+		for(Map.Entry<String, Object> property : changed.entrySet()) {
+			PropertyObservation change = new PropertyObservation(property.getKey(), property.getValue());
+			fireObservation(change);
 		}
 	}
 
@@ -69,7 +63,7 @@ public abstract class Observer<M extends Reactable> {
 	 */
 	private Map<String, Object> getChanges() {
 		final Map<String, Object> changed = new ConcurrentHashMap<>();
-		final Map<String, Object> state   = model.getState();
+		final Map<String, Object> state   = subject.getState();
 		for(String property : state.keySet()) {
 			detectChange(changed, property, state.get(property));
 		}
@@ -91,28 +85,25 @@ public abstract class Observer<M extends Reactable> {
 		}
 	}
 
-
-	/**
-	 * Bind the model to the UI
-	 *
-	 * @param model the model to display for this controller (its UI)
-	 */
-	public void bind(M model) {
-		if(model == null) {
-			throw new IllegalArgumentException("Cannot bind to null");
-		}
-		if(this.model != null) {
-			this.model.unbind(this);
-		}
-		model.bind(this);
-		this.model = model;
-
-		//This is kind of propritary and is subject to change
-		if(model instanceof ReactiveList) {
-			model.react(ListActions.INIT.id(), model);
-		} else {
-			update();
-		}
+	public void observe(M object) {
+		if(object == null)
+			throw new IllegalArgumentException("Cannot observe null");
+		object.bind(this);
+		super.observe(object);
 	}
 
+	@Override
+	public void stopObservation() {
+		subject.unbind(this);
+	}
+
+	public static class PropertyObservation{
+		public final String propertyName;
+		public final Object propertyValue;
+
+		PropertyObservation(String propertyName, Object propertyValue) {
+			this.propertyName = propertyName;
+			this.propertyValue = propertyValue;
+		}
+	}
 }

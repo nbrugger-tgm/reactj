@@ -3,6 +3,7 @@ package com.niton.reactj;
 import com.niton.reactj.ReactiveBinder.BiBinding;
 import com.niton.reactj.ReactiveBinder.Binding;
 import com.niton.reactj.ReactiveBinder.SuperBinding;
+import com.niton.reactj.observers.ObjectObserver;
 import com.niton.reactj.util.ReactiveComponentUtil;
 
 import java.util.*;
@@ -17,8 +18,8 @@ import static com.niton.reactj.exceptions.ReactiveException.bindingException;
  *
  * @param <M> Model Type (might be a {@link ReactiveProxy})
  */
-public final class ReactiveController<M extends Reactable> extends Observer<M> {
-
+public final class ReactiveController<M extends Reactable> {
+	private final ObjectObserver<M> observer = new ObjectObserver<>();
 	private final Map<String, List<Binding<?, ?>>>      displayBindings            = new ConcurrentHashMap<>();
 	private final Map<String, List<BiBinding<?, ?>>>    editBindings               = new ConcurrentHashMap<>();
 	private final Map<String, List<SuperBinding<?, M>>> displaySuperBindings       = new ConcurrentHashMap<>();
@@ -26,17 +27,19 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 	private       boolean                               blockReactions;
 
 	/**
-	 * @param view the view or component to control. Most likely a UI element
+	 * @param component the view or component to control. Most likely a UI element
 	 */
-	public ReactiveController(ReactiveComponent<M> view) {
+	public ReactiveController(ReactiveComponent<M> component) {
 		//Maybe in the future it is needed to add the view as field
 		ReactiveBinder<M> binder = new ReactiveBinder<>(this::updateModel,
 		                                                displayBindings,
 		                                                displaySuperBindings,
 		                                                globalDisplaySuperBindings,
 		                                                editBindings);
-		view.createBindings(binder);
-		ReactiveComponentUtil.createAnnotatedBindings(view, binder);
+		component.createBindings(binder);
+		ReactiveComponentUtil.createAnnotatedBindings(component, binder);
+		observer.addListener(this::updateView);
+		observer.setObserveOnRebind(true);
 	}
 
 	/**
@@ -89,11 +92,11 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 		}
 		Map<String, Object> changed = findUiChanges();
 
+		M subject = observer.getObserved();
 		if(!changed.isEmpty()) {
-			M model = getModel();
-			model.set(changed);
-			model.react();
-			updateCache(changed);
+			subject.set(changed);
+			subject.react();
+			observer.updateCache(changed);
 		}
 	}
 
@@ -104,7 +107,7 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 	 */
 	private Map<String, Object> findUiChanges() {
 		Map<String, Object> changed = new HashMap<>();
-		Map<String, Object> state   = getModel().getState();
+		Map<String, Object> state   = observer.getObserved().getState();
 		for(Map.Entry<String, Object> field : state.entrySet()) {
 			if(!editBindings.containsKey(field.getKey())) {
 				continue;
@@ -139,24 +142,39 @@ public final class ReactiveController<M extends Reactable> extends Observer<M> {
 	/**
 	 * Sends a signal to all bindings with the regarding key
 	 *
-	 * @param key   the key to react to (most likely the name of the changed property)
-	 * @param value the value the event carries
+	 * @param key   the key to react to (the name of the changed property)
+	 * @param value the value the event carries (value of the changed property)
 	 */
 	private void updateView(final String key, final Object value) {
-		List<Binding<?, ?>> bindings = displayBindings.getOrDefault(key,
-		                                                            Collections.emptyList());
-		List<SuperBinding<?, M>> superBindings = displaySuperBindings.getOrDefault(key,
-		                                                                           Collections.emptyList());
+		List<Binding<?, ?>> bindings = displayBindings.getOrDefault(key, Collections.emptyList());
+		List<SuperBinding<?, M>> superBindings = displaySuperBindings.getOrDefault(key, Collections.emptyList());
 
 		blockReactions = true;
-		superBindings.forEach(e -> e.display(getModel()));
-		globalDisplaySuperBindings.forEach(e -> e.display(getModel()));
+		superBindings.forEach(e -> e.display(observer.getObserved()));
+		globalDisplaySuperBindings.forEach(e -> e.display(observer.getObserved()));
 		bindings.forEach(e -> updateBinding(key, value, e));
 		blockReactions = false;
 	}
 
-	@Override
-	public void onChange(String property, Object value) {
-		updateView(property, value);
+	private void updateView(ObjectObserver.PropertyObservation change){
+		updateView(change.propertyName,change.propertyValue);
+	}
+	public M getModel(){
+		return observer.getObserved();
+	}
+	public void setModel(M model){
+		observer.observe(model);
+	}
+
+	public void update() {
+		observer.update();
+	}
+
+	/**
+	 * Clears all values and removes the model -> stops listening
+	 */
+	public void stop(){
+		observer.stopObservation();
+		observer.reset();
 	}
 }

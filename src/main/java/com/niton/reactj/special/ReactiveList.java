@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 
-import static com.niton.reactj.special.ListActions.*;
+import static com.niton.reactj.special.ListAction.*;
 
 /**
  * Proxy creating interface. There are no implementations! You have to use ReactiveList.create
@@ -164,11 +164,11 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 				model.react(SET_INDEX.id(), parameters[0]);
 				model.react(ADD_INDEX.id(), parameters[1]);
 			} else if(signature.equals(REMOVE_OBJECT)) {
-				model.react(ListActions.REMOVE_OBJECT.id(), parameters[0]);
+				model.react(ListAction.REMOVE_OBJECT.id(), parameters[0]);
 			} else if(signature.equals(REMOVE_INDEX)) {
-				model.react(ListActions.REMOVE_INDEX.id(), parameters[0]);
+				model.react(ListAction.REMOVE_INDEX.id(), parameters[0]);
 			} else if(signature.equals(CLEAR)) {
-				model.react(ListActions.CLEAR.id(), null);
+				model.react(ListAction.CLEAR.id(), null);
 			} else if(signature.equals(SET_METHOD)) {
 				model.react(SET_INDEX.id(), parameters[0]);
 				model.react(REPLACE.id(), parameters[1]);

@@ -14,20 +14,32 @@ public class StringListApp {
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setLayout(new GridLayout());
 
-		SwingListView<String> view = new SwingListView<>(
-			(s) -> new ClickableListEntry(s, someArray::remove)
+		SwingListView<String> clickableView = new SwingListView<>(
+			(s) -> {
+				ClickableListEntry entry = new ClickableListEntry(s);
+				entry.onRemove.listen(someArray::remove);
+				return entry;
+			}
 		);
-		view.setList(someArray);
+		clickableView.setList(someArray);
 
-		frame.add(view.getView());
+		SwingListView<String> normalView = new SwingListView<>(JLabel::new);
+		normalView.setList(someArray);
+
+		SwingListView<String> customView = new SwingListView<>(PrettyTextView::new);
+		customView.setList(someArray);
+
+		frame.add(clickableView.getView());
+		frame.add(normalView.getView());
+		frame.add(customView.getView());
 		frame.pack();
 		frame.setVisible(true);
 
 		//Modifiying List to see change
 		int i = 0;
-		while(true) {
+		while(i<100) {
 			Thread.sleep(1000);
-			someArray.add(Integer.toString(i++));
+			someArray.add("Entry "+i++);
 		}
 	}
 }

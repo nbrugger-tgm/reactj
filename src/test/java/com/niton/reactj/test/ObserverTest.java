@@ -2,6 +2,7 @@ package com.niton.reactj.test;
 
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.ReactivResolution;
+import com.niton.reactj.observers.ObjectObserver;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ import java.util.Collections;
 import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.DEEP;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Observer")
+@DisplayName("Observer.ObjectObserver")
 public class ObserverTest {
 	public String                  lastChanged;
 	public Object                  lastValue;
@@ -78,17 +79,15 @@ public class ObserverTest {
 	}
 
 	public <M extends Reactable> void observerTest(M obj, M newObj) {
-		Observer<M> testDataObserver = new Observer<M>() {
-			@Override
-			public void onChange(String property, Object value) {
-				System.out.println(property + " changed to " + value);
-				lastChanged = property;
-				lastValue   = value;
+		ObjectObserver<M> testDataObserver = new ObjectObserver<M>();
+		testDataObserver.addListener(change ->{
+				System.out.println(change.propertyName + " changed to " + change.propertyValue);
+				lastChanged = change.propertyName;
+				lastValue   = change.propertyValue;
 				changeCounter++;
-			}
-		};
+		});
 
-		testDataObserver.bind(obj);
+		testDataObserver.observe(obj);
 
 		lastValue     = null;
 		lastChanged   = null;
@@ -123,7 +122,7 @@ public class ObserverTest {
 		td.setColor(Color.WHITE);
 		assertEquals(Color.WHITE, lastValue);
 		int oldCounter = changeCounter;
-		testDataObserver.bind(obj);
+		testDataObserver.observe(obj);
 		assertEquals(oldCounter,
 		             changeCounter,
 		             "Rebinding the same object should not create changes");
@@ -131,19 +130,15 @@ public class ObserverTest {
 		td.setId(9999);
 		assertEquals(oldCounter, changeCounter, "Unbound is not working");
 
-		testDataObserver.bind(newObj);
-		assertEquals(testDataObserver.getModel(), newObj);
+		testDataObserver.observe(newObj);
+		assertEquals(testDataObserver.getObserved(), newObj);
 	}
 
 	@Test
 	@DisplayName("Argument verification")
 	public void testArgumentVerification() {
-		Observer<ReactiveProxy<TestData>> observer = new Observer<ReactiveProxy<TestData>>() {
-			@Override
-			public void onChange(String property, Object value) {
-			}
-		};
-		assertThrows(IllegalArgumentException.class, () -> observer.bind(null));
+		ObjectObserver<ReactiveProxy<TestData>> observer = new ObjectObserver<>();
+		assertThrows(IllegalArgumentException.class, () -> observer.observe(null));
 	}
 
 	@Test
@@ -159,7 +154,7 @@ public class ObserverTest {
 		};
 		ReactiveController<ReactiveProxy<TestData>> controller = new ReactiveController<>(
 			testComponent);
-		controller.bind(proxy);
+		controller.setModel(proxy);
 
 		td.setColor(Color.GREEN);
 		assertEquals(Color.GREEN, lastValue);

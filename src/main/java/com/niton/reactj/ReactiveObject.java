@@ -2,6 +2,7 @@ package com.niton.reactj;
 
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.observers.ObjectObserver;
 import com.niton.reactj.util.ReactiveReflectorUtil;
 import javassist.util.proxy.ProxyFactory;
 
@@ -20,9 +21,9 @@ import static com.niton.reactj.exceptions.ReactiveException.constructorNotFound;
  */
 public class ReactiveObject implements Reactable {
 	@Unreactive
-	protected final List<Observer<?>> listeners = new ArrayList<>();
+	protected final List<ObjectObserver<?>> listeners = new ArrayList<>();
 	@Unreactive
-	private final   Object            store;
+	private final   Object                  store;
 
 	/**
 	 * Creates a Reactive Object that forwards calls to the given object
@@ -231,7 +232,7 @@ public class ReactiveObject implements Reactable {
 
 
 	@Override
-	public void bind(Observer<?> observer) {
+	public void bind(ObjectObserver<?> observer) {
 		listeners.add(observer);
 	}
 
@@ -241,13 +242,13 @@ public class ReactiveObject implements Reactable {
 	}
 
 	@Override
-	public void unbind(Observer<?> observer) {
+	public void unbind(ObjectObserver<?> observer) {
 		listeners.remove(observer);
 	}
 
 	@Override
 	public void react() {
-		listeners.forEach(Observer::update);
+		listeners.forEach(ObjectObserver::update);
 	}
 
 	@Override

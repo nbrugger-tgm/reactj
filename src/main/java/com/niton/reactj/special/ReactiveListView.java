@@ -22,7 +22,7 @@ public abstract class ReactiveListView
 
 
 	@Override
-	public void createBindings(ReactiveBinder binder) {
+	public void createBindings(ReactiveBinder<ReactiveList<E>> binder) {
 		ReactiveListModel<E> model = new ReactiveListModel<>(
 			this::addElement,
 			this::removeFromIndex,
