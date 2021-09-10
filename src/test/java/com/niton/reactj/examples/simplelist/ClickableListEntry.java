@@ -1,5 +1,7 @@
 package com.niton.reactj.examples.simplelist;
 
+import com.niton.reactj.mvc.EventManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -11,14 +13,15 @@ interface Remover {
 }
 
 public class ClickableListEntry extends JLabel {
-	public ClickableListEntry(String text, Remover remover) {
+	public final EventManager<String> onRemove = new EventManager<>();
+	public ClickableListEntry(String text) {
 		super(text);
 
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton() == MouseEvent.BUTTON1) {
-					remover.remove(getText());
+					onRemove.fire(getText());
 				} else {
 					Color oldColor = getForeground();
 					setForeground(new Color(100 - oldColor.getRed(),
