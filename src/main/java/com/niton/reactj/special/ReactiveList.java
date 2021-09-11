@@ -79,7 +79,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 				CLEAR = List.class.getMethod("clear")
 				                  .toGenericString();
 			} catch(NoSuchMethodException e) {
-				//will not be reached. If reached only because java radicaly changed
+				//will not be reached. If reached only because java radically changed
 				throw new LinkageError("Expected methods not found in java.lang.List class", e);
 			}
 		}

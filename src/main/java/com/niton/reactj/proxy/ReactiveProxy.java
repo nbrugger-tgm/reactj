@@ -5,22 +5,17 @@ import com.niton.reactj.ReactiveObject;
 import com.niton.reactj.ReactiveStrategy;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
-import com.niton.reactj.mvc.EventManager;
 import com.niton.reactj.mvc.GenericEventManager;
-import com.niton.reactj.observers.ObjectObserver;
-import com.niton.reactj.observers.ObjectObserver.PropertyObservation;
+import com.niton.reactj.util.ProxyUtility;
 import com.niton.reactj.util.ReactiveReflectorUtil;
 import javassist.util.proxy.MethodHandler;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.tree.ExpandVetoException;
-import java.awt.*;
 import java.io.Serializable;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
 
@@ -33,7 +28,6 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
  * @param <M> The type this Model is going to wrap
  */
 public final class ReactiveProxy<M> implements MethodHandler, Reactable, Serializable {
-	private static final String                                      equalsWarning = "[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result. Consider writing a custom equals for \"%s\"";
 	@Unreactive
 	private final        M                                           backend;
 	@Unreactive
@@ -158,7 +152,7 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 				args[0] instanceof ProxySubject &&
 				self instanceof ProxySubject
 		) {
-			Object o = handleEquals(self, thisMethod, args);
+			Object o = ProxyUtility.handleEquals(self, thisMethod, args, backend);
 			if(o != null) {
 				return o;
 			}
@@ -176,22 +170,7 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 		return returnValue;
 	}
 
-	private Object handleEquals(Object self, Method thisMethod, Object[] args)
-	throws IllegalAccessException, InvocationTargetException {
-		// only prevent the default Object implementation.
-		// If the user overwrote `equals` this should not kick in
-		if(thisMethod.getDeclaringClass().equals(Object.class)) {
-			System.err.printf(equalsWarning + "%n", self.getClass().getSimpleName());
-			return ((ProxySubject) args[0]).getState().equals(((ProxySubject) self).getState());
-		}
-		//if call is not "mocked" by the proxy, just forward to the actual object
-		if(thisMethod.getDeclaringClass().equals(backend.getClass())) {
-			// System.err.println("[WARNING] "+backend.getClass().getTypeName()+".equals()
-			// implementation should also support subclasses of "+backend.getClass().getTypeName());
-			return thisMethod.invoke(backend, args);
-		}
-		return null;
-	}
+
 
 	private boolean originatesFromPSubject(Method thisMethod, Object self) {
 		return thisMethod.getDeclaringClass().equals(ProxySubject.class)
@@ -204,7 +183,8 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 	throws InvocationTargetException, IllegalAccessException {
 		try {
 			return ReactiveProxy.class.getMethod(thisMethod.getName(),
-			                                     thisMethod.getParameterTypes()).invoke(this, args);
+			                                     thisMethod.getParameterTypes())
+			                          .invoke(this, args);
 		} catch(NoSuchMethodException e) {
 			//No way this happens
 			throw new ReactiveException("unexpected failure", e);
@@ -220,7 +200,7 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 	public void set(String property, Object value) throws Exception {
 		ReactiveReflectorUtil.updateField(backend, property, value);
 	}
-	private GenericEventManager reactEvent = new GenericEventManager();
+	private final GenericEventManager reactEvent = new GenericEventManager();
 
 	@Override
 	public GenericEventManager reactEvent() {
