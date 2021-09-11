@@ -1,5 +1,6 @@
 package com.niton.reactj.mvc;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * @param <E> the type to be used for events
  * @param <L> the type to be used for listeners
  */
-public abstract class CustomEventManager<E, L> {
+public abstract class CustomEventManager<E, L> implements Serializable {
 	private final List<L> listeners = new ArrayList<>(1);
 
 	public void listen(L listener) {

@@ -5,7 +5,7 @@ import com.niton.reactj.special.ListAction;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ListObsserver<E> extends AbstractObserver<ListObsserver.ListObservation,List<E>> {
+public class ListObserver<E> extends AbstractObserver<ListObserver.ListObservation,List<E>> {
 	public static class ListObservation{
 		public final ListAction action;
 		public final Object content;
@@ -20,4 +20,19 @@ public abstract class ListObsserver<E> extends AbstractObserver<ListObsserver.Li
 
 	private final List<E> valueCache = new ArrayList<>();
 
+
+	@Override
+	public void stopObservation() {
+
+	}
+
+	@Override
+	protected void update() {
+
+	}
+
+	@Override
+	public void reset() {
+
+	}
 }

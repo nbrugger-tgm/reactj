@@ -1,9 +1,9 @@
 package com.niton.reactj.examples.superbinding;
 
-import com.niton.reactj.ProxySubject;
+import com.niton.reactj.proxy.ProxySubject;
 import com.niton.reactj.ReactiveComponent;
 import com.niton.reactj.ReactiveController;
-import com.niton.reactj.ReactiveProxy;
+import com.niton.reactj.proxy.ReactiveProxy;
 
 public class Superbinding {
 	public static void main(String[] args) {

@@ -4,6 +4,7 @@ import com.niton.reactj.ReactiveBinder.BiBinding;
 import com.niton.reactj.ReactiveBinder.Binding;
 import com.niton.reactj.ReactiveBinder.SuperBinding;
 import com.niton.reactj.observers.ObjectObserver;
+import com.niton.reactj.proxy.ReactiveProxy;
 import com.niton.reactj.util.ReactiveComponentUtil;
 
 import java.util.*;

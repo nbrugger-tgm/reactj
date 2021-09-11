@@ -1,10 +1,8 @@
 package com.niton.reactj.examples;
 
-import com.niton.reactj.ProxySubject;
-import com.niton.reactj.observers.AbstractObserver;
+import com.niton.reactj.proxy.ProxySubject;
 import com.niton.reactj.observers.ObjectObserver;
 import com.niton.reactj.ReactiveObject;
-import com.niton.reactj.ReactiveProxy;
 
 import java.awt.*;
 

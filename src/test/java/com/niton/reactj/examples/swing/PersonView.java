@@ -1,7 +1,7 @@
 package com.niton.reactj.examples.swing;
 
 import com.niton.reactj.ReactiveBinder;
-import com.niton.reactj.ReactiveProxy;
+import com.niton.reactj.proxy.ReactiveProxy;
 import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.mvc.EventManager;
 import com.niton.reactj.mvc.ReactiveView;

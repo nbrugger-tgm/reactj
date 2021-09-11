@@ -2,6 +2,7 @@ package com.niton.reactj.examples.CLI;
 
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.Reactive;
+import com.niton.reactj.proxy.ReactiveProxy;
 
 import static com.niton.reactj.examples.CLI.CliApp.Progress;
 

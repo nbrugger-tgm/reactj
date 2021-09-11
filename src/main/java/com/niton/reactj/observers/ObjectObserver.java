@@ -1,6 +1,7 @@
 package com.niton.reactj.observers;
 
 import com.niton.reactj.Reactable;
+import com.niton.reactj.mvc.GenericListener;
 
 import java.util.Collections;
 import java.util.Map;
@@ -11,9 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * An Observer is used to observe changes in the state of an Object,
  * eg. reports changes to the properties
  *<p>Only works with {@link Reactable} classes. There are multiple ways to achieve this.</p>
- *
- *
- * @param <M> The Model class to observe
  */
 public class ObjectObserver<M extends Reactable> extends AbstractObserver<ObjectObserver.PropertyObservation,M> {
 
@@ -84,17 +82,18 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Object
 			changed.put(property, currentValue);
 		}
 	}
+	private final GenericListener updateListener = this::update;
 
 	public void observe(M object) {
 		if(object == null)
 			throw new IllegalArgumentException("Cannot observe null");
-		object.bind(this);
+		object.reactEvent().listen(updateListener);
 		super.observe(object);
 	}
 
 	@Override
 	public void stopObservation() {
-		subject.unbind(this);
+		subject.reactEvent().stopListening(updateListener);
 	}
 
 	public static class PropertyObservation{

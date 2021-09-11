@@ -6,6 +6,7 @@ import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.annotation.ReactiveListener;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.proxy.ReactiveProxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -48,12 +49,11 @@ public class AnnotationTest {
 			binder.bindBi("test", v -> testDeposit = v, () -> testDeposit);
 		};
 
-		ReactiveController<ReactiveProxy<DeepBase>> controller = new ReactiveController<>(
-			deepComponent);
+		ReactiveController<ReactiveProxy<DeepBase>> controller = new ReactiveController<>(deepComponent);
 		deep.setA(0);
 		deep.setB(0);
 		deep.setC(0);
-		deepProxy.unbindAll();
+		controller.stop();
 		controller.setModel(deepProxy);
 
 		aCalled    = false;
@@ -84,14 +84,14 @@ public class AnnotationTest {
 				binder.bind("test", v -> testCalled = true);
 			}
 
-			@Reactive("a")
+			@ReactiveListener("a")
 			void aListener() {
 				if(!a) {
 					fail("@Reactive rename should erase old name");
 				}
 			}
 
-			@Reactive("test")
+			@ReactiveListener("test")
 			void aListener(Integer i) {
 				if(!test) {
 					fail("test is not allowed to be called");
@@ -100,7 +100,7 @@ public class AnnotationTest {
 				}
 			}
 
-			@Reactive("test")
+			@ReactiveListener("test")
 			void aListener(int i) {
 				if(!test) {
 					fail("test is not allowed to react");
@@ -110,14 +110,14 @@ public class AnnotationTest {
 
 			}
 
-			@Reactive("b")
+			@ReactiveListener("b")
 			void bListener() {
 				if(!b) {
 					fail("@Unreactive disrespected");
 				}
 			}
 
-			@Reactive("c")
+			@ReactiveListener("c")
 			void someMethod(int val) {
 				if(val != 0) {
 					assertEquals(SET3, val);

@@ -1,15 +1,26 @@
-package com.niton.reactj;
+package com.niton.reactj.proxy;
 
+import com.niton.reactj.Reactable;
+import com.niton.reactj.ReactiveObject;
+import com.niton.reactj.ReactiveStrategy;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.mvc.EventManager;
+import com.niton.reactj.mvc.GenericEventManager;
 import com.niton.reactj.observers.ObjectObserver;
+import com.niton.reactj.observers.ObjectObserver.PropertyObservation;
 import com.niton.reactj.util.ReactiveReflectorUtil;
 import javassist.util.proxy.MethodHandler;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.tree.ExpandVetoException;
+import java.awt.*;
 import java.io.Serializable;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.List;
 
 import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
 
@@ -22,17 +33,15 @@ import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
  * @param <M> The type this Model is going to wrap
  */
 public final class ReactiveProxy<M> implements MethodHandler, Reactable, Serializable {
-	private static final String                  equalsWarning = "[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result. Consider writing a custom equals for \"%s\"";
+	private static final String                                      equalsWarning = "[WARNING] 'equals()' calls on ProxySubjects DO NOT use the Object.equals() implementation but `Reactable.getState()` and equals the result. Consider writing a custom equals for \"%s\"";
 	@Unreactive
-	protected final      List<ObjectObserver<?>> listeners     = new ArrayList<>();
+	private final        M                                           backend;
 	@Unreactive
-	private final        M                       backend;
+	private              M                       proxy;
 	@Unreactive
-	private              M                 proxy;
+	private              ReactiveStrategy        strategy      = REACT_ON_SETTER;
 	@Unreactive
-	private              ReactiveStrategy  strategy      = REACT_ON_SETTER;
-	@Unreactive
-	private              String[]          reactToList;
+	private              String[]                reactToList;
 
 	/**
 	 * Creates a proxy forwarding Reactive calls to 'real'
@@ -107,7 +116,9 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 		return proxy;
 	}
 
-	void setProxy(M proxy) {
+	public void setProxy(M proxy) {
+		if(this.proxy != null)
+			throw new UnsupportedOperationException("The proxy can't be changed after creation");
 		this.proxy = proxy;
 	}
 
@@ -118,7 +129,7 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 	/**
 	 * Set the strategy on how to react to method changes (only has an effect on proxies created by {@link #create(Class, Object...)})
 	 *
-	 * @param strategy the startegy to use
+	 * @param strategy the strategy to use
 	 */
 	public void setStrategy(ReactiveStrategy strategy) {
 		this.strategy = strategy;
@@ -167,7 +178,7 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 
 	private Object handleEquals(Object self, Method thisMethod, Object[] args)
 	throws IllegalAccessException, InvocationTargetException {
-		// only prevent the default Object implemetation.
+		// only prevent the default Object implementation.
 		// If the user overwrote `equals` this should not kick in
 		if(thisMethod.getDeclaringClass().equals(Object.class)) {
 			System.err.printf(equalsWarning + "%n", self.getClass().getSimpleName());
@@ -201,37 +212,24 @@ public final class ReactiveProxy<M> implements MethodHandler, Reactable, Seriali
 	}
 
 	@Override
-	public void bind(ObjectObserver<?> observer) {
-		listeners.add(observer);
-	}
-
-	@Override
 	public Map<String, Object> getState() {
 		return ReactiveReflectorUtil.getState(backend);
-	}
-
-	@Override
-	public void unbind(ObjectObserver<?> observer) {
-		listeners.remove(observer);
-	}
-
-	@Override
-	public void react() {
-		listeners.forEach(ObjectObserver::update);
-	}
-
-	@Override
-	public void react(String property, Object value) {
-		listeners.forEach(l -> l.update(Collections.singletonMap(property, value)));
 	}
 
 	@Override
 	public void set(String property, Object value) throws Exception {
 		ReactiveReflectorUtil.updateField(backend, property, value);
 	}
+	private GenericEventManager reactEvent = new GenericEventManager();
 
 	@Override
-	public void unbindAll() {
-		listeners.clear();
+	public GenericEventManager reactEvent() {
+		return reactEvent;
 	}
+
+	//private EventManager<PropertyObservation> changeEvent = new EventManager<>();
+	//@Override
+	//public EventManager<PropertyObservation> getEventManager() {
+	//	return changeEvent;
+	//}
 }

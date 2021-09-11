@@ -1,8 +1,14 @@
 package com.niton.reactj;
 
+import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.mvc.EventManager;
+import com.niton.reactj.mvc.GenericEventManager;
 import com.niton.reactj.observers.ObjectObserver;
+import com.niton.reactj.observers.ObjectObserver.PropertyObservation;
+import com.niton.reactj.proxy.ProxySubject;
+import com.niton.reactj.proxy.ReactiveProxy;
 import com.niton.reactj.util.ReactiveReflectorUtil;
 import javassist.util.proxy.ProxyFactory;
 
@@ -20,26 +26,16 @@ import static com.niton.reactj.exceptions.ReactiveException.constructorNotFound;
  * The most common way to use this component is by extending it and call {@link ReactiveObject#react()} whenever needed
  */
 public class ReactiveObject implements Reactable {
-	@Unreactive
-	protected final List<ObjectObserver<?>> listeners = new ArrayList<>();
-	@Unreactive
-	private final   Object                  store;
-
-	/**
-	 * Creates a Reactive Object that forwards calls to the given object
-	 *
-	 * @param obj the object to forward calls to
-	 */
-	public ReactiveObject(Object obj) {
-		store = obj;
+	@Override
+	public GenericEventManager reactEvent() {
+		return thisWrapper.reactEvent();
 	}
 
+	private final ReactiveWrapper<ReactiveObject> thisWrapper = new ReactiveWrapper<>(this);
 	/**
 	 * Only use this constructor when extending from this class
 	 */
-	public ReactiveObject() {
-		store = this;
-	}
+	protected ReactiveObject() {}
 
 	/**
 	 * alias to {@link ReactiveProxy#createProxy(Class, Object...)}
@@ -232,37 +228,18 @@ public class ReactiveObject implements Reactable {
 
 
 	@Override
-	public void bind(ObjectObserver<?> observer) {
-		listeners.add(observer);
+	public void set(Map<String, Object> changed) {
+		thisWrapper.set(changed);
+	}
+
+
+	@Override
+	public void set(String property, Object value) throws Exception {
+		thisWrapper.set(property, value);
 	}
 
 	@Override
 	public Map<String, Object> getState() {
-		return ReactiveReflectorUtil.getState(store);
-	}
-
-	@Override
-	public void unbind(ObjectObserver<?> observer) {
-		listeners.remove(observer);
-	}
-
-	@Override
-	public void react() {
-		listeners.forEach(ObjectObserver::update);
-	}
-
-	@Override
-	public void react(String name, Object obj) {
-		listeners.forEach(l -> l.update(Collections.singletonMap(name, obj)));
-	}
-
-	@Override
-	public void set(String property, Object value) throws Exception {
-		ReactiveReflectorUtil.updateField(store, property, value);
-	}
-
-	@Override
-	public void unbindAll() {
-		listeners.clear();
+		return thisWrapper.getState();
 	}
 }

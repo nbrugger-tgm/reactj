@@ -1,7 +1,7 @@
 package com.niton.reactj.special;
 
 import com.niton.reactj.Reactable;
-import com.niton.reactj.ReactiveProxy;
+import com.niton.reactj.proxy.ReactiveProxy;
 import com.niton.reactj.exceptions.ReactiveException;
 
 import java.lang.reflect.InvocationHandler;

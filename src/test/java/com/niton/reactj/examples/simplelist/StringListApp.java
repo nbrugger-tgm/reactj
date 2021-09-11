@@ -1,5 +1,7 @@
 package com.niton.reactj.examples.simplelist;
 
+import com.niton.reactj.examples.list.Person;
+import com.niton.reactj.observers.ObjectObserver;
 import com.niton.reactj.special.ReactiveList;
 
 import javax.swing.*;

@@ -1,5 +1,6 @@
 package com.niton.reactj.examples.list;
 
+import com.niton.reactj.ReactiveObject;
 import com.niton.reactj.examples.swing.Gender;
 import com.niton.reactj.special.ReactiveListView;
 

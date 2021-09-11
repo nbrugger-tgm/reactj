@@ -3,6 +3,8 @@ package com.niton.reactj.test;
 import com.niton.reactj.*;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.observers.ObjectObserver;
+import com.niton.reactj.proxy.ProxySubject;
+import com.niton.reactj.proxy.ReactiveProxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -126,7 +128,7 @@ public class ObserverTest {
 		assertEquals(oldCounter,
 		             changeCounter,
 		             "Rebinding the same object should not create changes");
-		obj.unbind(testDataObserver);
+		testDataObserver.stopObservation();
 		td.setId(9999);
 		assertEquals(oldCounter, changeCounter, "Unbound is not working");
 

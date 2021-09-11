@@ -1,6 +1,8 @@
 package com.niton.reactj;
 
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.mvc.EventManager;
+import com.niton.reactj.mvc.GenericEventManager;
 import com.niton.reactj.observers.ObjectObserver;
 
 import java.util.Map;
@@ -10,12 +12,6 @@ import java.util.Map;
  * implementing this interface makes it able to bind it to an UI
  */
 public interface Reactable {
-	/**
-	 * After binding this object will report changes to the given observer
-	 *
-	 * @param observer the observer to bind to this object
-	 */
-	void bind(ObjectObserver<?> observer);
 
 	/**
 	 * Get a map of all properties and their values.<br>
@@ -26,26 +22,16 @@ public interface Reactable {
 	Map<String, Object> getState();
 
 	/**
-	 * Unbinds the object from the observer. By doing this the observer will not be notified about changes anymore
-	 *
-	 * @param observer the observer to unbind
-	 */
-	void unbind(ObjectObserver<?> observer);
-
-	/**
 	 * Report a change in the state of the object (shoul be called after every setter and mutating method).
 	 * <br>
 	 * This should notify all bound Observers
 	 */
-	void react();
+	default void react(){
+		reactEvent().fire();
+	}
+	default void react(String s,Object o){}
 
-	/**
-	 * React to a certain property
-	 *
-	 * @param property the name of the property to react to
-	 * @param value    the new value
-	 */
-	void react(String property, Object value);
+	GenericEventManager reactEvent();
 
 	/**
 	 * Updates a field in this object with the respective name (sentivie to @Reactive)
@@ -71,11 +57,4 @@ public interface Reactable {
 			}
 		}
 	}
-
-	/**
-	 * Unbind all Observers.
-	 *
-	 * @see #unbind(ObjectObserver)
-	 */
-	void unbindAll();
 }

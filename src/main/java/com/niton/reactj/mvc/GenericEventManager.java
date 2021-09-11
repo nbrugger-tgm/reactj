@@ -6,4 +6,8 @@ public class GenericEventManager extends CustomEventManager<Void,GenericListener
 	protected void call(GenericListener listener, Void event) {
 		listener.onAction();
 	}
+
+	public void fire() {
+		super.fire(null);
+	}
 }

@@ -13,8 +13,7 @@ import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.
 
 
 @ReactivResolution(FLAT)//optional
-public class Person extends ReactiveObject
-	implements Identity<String> {//Identity is needed for list items
+public class Person extends ReactiveObject implements Identity<String> {//Identity is needed for list items
 	public static int ID = 0;
 	private final int id = ID++;
 
