@@ -16,13 +16,9 @@ public abstract class ReactiveView<V, M extends Reactable> implements ReactiveCo
 	private final V                     view;
 
 	public ReactiveView() {
-		view       = createView();
+		view = createView();
 		controller = new ReactiveController<>(this);
 		registerListeners();
-	}
-
-	protected void registerListeners() {
-		//empty by intend as it should only be overwritten if needed
 	}
 
 	/**
@@ -33,6 +29,10 @@ public abstract class ReactiveView<V, M extends Reactable> implements ReactiveCo
 	 * @return the completed view
 	 */
 	protected abstract V createView();
+
+	protected void registerListeners() {
+		//empty by intend as it should only be overwritten if needed
+	}
 
 	/**
 	 * @return the model displayed

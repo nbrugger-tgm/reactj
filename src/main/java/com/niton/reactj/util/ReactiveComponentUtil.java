@@ -26,32 +26,35 @@ public final class ReactiveComponentUtil {
 	public static void createAnnotatedBindings(ReactiveComponent<?> component, ReactiveBinder<?> binder) {
 		Class<?> viewClass = component.getClass();
 
-		ReactivResolution resolution = viewClass.getAnnotation(ReactivResolution.class);
-		boolean searchSuperClasses = resolution != null && resolution.value() == DEEP;
+		ReactivResolution resolution         = viewClass.getAnnotation(ReactivResolution.class);
+		boolean           searchSuperClasses = resolution != null && resolution.value() == DEEP;
 		Method[] methods = MethodUtils.getMethodsWithAnnotation(
-			viewClass,
-			ReactiveListener.class,
-			searchSuperClasses,
-			true
+				viewClass,
+				ReactiveListener.class,
+				searchSuperClasses,
+				true
 		);
 
-		for(Method method : methods) {
+		for (Method method : methods) {
 			processAnnotatedMethod(component, binder, method);
 		}
 	}
 
 	/**
 	 * Attaches an annotated method to the reactive binder (uno-direction)
+	 *
 	 * @param component the component instance the method originates from
-	 * @param binder the binder to bind the method to
-	 * @param method the method to bind
+	 * @param binder    the binder to bind the method to
+	 * @param method    the method to bind
 	 */
-	private static void processAnnotatedMethod(ReactiveComponent<?> component,
-	                                           ReactiveBinder<?> binder,
-	                                           Method method) {
-		if(method.getParameterTypes().length > 1) {
+	private static void processAnnotatedMethod(
+			ReactiveComponent<?> component,
+			ReactiveBinder<?> binder,
+			Method method
+	) {
+		if (method.getParameterTypes().length > 1) {
 			throw new ReactiveException(
-				String.format("@ReactiveListener method '%s' has more than one parameter", method)
+					String.format("@ReactiveListener method '%s' has more than one parameter", method)
 			);
 		}
 
@@ -61,20 +64,20 @@ public final class ReactiveComponentUtil {
 
 	private static void dynamicCall(ReactiveComponent<?> component, Method method, Object val) {
 		try {
-			if(!method.isAccessible())
+			if (!method.isAccessible())
 				method.setAccessible(true);
-			if(method.getParameterTypes().length == 1) {
+			if (method.getParameterTypes().length == 1) {
 				Class<?> paramType = method.getParameterTypes()[0];
-				if(!ReactiveReflectorUtil.isFitting(val, paramType)) {
+				if (!ReactiveReflectorUtil.isFitting(val, paramType)) {
 					throw invalidMethodParameterException(method, val);
 				}
 				method.invoke(component, val);
 			} else {
 				method.invoke(component);
 			}
-		} catch(IllegalAccessException | InvocationTargetException e) {
+		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new ReactiveException(
-				String.format("Failed to call automatic binding (%s): %s", method, e)
+					String.format("Failed to call automatic binding (%s): %s", method, e)
 			);
 		}
 	}

@@ -11,15 +11,26 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * An Observer is used to observe changes in the state of an Object,
  * eg. reports changes to the properties
- *<p>Only works with {@link Reactable} classes. There are multiple ways to achieve this.</p>
+ * <p>Only works with {@link Reactable} classes. There are multiple ways to achieve this.</p>
  */
-public class ObjectObserver<M extends Reactable> extends AbstractObserver<ObjectObserver.PropertyObservation,M> {
+public class ObjectObserver<M extends Reactable> extends AbstractObserver<ObjectObserver.PropertyObservation, M> {
 
-	private final     Map<String, Object> valueCache = new ConcurrentHashMap<>();
+	private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
+	private final GenericListener updateListener = this::update;
+
+	public static class PropertyObservation {
+		public final String propertyName;
+		public final Object propertyValue;
+
+		PropertyObservation(String propertyName, Object propertyValue) {
+			this.propertyName = propertyName;
+			this.propertyValue = propertyValue;
+		}
+	}
+
 	protected Map<String, Object> getValueCache() {
 		return Collections.unmodifiableMap(valueCache);
 	}
-
 
 	/**
 	 * Updates the cache with the pairs in the map
@@ -28,6 +39,18 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Object
 	 */
 	public void updateCache(Map<String, Object> changed) {
 		valueCache.putAll(changed);
+	}
+
+	public void observe(M object) {
+		if (object == null)
+			throw new IllegalArgumentException("Cannot observe null");
+		object.reactEvent().listen(updateListener);
+		super.observe(object);
+	}
+
+	@Override
+	public void stopObservation() {
+		subject.reactEvent().stopListening(updateListener);
 	}
 
 	/**
@@ -48,7 +71,7 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Object
 	 * @param changed the values that changed and will be changed on the UI
 	 */
 	public void update(Map<String, Object> changed) {
-		for(Map.Entry<String, Object> property : changed.entrySet()) {
+		for (Map.Entry<String, Object> property : changed.entrySet()) {
 			PropertyObservation change = new PropertyObservation(property.getKey(), property.getValue());
 			fireObservation(change);
 		}
@@ -62,7 +85,7 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Object
 	private Map<String, Object> getChanges() {
 		final Map<String, Object> changed = new ConcurrentHashMap<>();
 		final Map<String, Object> state   = subject.getState();
-		for(String property : state.keySet()) {
+		for (String property : state.keySet()) {
 			detectChange(changed, property, state.get(property));
 		}
 		return changed;
@@ -77,32 +100,9 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Object
 	 */
 	private void detectChange(Map<String, Object> changed, String property, Object currentValue) {
 		Object oldValue = valueCache.get(property);
-		if(!Objects.equals(currentValue, oldValue)) {
+		if (!Objects.equals(currentValue, oldValue)) {
 			valueCache.put(property, currentValue);
 			changed.put(property, currentValue);
-		}
-	}
-	private final GenericListener updateListener = this::update;
-
-	public void observe(M object) {
-		if(object == null)
-			throw new IllegalArgumentException("Cannot observe null");
-		object.reactEvent().listen(updateListener);
-		super.observe(object);
-	}
-
-	@Override
-	public void stopObservation() {
-		subject.reactEvent().stopListening(updateListener);
-	}
-
-	public static class PropertyObservation{
-		public final String propertyName;
-		public final Object propertyValue;
-
-		PropertyObservation(String propertyName, Object propertyValue) {
-			this.propertyName = propertyName;
-			this.propertyValue = propertyValue;
 		}
 	}
 }

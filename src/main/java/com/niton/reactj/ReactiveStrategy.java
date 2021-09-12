@@ -20,6 +20,14 @@ public enum ReactiveStrategy {
 	REACT_ON_CUSTOM((a, b) -> Arrays.asList(b).contains(a));
 	private final ReactionDecider decider;
 
+	/**
+	 * Decides wether to react to a method with a certain name or not
+	 */
+	@FunctionalInterface
+	private interface ReactionDecider {
+		boolean decideReaction(String methodName, String... acceptors);
+	}
+
 	ReactiveStrategy(ReactionDecider decider) {
 		this.decider = decider;
 	}
@@ -29,17 +37,10 @@ public enum ReactiveStrategy {
 	 *
 	 * @param name    the name of the method to check
 	 * @param reactTo only used for REACT_ON_CUSTOM elswhile can be empty or null
+	 *
 	 * @return true if this strategy reacts to the given method name
 	 */
 	public boolean reactTo(String name, String... reactTo) {
 		return decider.decideReaction(name, reactTo);
-	}
-
-	/**
-	 * Decides wether to react to a method with a certain name or not
-	 */
-	@FunctionalInterface
-	private interface ReactionDecider {
-		boolean decideReaction(String methodName, String... acceptors);
 	}
 }

@@ -22,17 +22,17 @@ public abstract class ListView<M, E, C> implements ReactiveComponent<ReactiveLis
 
 	protected ListView(Function<M, E> elementCreator) {
 		this.elementCreator = elementCreator;
-		controller          = new ReactiveController<>(this);
+		controller = new ReactiveController<>(this);
 	}
 
 	@Override
 	public void createBindings(ReactiveBinder<ReactiveList<M>> binder) {
 		ReactiveListModel<M> list = new ReactiveListModel<>(
-			this::convertingAdd,
-			this::remove,
-			(e) -> convertingAdd(size(), e),
-			this::convertingRemove,
-			this::size
+				this::convertingAdd,
+				this::remove,
+				(e) -> convertingAdd(size(), e),
+				this::convertingRemove,
+				this::size
 		);
 		list.bind(binder);
 	}
@@ -45,8 +45,6 @@ public abstract class ListView<M, E, C> implements ReactiveComponent<ReactiveLis
 
 	public abstract void remove(int index);
 
-	public abstract void remove(E model);
-
 	public abstract int size();
 
 	private void convertingRemove(M element) {
@@ -54,6 +52,8 @@ public abstract class ListView<M, E, C> implements ReactiveComponent<ReactiveLis
 	}
 
 	public abstract void add(int index, E model);
+
+	public abstract void remove(E model);
 
 	public abstract C getView();
 

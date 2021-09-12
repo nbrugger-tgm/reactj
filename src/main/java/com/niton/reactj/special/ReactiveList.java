@@ -12,38 +12,13 @@ import java.util.List;
 /**
  * Proxy creating interface. There are no implementations! You have to use ReactiveList.create
  * <p>
- * This class wraps a list, it isnt a list implementation it just makes a list implementation (for example ArrayList) reactive
+ * This class wraps a list, it isnt a list implementation it just makes a list implementation (for example ArrayList)
+ * reactive
  *
  * @param <E> Type of the list as specified in {@link List}
  */
 public interface ReactiveList<E> extends Reactable, List<E> {
 
-
-	/**
-	 * Creates an reactive list from an existing list.
-	 * The new reactive list is returned.
-	 * <p>
-	 * After creating a reactive version of a list, DO NOT use the old list reference
-	 * <p>
-	 * {@code
-	 * ArrayList<int> lst = new ArrayList<>();
-	 * lst.add(value1);//This is allowed
-	 * ReactiveList<int> reactive = ReactiveList.create(lst);
-	 * lst.add(value2);//DONT! do this
-	 * }
-	 *
-	 * @param list the list to make reactive
-	 * @param <E>  the type of the list
-	 * @return the reactive list
-	 */
-	static <E> ReactiveList<E> create(List<E> list) {
-		return (ReactiveList<E>) Proxy.newProxyInstance(
-			Thread.currentThread().getContextClassLoader(),
-			new Class[]{ReactiveList.class},
-			new ReactiveListHandler<>(list));
-	}
-
-	void removeById(Object id);
 
 	class ReactiveListHandler<E> implements InvocationHandler {
 		private static final String ADD_METHOD;
@@ -76,7 +51,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 				CLEAR = List.class.getMethod("clear")
 				                  .toGenericString();
-			} catch(NoSuchMethodException e) {
+			} catch (NoSuchMethodException e) {
 				//will not be reached. If reached only because java radically changed
 				throw new LinkageError("Expected methods not found in java.lang.List class", e);
 			}
@@ -87,14 +62,14 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 
 		public ReactiveListHandler(List<E> list) {
 			this.list = list;
-			model     = new ReactiveProxyEngine<>(list);
+			model = new ReactiveProxyEngine<>(list);
 			//model.react(INIT.id(), list);
 		}
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			method.setAccessible(true);
-			if(method.toGenericString().equals(REMOVE_BY_ID)) {
+			if (method.toGenericString().equals(REMOVE_BY_ID)) {
 				performRemoveByID(args);
 				return null;
 			}
@@ -102,57 +77,34 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 			Object returnValue = method.invoke(delegate, args);
 
 			//just react to list calls
-			if(method.getDeclaringClass().equals(List.class)) {
+			if (method.getDeclaringClass().equals(List.class)) {
 				String signature = method.toGenericString();
 				reactToListCall(signature, args);
 			}
 			return returnValue;
 		}
 
-		private Object getDelegateObject(Method method) {
-			Object delegate;
-			if(originatesFrom(method, List.class)) {
-				delegate = list;
-			} else if(originatesFrom(method, Reactable.class)) {
-				delegate = model;
-			} else {
-				throw new ReactiveException(
-					"List Proxy doesnt know how to call " + method.getDeclaringClass()
-				);
-			}
-			return delegate;
-		}
-
-		/**
-		 * Checks if the given method is avainable in the tree of a given type.
-		 *
-		 * @param method the method to check
-		 * @param type   the type to check for the method
-		 * @return true if type contains the method
-		 */
-		private boolean originatesFrom(Method method, Class<?> type) {
-			return method.getDeclaringClass().isAssignableFrom(type);
-		}
-
 		private void performRemoveByID(Object... args) {
-			for(int i = 0; i < list.size(); i++) {
-				if(isSameIdentity(list.get(i), args[0])) {
+			for (int i = 0; i < list.size(); i++) {
+				if (isSameIdentity(list.get(i), args[0])) {
 					list.remove(i);
 					reactToListCall(REMOVE_INDEX, i);
 				}
 			}
 		}
 
-		private boolean isSameIdentity(E element, Object arg) {
-			if(element instanceof Identity) {
-				Identity<?> identity = (Identity<?>) element;
-				if(arg instanceof Identity) {
-					return identity.getID().equals(((Identity<?>) arg).getID());
-				} else {
-					return identity.getID().equals(arg);
-				}
+		private Object getDelegateObject(Method method) {
+			Object delegate;
+			if (originatesFrom(method, List.class)) {
+				delegate = list;
+			} else if (originatesFrom(method, Reactable.class)) {
+				delegate = model;
+			} else {
+				throw new ReactiveException(
+						"List Proxy doesnt know how to call " + method.getDeclaringClass()
+				);
 			}
-			return element.equals(arg);
+			return delegate;
 		}
 
 		private void reactToListCall(String signature, Object... parameters) {
@@ -172,5 +124,57 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 				model.react(REPLACE.id(), parameters[1]);
 			}*/
 		}
+
+		private boolean isSameIdentity(E element, Object arg) {
+			if (element instanceof Identity) {
+				Identity<?> identity = (Identity<?>) element;
+				if (arg instanceof Identity) {
+					return identity.getID().equals(((Identity<?>) arg).getID());
+				} else {
+					return identity.getID().equals(arg);
+				}
+			}
+			return element.equals(arg);
+		}
+
+		/**
+		 * Checks if the given method is avainable in the tree of a given type.
+		 *
+		 * @param method the method to check
+		 * @param type   the type to check for the method
+		 *
+		 * @return true if type contains the method
+		 */
+		private boolean originatesFrom(Method method, Class<?> type) {
+			return method.getDeclaringClass().isAssignableFrom(type);
+		}
 	}
+
+	/**
+	 * Creates an reactive list from an existing list.
+	 * The new reactive list is returned.
+	 * <p>
+	 * After creating a reactive version of a list, DO NOT use the old list reference
+	 * <p>
+	 * {@code
+	 * ArrayList<int> lst = new ArrayList<>();
+	 * lst.add(value1);//This is allowed
+	 * ReactiveList<int> reactive = ReactiveList.create(lst);
+	 * lst.add(value2);//DONT! do this
+	 * }
+	 *
+	 * @param list the list to make reactive
+	 * @param <E>  the type of the list
+	 *
+	 * @return the reactive list
+	 */
+	static <E> ReactiveList<E> create(List<E> list) {
+		return (ReactiveList<E>) Proxy.newProxyInstance(
+				Thread.currentThread().getContextClassLoader(),
+				new Class[]{ReactiveList.class},
+				new ReactiveListHandler<>(list)
+		);
+	}
+
+	void removeById(Object id);
 }

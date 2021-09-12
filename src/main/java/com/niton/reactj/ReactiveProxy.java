@@ -4,10 +4,10 @@ import com.niton.reactj.mvc.GenericEventManager;
 
 import java.util.Map;
 
-public class ReactiveProxy<T> implements Reactable{
+public class ReactiveProxy<T> implements Reactable {
 
 	private final ReactiveWrapper<T> reactor;
-	private final T proxy;
+	private final T                  proxy;
 
 	public ReactiveProxy(ReactiveWrapper<T> reactor, T proxy) {
 		this.reactor = reactor;
@@ -30,7 +30,7 @@ public class ReactiveProxy<T> implements Reactable{
 
 	@Override
 	public void set(String property, Object value) throws Exception {
-		reactor.set(property,value);
+		reactor.set(property, value);
 	}
 
 	public void setStrategy(ReactiveStrategy reactOnAll) {

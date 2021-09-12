@@ -24,20 +24,11 @@ public interface Reactable {
 	 * <br>
 	 * This should notify all bound Observers
 	 */
-	default void react(){
+	default void react() {
 		reactEvent().fire();
 	}
 
 	GenericEventManager reactEvent();
-
-	/**
-	 * Updates a field in this object with the respective name (sentivie to @Reactive)
-	 *
-	 * @param property the name of the property to set (@Reactive respected)
-	 * @param value    the value to change to
-	 * @throws Exception if anything goes wrong
-	 */
-	void set(String property, Object value) throws Exception;
 
 	/**
 	 * Performs multiple {@link #set(String, Object)} operations. One for every Map Entry
@@ -45,13 +36,24 @@ public interface Reactable {
 	 * @param changed the Map containing all changes
 	 */
 	default void set(Map<String, Object> changed) {
-		for(Map.Entry<String, Object> change : changed.entrySet()) {
+		for (Map.Entry<String, Object> change : changed.entrySet()) {
 			try {
 				set(change.getKey(), change.getValue());
-			} catch(Exception e) {
+			} catch (Exception e) {
 				throw new ReactiveException("Set(" + change.getKey() + ", " + change.getValue() + ") failed",
-				                            e);
+				                            e
+				);
 			}
 		}
 	}
+
+	/**
+	 * Updates a field in this object with the respective name (sentivie to @Reactive)
+	 *
+	 * @param property the name of the property to set (@Reactive respected)
+	 * @param value    the value to change to
+	 *
+	 * @throws Exception if anything goes wrong
+	 */
+	void set(String property, Object value) throws Exception;
 }

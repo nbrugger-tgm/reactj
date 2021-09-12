@@ -5,11 +5,13 @@ import com.niton.reactj.special.ListAction;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListObserver<E> extends AbstractObserver<ListObserver.ListObservation,List<E>> {
-	public static class ListObservation{
+public class ListObserver<E> extends AbstractObserver<ListObserver.ListObservation, List<E>> {
+	private final List<E> valueCache = new ArrayList<>();
+
+	public static class ListObservation {
 		public final ListAction action;
-		public final Object content;
-		public final int index;
+		public final Object     content;
+		public final int        index;
 
 		protected ListObservation(ListAction action, Object content, int index) {
 			this.action = action;
@@ -17,9 +19,6 @@ public class ListObserver<E> extends AbstractObserver<ListObserver.ListObservati
 			this.index = index;
 		}
 	}
-
-	private final List<E> valueCache = new ArrayList<>();
-
 
 	@Override
 	public void stopObservation() {
