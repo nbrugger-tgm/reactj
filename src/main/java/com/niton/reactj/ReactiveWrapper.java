@@ -10,7 +10,7 @@ import java.util.Map;
 public class ReactiveWrapper<T> implements Reactable, Serializable {
 	private final GenericEventManager reactEvent = new GenericEventManager();
 	@Unreactive
-	private final T store;
+	private final T                   wrappedObject;
 
 	/**
 	 * Creates a Reactive Object that forwards calls to the given object
@@ -18,12 +18,12 @@ public class ReactiveWrapper<T> implements Reactable, Serializable {
 	 * @param obj the object to forward calls to
 	 */
 	public ReactiveWrapper(T obj) {
-		store = obj;
+		wrappedObject = obj;
 	}
 
 	@Override
 	public Map<String, Object> getState() {
-		return ReactiveReflectorUtil.getState(store);
+		return ReactiveReflectorUtil.getState(wrappedObject);
 	}
 
 	@Override
@@ -33,10 +33,10 @@ public class ReactiveWrapper<T> implements Reactable, Serializable {
 
 	@Override
 	public void set(String property, Object value) throws Exception {
-		ReactiveReflectorUtil.updateField(store, property, value);
+		ReactiveReflectorUtil.updateField(wrappedObject, property, value);
 	}
 
 	public T getObject() {
-		return store;
+		return wrappedObject;
 	}
 }

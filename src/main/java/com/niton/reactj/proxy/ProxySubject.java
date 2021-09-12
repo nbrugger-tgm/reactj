@@ -14,13 +14,8 @@ import java.util.Map;
  * "implementing" this interface removes the need to use {@code ReactiveProxy<MyDataType>} as type definition
  */
 public interface ProxySubject extends Reactable {
-
-	/**
-	 * Get a map of all properties and their values.<br>
-	 * {@code Map<NameOfField,ValueOfField>} The name should be influenced by {@code @Reactive("name")}
-	 *
-	 * @return the state of the object
-	 */
+	
+	@Override
 	default Map<String, Object> getState() {
 		return null;
 	}
@@ -28,15 +23,6 @@ public interface ProxySubject extends Reactable {
 	@Override
 	default GenericEventManager reactEvent() {return null;}
 
-	//default EventManager<ObjectObserver.PropertyObservation> getEventManager(){return null;}
-
-	/**
-	 * Updates a field in this object with the respective name (sentivie to @Reactive)
-	 *
-	 * @param property the name of the property to set (@Reactive respected)
-	 * @param value    the value to change to
-	 *
-	 * @throws Exception if anything goes wrong
-	 */
+	@Override
 	default void set(String property, Object value) throws Exception {}
 }

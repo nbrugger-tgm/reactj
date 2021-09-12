@@ -6,11 +6,11 @@ import java.util.Map;
 
 public class ReactiveProxy<T> implements Reactable {
 
-	private final ReactiveWrapper<T> reactor;
+	private final ReactiveWrapper<T> wrapper;
 	private final T                  proxy;
 
-	public ReactiveProxy(ReactiveWrapper<T> reactor, T proxy) {
-		this.reactor = reactor;
+	public ReactiveProxy(ReactiveWrapper<T> wrapper, T proxy) {
+		this.wrapper = wrapper;
 		this.proxy = proxy;
 	}
 
@@ -20,17 +20,17 @@ public class ReactiveProxy<T> implements Reactable {
 
 	@Override
 	public Map<String, Object> getState() {
-		return reactor.getState();
+		return wrapper.getState();
 	}
 
 	@Override
 	public GenericEventManager reactEvent() {
-		return reactor.reactEvent();
+		return wrapper.reactEvent();
 	}
 
 	@Override
 	public void set(String property, Object value) throws Exception {
-		reactor.set(property, value);
+		wrapper.set(property, value);
 	}
 
 	public void setStrategy(ReactiveStrategy reactOnAll) {

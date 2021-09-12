@@ -50,7 +50,7 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Object
 
 	@Override
 	public void stopObservation() {
-		subject.reactEvent().stopListening(updateListener);
+		observedObject.reactEvent().stopListening(updateListener);
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Object
 	 */
 	private Map<String, Object> getChanges() {
 		final Map<String, Object> changed = new ConcurrentHashMap<>();
-		final Map<String, Object> state   = subject.getState();
+		final Map<String, Object> state   = observedObject.getState();
 		for (String property : state.keySet()) {
 			detectChange(changed, property, state.get(property));
 		}

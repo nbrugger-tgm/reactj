@@ -28,7 +28,7 @@ import static java.lang.String.format;
 public final class ReactiveProxyEngine<M> extends ProxyEngine<M> {
 	private final static Map<Method,Method> subjectMethodMap = new HashMap<>();
 
-	private final ReactiveWrapper<M> wrapper  = new ReactiveWrapper<>(getBackend());
+	private final ReactiveWrapper<M> wrapper  = new ReactiveWrapper<>(getOriginal());
 	@Unreactive
 	private       ReactiveStrategy   strategy = REACT_ON_SETTER;
 	@Unreactive

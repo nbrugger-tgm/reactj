@@ -17,14 +17,14 @@ import static com.niton.reactj.util.ReflectiveUtil.executeCall;
 public abstract class ProxyEngine<T> implements MethodHandler, Serializable {
 	private static final String equalsWarning = "'%s' has no `equals()` implementation!";
 
-	private final T backend;
+	private final T original;
 
 	protected ProxyEngine(T real) {
-		backend = real;
+		original = real;
 	}
 
-	protected T getBackend() {
-		return backend;
+	protected T getOriginal() {
+		return original;
 	}
 
 
@@ -43,13 +43,13 @@ public abstract class ProxyEngine<T> implements MethodHandler, Serializable {
 		}
 
 		if (method.getName().equals("hashCode"))
-			return method.invoke(backend, args);
+			return method.invoke(original, args);
 
 
 		if (useCustomImplementation(method, args))
 			result = executeImplementation(method, args);
 		else {
-			result = executeCall(backend, method, args);
+			result = executeCall(original, method, args);
 			postExecution(method, args);
 		}
 
@@ -74,10 +74,10 @@ public abstract class ProxyEngine<T> implements MethodHandler, Serializable {
 			return ((ProxySubject) args[0]).getState().equals(((ProxySubject) self).getState());
 		}
 		//if call is not "mocked" by the proxy, just forward to the actual object
-		if (thisMethod.getDeclaringClass().equals(backend.getClass())) {
+		if (thisMethod.getDeclaringClass().equals(original.getClass())) {
 			// System.err.println("[WARNING] "+backend.getClass().getTypeName()+".equals()
 			// implementation should also support subclasses of "+backend.getClass().getTypeName());
-			return thisMethod.invoke(backend, args);
+			return thisMethod.invoke(original, args);
 		}
 		return null;
 	}

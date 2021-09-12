@@ -11,7 +11,7 @@ import com.niton.reactj.mvc.Listener;
  */
 public abstract class AbstractObserver<T, O> {
 	private final EventManager<T> observeEvent    = new EventManager<>();
-	protected     O               subject;
+	protected     O               observedObject;
 	/**
 	 * If this property is true, calling {@link #observe(Object)} will report all changes to listeners.
 	 * Otherwise {@link #observe(Object)} will call {@link #reset()}
@@ -46,9 +46,9 @@ public abstract class AbstractObserver<T, O> {
 		if (observable == null) {
 			throw new IllegalArgumentException("Cannot observe null");
 		}
-		if (subject != null)
+		if (observedObject != null)
 			stopObservation();
-		subject = observable;
+		observedObject = observable;
 		if (observeOnRebind) {
 			update();
 		} else {
@@ -78,7 +78,7 @@ public abstract class AbstractObserver<T, O> {
 	 * @return the object that is currently under observation
 	 */
 	public O getObserved() {
-		return subject;
+		return observedObject;
 	}
 
 	public boolean isObservingRebind() {
