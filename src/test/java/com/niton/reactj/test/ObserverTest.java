@@ -22,8 +22,8 @@ public class ObserverTest {
 	public String                  lastChanged;
 	public Object                  lastValue;
 	public String                  converted;
-	public int                           changeCounter = 0;
-	public ReactiveProxy<TestData> personProxy   = ProxyCreator.wrapper(TestData.class);
+	public       int                     changeCounter = 0;
+	public final ReactiveProxy<TestData> personProxy   = ProxyCreator.wrapper(TestData.class);
 
 	@Test
 	@DisplayName("Live Object Reactive Proxy")
@@ -63,12 +63,11 @@ public class ObserverTest {
 	@DisplayName("Reactive Subject method forwarding")
 	public void testReactiveSubjectForwardDomain() throws Exception {
 		SubjectTestData d1       = ProxyCreator.subject(SubjectTestData.class);
-		Reactable       reactive = d1;
-		reactive.set("id", 12);
+		d1.set("id", 12);
 		assertEquals(12, d1.getId(), "Call to the reactive part of a Subject should be forwarded");
-		reactive.set("id", 15);
+		d1.set("id", 15);
 		assertEquals(15, d1.getId(), "Call to the reactive part of a Subject should be forwarded");
-		reactive.set(Collections.singletonMap("c", Color.CYAN));
+		d1.set(Collections.singletonMap("c", Color.CYAN));
 		assertEquals(Color.CYAN,
 		             d1.getC(),
 		             "Call to the reactive part of a Subject should be forwarded");
@@ -98,6 +97,7 @@ public class ObserverTest {
 		lastChanged   = null;
 		changeCounter = 0;
 
+		@SuppressWarnings("unchecked")
 		TestData td = obj instanceof TestData ? (TestData) obj : (obj instanceof ReactiveProxy ? ((ReactiveProxy<? extends TestData>) obj)
 			.getObject() : null);
 		assert td != null;

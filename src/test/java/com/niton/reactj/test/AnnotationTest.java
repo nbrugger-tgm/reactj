@@ -23,11 +23,11 @@ public class AnnotationTest {
 		SET1 = 12,
 		SET2 = 22,
 		SET3 = 83;
-	public ReactiveProxy<DeepBase> deepProxy = ProxyCreator.wrapper(DeepBase.class);
-	public DeepBase                      deep      = deepProxy.getObject();
+	public final ReactiveProxy<DeepBase> deepProxy = ProxyCreator.wrapper(DeepBase.class);
+	public final DeepBase                deep      = deepProxy.getObject();
 
-	public ReactiveProxy<FlatBase> flatProxy = ProxyCreator.wrapper(FlatBase.class);
-	public FlatBase                      flat      = flatProxy.getObject();
+	public final ReactiveProxy<FlatBase> flatProxy = ProxyCreator.wrapper(FlatBase.class);
+	public final FlatBase                flat      = flatProxy.getObject();
 
 	private boolean
 		aCalled    = false,
@@ -161,17 +161,14 @@ public class AnnotationTest {
 	@Test
 	@DisplayName("Exception throwing")
 	void errorTesting() {
-		assertThrows(ReactiveException.class, () -> {
-			ProxyCreator.wrapper(FailBase.class);
-		});
+		assertThrows(ReactiveException.class, () -> ProxyCreator.wrapper(FailBase.class));
 
+		assertThrows(ReactiveException.class, () -> ProxyCreator.wrapper(FlatBase.class, "Wrong type"));
 		assertThrows(ReactiveException.class, () -> {
-			ProxyCreator.wrapper(FlatBase.class, "Wrong type");
-		});
-		assertThrows(ReactiveException.class, () -> {
-			ReactiveComponent deepComponent = new ReactiveComponent() {
+			ReactiveComponent<ReactiveProxy<DeepBase>> deepComponent = new ReactiveComponent<ReactiveProxy<DeepBase>>() {
+
 				@Override
-				public void createBindings(ReactiveBinder binder) {
+				public void createBindings(ReactiveBinder<ReactiveProxy<DeepBase>> binder) {
 				}
 
 
@@ -179,13 +176,12 @@ public class AnnotationTest {
 				void wrong(int too, int many) {
 				}
 			};
-			ReactiveController<ReactiveProxy<DeepBase>> controller = new ReactiveController<>(
-				deepComponent);
+			new ReactiveController<>(deepComponent);
 		});
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveComponent<ReactiveProxy<DeepBase>> deepComponent = new ReactiveComponent() {
+			ReactiveComponent<ReactiveProxy<DeepBase>> deepComponent = new ReactiveComponent<ReactiveProxy<DeepBase>>() {
 				@Override
-				public void createBindings(ReactiveBinder binder) {
+				public void createBindings(ReactiveBinder<ReactiveProxy<DeepBase>> binder) {
 				}
 
 
@@ -201,9 +197,9 @@ public class AnnotationTest {
 		});
 
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveComponent deepComponent = new ReactiveComponent() {
+			ReactiveComponent<ReactiveProxy<DeepBase>> deepComponent = new ReactiveComponent<ReactiveProxy<DeepBase>>() {
 				@Override
-				public void createBindings(ReactiveBinder binder) {
+				public void createBindings(ReactiveBinder<ReactiveProxy<DeepBase>> binder) {
 				}
 
 

@@ -28,11 +28,12 @@ public class ReactiveBinder<L> {
 	 */
 	@FunctionalInterface
 	public interface DisplayFunction<R> {
-		default void display(Object data) {
-			displayTypesave((R) data);
+		@SuppressWarnings("unchecked")
+		default void display(Object data) throws ClassCastException {
+			displayTypesafe((R) data);
 		}
 
-		void displayTypesave(R data);
+		void displayTypesafe(R data);
 	}
 
 	/**
@@ -43,11 +44,12 @@ public class ReactiveBinder<L> {
 	 */
 	@FunctionalInterface
 	public interface Converter<F, T> {
-		default T convert(Object toConvert) {
-			return convertTypesave((F) toConvert);
+		@SuppressWarnings("unchecked")
+		default T convert(Object toConvert)throws ClassCastException {
+			return convertTypesafe((F) toConvert);
 		}
 
-		T convertTypesave(F toConvert);
+		T convertTypesafe(F toConvert);
 	}
 
 	/**
@@ -81,16 +83,8 @@ public class ReactiveBinder<L> {
 			return toDisplayConverter.convert(value);
 		}
 
-		public void display(Object data) {
+		public void display(Object data) throws ClassCastException{
 			displayFunction.display(data);
-		}
-
-		public DisplayFunction<D> getDisplayFunction() {
-			return displayFunction;
-		}
-
-		public Converter<F, D> getToDisplayConverter() {
-			return toDisplayConverter;
 		}
 	}
 
@@ -107,7 +101,7 @@ public class ReactiveBinder<L> {
 		}
 
 		public void display(M model) {
-			display.displayTypesave(getter.get(model));
+			display.displayTypesafe(getter.get(model));
 		}
 	}
 
@@ -142,7 +136,7 @@ public class ReactiveBinder<L> {
 		 * @return the value from the UI converted to a value for the model
 		 */
 		public M getModelConverted() {
-			return toModelConverter.convertTypesave(get());
+			return toModelConverter.convertTypesafe(get());
 		}
 
 		public D get() {

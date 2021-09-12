@@ -133,7 +133,7 @@ public final class ReactiveController<M extends Reactable> {
 	private static void updateBinding(String key, Object value, Binding<?, ?> binding) {
 		Object converted;
 		try {
-			converted = binding.getToDisplayConverter().convert(value);
+			converted = binding.convertToDisplay(value);
 		} catch (ClassCastException ex) {
 			throw badConverterException(key, value.getClass());
 		}
@@ -146,7 +146,7 @@ public final class ReactiveController<M extends Reactable> {
 			}
 		}
 		try {
-			binding.getDisplayFunction().display(converted);
+			binding.display(converted);
 		} catch (ClassCastException ex) {
 			throw bindingException(key, value, converted, ex);
 		}

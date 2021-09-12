@@ -4,7 +4,7 @@ import com.niton.reactj.Reactable;
 import com.niton.reactj.ReactiveStrategy;
 import com.niton.reactj.ReactiveWrapper;
 import com.niton.reactj.annotation.Unreactive;
-import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.util.ReflectiveUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
-import static com.niton.reactj.util.ReflectiveUtil.getMethodSignature;
-import static java.lang.String.format;
 
 /**
  * A proxy providing automatic reacting to method calls.
@@ -56,22 +54,11 @@ public final class ReactiveProxyEngine<M> extends ProxyEngine<M> {
 			throws InvocationTargetException, IllegalAccessException {
 
 		if(!subjectMethodMap.containsKey(thisMethod))
-			subjectMethodMap.put(thisMethod,getOriginMethod(thisMethod, Reactable.class));
+			subjectMethodMap.put(thisMethod, ReflectiveUtil.getOriginMethod(thisMethod, Reactable.class));
 
 		Method originMethod = subjectMethodMap.get(thisMethod);
 
 		return originMethod.invoke(wrapper, args);
-	}
-
-	private Method getOriginMethod(Method thisMethod, Class<?> type) {
-		try {
-			return type.getDeclaredMethod(thisMethod.getName(),thisMethod.getParameterTypes());
-		} catch (NoSuchMethodException e) {
-			throw new ReactiveException(format("There is no method in class '%s' that matches : %s",
-			                                   type.getSimpleName(),
-			                                   getMethodSignature(thisMethod)
-			));
-		}
 	}
 
 	@Override

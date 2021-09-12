@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
 public final class ReflectiveUtil {
 	private ReflectiveUtil() {}
 
@@ -64,6 +66,17 @@ public final class ReflectiveUtil {
 					                    .map(Class::getTypeName)
 					                    .collect(Collectors.joining())
 					), e);
+		}
+	}
+
+	public static Method getOriginMethod(Method thisMethod, Class<?> type) {
+		try {
+			return type.getDeclaredMethod(thisMethod.getName(),thisMethod.getParameterTypes());
+		} catch (NoSuchMethodException e) {
+			throw new ReactiveException(format("There is no method in class '%s' that matches : %s",
+			                                   type.getSimpleName(),
+			                                   getMethodSignature(thisMethod)
+			));
 		}
 	}
 }

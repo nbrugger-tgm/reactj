@@ -20,7 +20,7 @@ public class EqualsAndHashcodeTest {
 	/**
 	 * If this is true also classes without a {@code equals} or {@code hashCode} implementation will be tested
 	 */
-	public static boolean testHashless = false;
+	public static final boolean testHashless = false;
 
 	@Nested
 	@DisplayName("Reactive Object")

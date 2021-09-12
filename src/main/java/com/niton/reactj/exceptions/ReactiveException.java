@@ -49,7 +49,7 @@ public class ReactiveException extends RuntimeException {
 			Class<?> convertedType
 	) {
 		return new ReactiveException(String.format(
-				"Bad binding for \"%s\". Target function doesnt accepts converted (from %s to %s)",
+				"Bad binding for \"%s\". Target function doesn't accept converted (from %s to %s)",
 				key,
 				original.getTypeName(),
 				convertedType.getTypeName()
@@ -58,7 +58,7 @@ public class ReactiveException extends RuntimeException {
 
 	public static ReactiveException badConverterException(String property, Class<?> type) {
 		return new ReactiveException(String.format(
-				"Bad converter. A converter for \"%s\" doesnt accepts type %s",
+				"Bad converter. A converter for \"%s\" doesn't accept type %s",
 				property,
 				type.getSimpleName()
 		));
