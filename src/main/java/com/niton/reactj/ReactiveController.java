@@ -4,7 +4,7 @@ import com.niton.reactj.ReactiveBinder.BiBinding;
 import com.niton.reactj.ReactiveBinder.Binding;
 import com.niton.reactj.ReactiveBinder.SuperBinding;
 import com.niton.reactj.observers.ObjectObserver;
-import com.niton.reactj.proxy.ReactiveProxy;
+import com.niton.reactj.proxy.ReactiveProxyEngine;
 import com.niton.reactj.util.ReactiveComponentUtil;
 
 import java.util.*;
@@ -17,7 +17,7 @@ import static com.niton.reactj.exceptions.ReactiveException.bindingException;
  * A reactive controller is responsible to communicate changes between ReactableObjects and ReactiveComponents.<br>
  * Use this to connect a View and a Model
  *
- * @param <M> Model Type (might be a {@link ReactiveProxy})
+ * @param <M> Model Type (might be a {@link ReactiveProxyEngine})
  */
 public final class ReactiveController<M extends Reactable> {
 	private final ObjectObserver<M> observer = new ObjectObserver<>();

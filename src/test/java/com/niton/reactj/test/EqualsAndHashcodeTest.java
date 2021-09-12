@@ -2,8 +2,8 @@ package com.niton.reactj.test;
 
 import com.niton.reactj.ReactiveObject;
 import com.niton.reactj.ReactiveWrapper;
+import com.niton.reactj.proxy.ProxyCreator;
 import com.niton.reactj.proxy.ProxySubject;
-import com.niton.reactj.proxy.ReactiveProxy;
 import org.junit.jupiter.api.*;
 
 import java.io.*;
@@ -60,11 +60,11 @@ public class EqualsAndHashcodeTest {
 	class ReactiveProxySubjectTests {
 		@TestFactory
 		DynamicContainer testProxySubjects() {
-			RProxySubject.WithHashEquals withHash = ReactiveProxy.create(RProxySubject.WithHashEquals.class);
-			RProxySubject.WithHashEquals withHash2 = ReactiveProxy.create(RProxySubject.WithHashEquals.class);
+			RProxySubject.WithHashEquals withHash = ProxyCreator.subject(RProxySubject.WithHashEquals.class);
+			RProxySubject.WithHashEquals withHash2 = ProxyCreator.subject(RProxySubject.WithHashEquals.class);
 
-			RProxySubject.WithoutHashEquals withtOutHash = ReactiveProxy.create(RProxySubject.WithoutHashEquals.class);
-			RProxySubject.WithoutHashEquals withtOutHash2 = ReactiveProxy.create(RProxySubject.WithoutHashEquals.class);
+			RProxySubject.WithoutHashEquals withtOutHash = ProxyCreator.subject(RProxySubject.WithoutHashEquals.class);
+			RProxySubject.WithoutHashEquals withtOutHash2 = ProxyCreator.subject(RProxySubject.WithoutHashEquals.class);
 
 			RProxySubject.WithHashEquals baseWith = new RProxySubject.WithHashEquals();
 			RProxySubject.WithoutHashEquals baseWithout = new RProxySubject.WithoutHashEquals();
@@ -78,12 +78,12 @@ public class EqualsAndHashcodeTest {
 
 			RProxySubject.WithoutHashEquals[] unique = new RProxySubject.WithoutHashEquals[5];
 			for (int i = 0; i < unique.length; i++) {
-				unique[i] = ReactiveProxy.create(RProxySubject.WithoutHashEquals.class);
+				unique[i] = ProxyCreator.subject(RProxySubject.WithoutHashEquals.class);
 				unique[i].i = i + 100;
 			}
 			RProxySubject.WithHashEquals[] unique2 = new RProxySubject.WithHashEquals[5];
 			for (int i = 0; i < unique2.length; i++) {
-				unique2[i] = ReactiveProxy.create(RProxySubject.WithHashEquals.class);
+				unique2[i] = ProxyCreator.subject(RProxySubject.WithHashEquals.class);
 				unique2[i].i = i + 20;
 			}
 			return generateTests(withHash,
@@ -104,15 +104,15 @@ public class EqualsAndHashcodeTest {
 	class ReactiveProxyTests {
 		@TestFactory
 		DynamicContainer testProxySubjects() {
-			RProxy.WithHashEquals withHash = ReactiveProxy.createProxy(RProxy.WithHashEquals.class)
-					.getObject();
-			RProxy.WithHashEquals withHash2 = ReactiveProxy.createProxy(RProxy.WithHashEquals.class)
-					.getObject();
+			RProxy.WithHashEquals withHash = ProxyCreator.wrapper(RProxy.WithHashEquals.class)
+			                                                    .getObject();
+			RProxy.WithHashEquals withHash2 = ProxyCreator.wrapper(RProxy.WithHashEquals.class)
+			                                                     .getObject();
 
-			RProxy.WithoutHashEquals withOutHash = ReactiveProxy.createProxy(RProxy.WithoutHashEquals.class)
-					.getObject();
-			RProxy.WithoutHashEquals withOutHash2 = ReactiveProxy.createProxy(RProxy.WithoutHashEquals.class)
-					.getObject();
+			RProxy.WithoutHashEquals withOutHash = ProxyCreator.wrapper(RProxy.WithoutHashEquals.class)
+			                                                          .getObject();
+			RProxy.WithoutHashEquals withOutHash2 = ProxyCreator.wrapper(RProxy.WithoutHashEquals.class)
+			                                                           .getObject();
 
 			RProxy.WithHashEquals baseWith = new RProxy.WithHashEquals();
 			RProxy.WithoutHashEquals baseWithout = new RProxy.WithoutHashEquals();
@@ -126,12 +126,12 @@ public class EqualsAndHashcodeTest {
 
 			RProxy.WithoutHashEquals[] unique = new RProxy.WithoutHashEquals[5];
 			for (int i = 0; i < unique.length; i++) {
-				unique[i] = ReactiveProxy.createProxy(RProxy.WithoutHashEquals.class).getObject();
+				unique[i] = ProxyCreator.wrapper(RProxy.WithoutHashEquals.class).getObject();
 				unique[i].i = i + 100;
 			}
 			RProxy.WithHashEquals[] unique2 = new RProxy.WithHashEquals[5];
 			for (int i = 0; i < unique2.length; i++) {
-				unique2[i] = ReactiveProxy.createProxy(RProxy.WithHashEquals.class).getObject();
+				unique2[i] = ProxyCreator.wrapper(RProxy.WithHashEquals.class).getObject();
 				unique2[i].i = i + 20;
 			}
 			return generateTests(withHash,

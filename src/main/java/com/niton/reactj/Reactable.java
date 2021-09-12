@@ -1,9 +1,7 @@
 package com.niton.reactj;
 
 import com.niton.reactj.exceptions.ReactiveException;
-import com.niton.reactj.mvc.EventManager;
 import com.niton.reactj.mvc.GenericEventManager;
-import com.niton.reactj.observers.ObjectObserver;
 
 import java.util.Map;
 
@@ -29,7 +27,6 @@ public interface Reactable {
 	default void react(){
 		reactEvent().fire();
 	}
-	default void react(String s,Object o){}
 
 	GenericEventManager reactEvent();
 

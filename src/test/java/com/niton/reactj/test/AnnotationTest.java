@@ -1,12 +1,15 @@
 package com.niton.reactj.test;
 
-import com.niton.reactj.*;
+import com.niton.reactj.ReactiveBinder;
+import com.niton.reactj.ReactiveComponent;
+import com.niton.reactj.ReactiveController;
+import com.niton.reactj.ReactiveProxy;
 import com.niton.reactj.annotation.ReactivResolution;
 import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.annotation.ReactiveListener;
 import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.exceptions.ReactiveException;
-import com.niton.reactj.proxy.ReactiveProxy;
+import com.niton.reactj.proxy.ProxyCreator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,11 +23,11 @@ public class AnnotationTest {
 		SET1 = 12,
 		SET2 = 22,
 		SET3 = 83;
-	public ReactiveProxy<DeepBase> deepProxy = ReactiveObject.createProxy(DeepBase.class);
-	public DeepBase                deep      = deepProxy.getObject();
+	public ReactiveProxy<DeepBase> deepProxy = ProxyCreator.wrapper(DeepBase.class);
+	public DeepBase                      deep      = deepProxy.getObject();
 
-	public ReactiveProxy<FlatBase> flatProxy = ReactiveObject.createProxy(FlatBase.class);
-	public FlatBase                flat      = flatProxy.getObject();
+	public ReactiveProxy<FlatBase> flatProxy = ProxyCreator.wrapper(FlatBase.class);
+	public FlatBase                      flat      = flatProxy.getObject();
 
 	private boolean
 		aCalled    = false,
@@ -159,11 +162,11 @@ public class AnnotationTest {
 	@DisplayName("Exception throwing")
 	void errorTesting() {
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveObject.createProxy(FailBase.class);
+			ProxyCreator.wrapper(FailBase.class);
 		});
 
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveObject.createProxy(FlatBase.class, "Wrong type");
+			ProxyCreator.wrapper(FlatBase.class, "Wrong type");
 		});
 		assertThrows(ReactiveException.class, () -> {
 			ReactiveComponent deepComponent = new ReactiveComponent() {

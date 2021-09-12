@@ -3,19 +3,15 @@ package com.niton.reactj.util;
 import com.niton.reactj.ReactiveBinder;
 import com.niton.reactj.ReactiveComponent;
 import com.niton.reactj.annotation.ReactivResolution;
-import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.annotation.ReactiveListener;
 import com.niton.reactj.exceptions.ReactiveException;
-import com.niton.reactj.special.ReactiveList;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.DEEP;
+import static com.niton.reactj.util.ReflectiveUtil.invalidMethodParameterException;
 
 
 public final class ReactiveComponentUtil {
@@ -83,25 +79,5 @@ public final class ReactiveComponentUtil {
 		}
 	}
 
-	private static ClassCastException invalidMethodParameterException(Method method, Object val) {
-		String message = String.format("Method %s doesnt accepts type %s",
-		                               getMethodSignature(method),
-		                               val.getClass().getTypeName());
-		return new ClassCastException(message);
-	}
 
-
-	private static String getMethodSignature(Method method) {
-		return String.format("%s.%s(%s)",
-		                     method.getDeclaringClass().getSimpleName(),
-		                     method.getName(),
-		                     getMethodParamSignature(method));
-	}
-
-	private static String getMethodParamSignature(Method method) {
-		return Arrays
-			.stream(method.getParameterTypes())
-			.map(Class::getTypeName)
-			.collect(Collectors.joining(", "));
-	}
 }

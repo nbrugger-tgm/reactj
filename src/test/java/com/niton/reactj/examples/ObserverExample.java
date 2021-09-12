@@ -1,15 +1,15 @@
 package com.niton.reactj.examples;
 
-import com.niton.reactj.proxy.ProxySubject;
 import com.niton.reactj.observers.ObjectObserver;
-import com.niton.reactj.ReactiveObject;
+import com.niton.reactj.proxy.ProxyCreator;
+import com.niton.reactj.proxy.ProxySubject;
 
 import java.awt.*;
 
 public class ObserverExample {
 
 	public static void main(String[] args) {
-		Data model = ReactiveObject.create(Data.class);
+		Data model = ProxyCreator.subject(Data.class);
 
 		ObjectObserver<Data> observer = new ObjectObserver<>();
 

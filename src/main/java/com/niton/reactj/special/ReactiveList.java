@@ -1,15 +1,13 @@
 package com.niton.reactj.special;
 
 import com.niton.reactj.Reactable;
-import com.niton.reactj.proxy.ReactiveProxy;
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.proxy.ReactiveProxyEngine;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
-
-import static com.niton.reactj.special.ListAction.*;
 
 /**
  * Proxy creating interface. There are no implementations! You have to use ReactiveList.create
@@ -84,13 +82,13 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 			}
 		}
 
-		private final List<E>                list;
-		private final ReactiveProxy<List<E>> model;
+		private final List<E>                      list;
+		private final ReactiveProxyEngine<List<E>> model;
 
 		public ReactiveListHandler(List<E> list) {
 			this.list = list;
-			model     = new ReactiveProxy<>(list);
-			model.react(INIT.id(), list);
+			model     = new ReactiveProxyEngine<>(list);
+			//model.react(INIT.id(), list);
 		}
 
 		@Override
@@ -158,7 +156,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 		}
 
 		private void reactToListCall(String signature, Object... parameters) {
-			if(signature.equals(ADD_METHOD)) {
+			/*if(signature.equals(ADD_METHOD)) {
 				model.react(ADD.id(), parameters[0]);
 			} else if(signature.equals(INT_ADD_METHOD)) {
 				model.react(SET_INDEX.id(), parameters[0]);
@@ -172,7 +170,7 @@ public interface ReactiveList<E> extends Reactable, List<E> {
 			} else if(signature.equals(SET_METHOD)) {
 				model.react(SET_INDEX.id(), parameters[0]);
 				model.react(REPLACE.id(), parameters[1]);
-			}
+			}*/
 		}
 	}
 }

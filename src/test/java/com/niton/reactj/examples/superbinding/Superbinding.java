@@ -1,13 +1,13 @@
 package com.niton.reactj.examples.superbinding;
 
-import com.niton.reactj.proxy.ProxySubject;
 import com.niton.reactj.ReactiveComponent;
 import com.niton.reactj.ReactiveController;
-import com.niton.reactj.proxy.ReactiveProxy;
+import com.niton.reactj.proxy.ProxyCreator;
+import com.niton.reactj.proxy.ProxySubject;
 
 public class Superbinding {
 	public static void main(String[] args) {
-		Person p = ReactiveProxy.create(Person.class, "Nils", "Brugger");
+		Person p = ProxyCreator.subject(Person.class, "Nils", "Brugger");
 
 		ReactiveComponent<Person> personCliView = binder -> {
 			binder.bind(Person::fullName, s -> System.out.println("fullName(*) -> " + s));
