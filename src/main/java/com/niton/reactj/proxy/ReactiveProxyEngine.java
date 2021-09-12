@@ -9,7 +9,9 @@ import com.niton.reactj.exceptions.ReactiveException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.niton.reactj.ReactiveStrategy.REACT_ON_SETTER;
 import static com.niton.reactj.util.ReflectiveUtil.getMethodSignature;
@@ -24,6 +26,8 @@ import static java.lang.String.format;
  * @param <M> The type this Model is going to wrap
  */
 public final class ReactiveProxyEngine<M> extends ProxyEngine<M> {
+	private final static Map<Method,Method> subjectMethodMap = new HashMap<>();
+
 	private final ReactiveWrapper<M> wrapper  = new ReactiveWrapper<>(getBackend());
 	@Unreactive
 	private       ReactiveStrategy   strategy = REACT_ON_SETTER;
@@ -40,19 +44,34 @@ public final class ReactiveProxyEngine<M> extends ProxyEngine<M> {
 	}
 
 	@Override
-	protected boolean useCustomImplementation(Method thisMethod, Object[] args) {
-		return thisMethod.getDeclaringClass().equals(ProxySubject.class);
+	protected boolean useCustomImplementation(Method method, Object[] args) {
+		return isDefined(method,ProxySubject.class) ||
+		       isDefined(method,Reactable.class);
 	}
-
+	public boolean isDefined(Method method, Class<?> type){
+		return method.getDeclaringClass().equals(type);
+	}
 	@Override
 	protected Object executeImplementation(Method thisMethod, Object[] args)
 			throws InvocationTargetException, IllegalAccessException {
-		if (!thisMethod.getDeclaringClass().equals(Reactable.class))
-			throw new ReactiveException(format("%s is not implemented in %s",
-			                                   getMethodSignature(thisMethod),
-			                                   getBackend().getClass()
+
+		if(!subjectMethodMap.containsKey(thisMethod))
+			subjectMethodMap.put(thisMethod,getOriginMethod(thisMethod, Reactable.class));
+
+		Method originMethod = subjectMethodMap.get(thisMethod);
+
+		return originMethod.invoke(wrapper, args);
+	}
+
+	private Method getOriginMethod(Method thisMethod, Class<?> type) {
+		try {
+			return type.getDeclaredMethod(thisMethod.getName(),thisMethod.getParameterTypes());
+		} catch (NoSuchMethodException e) {
+			throw new ReactiveException(format("There is no method in class '%s' that matches : %s",
+			                                   type.getSimpleName(),
+			                                   getMethodSignature(thisMethod)
 			));
-		return thisMethod.invoke(wrapper, args);
+		}
 	}
 
 	@Override

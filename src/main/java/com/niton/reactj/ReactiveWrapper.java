@@ -4,9 +4,10 @@ import com.niton.reactj.annotation.Unreactive;
 import com.niton.reactj.mvc.GenericEventManager;
 import com.niton.reactj.util.ReactiveReflectorUtil;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class ReactiveWrapper<T> implements Reactable {
+public class ReactiveWrapper<T> implements Reactable, Serializable {
 	private final GenericEventManager reactEvent = new GenericEventManager();
 	@Unreactive
 	private final T store;

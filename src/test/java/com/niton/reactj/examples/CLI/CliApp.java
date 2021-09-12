@@ -59,7 +59,7 @@ class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 		System.out.print("\r");
 		System.out.print('[');
 		for(int i = 0; i < width; i++) {
-			System.out.print(i < fullDone ? '█' : (i == fullDone ? '>' : ' '));
+			System.out.print(i < fullDone ? "█" : (i == fullDone ? '>' : ' '));
 		}
 		System.out.print(']');
 		System.out.print((int) (percent * 100) + "%");
@@ -68,6 +68,6 @@ class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 	@Override
 	public void createBindings(ReactiveBinder<ReactiveProxy<Progress>> binder) {
 		binder.bind("percent", this::renderProgress);
-		binder.<Double>showIf("percent", this::displayDone, p -> p == 1);
+		binder.<Double>showIf("percent", this::displayDone, p -> p >= 0.999);
 	}
 }

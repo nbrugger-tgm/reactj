@@ -2,6 +2,7 @@ package com.niton.reactj.proxy;
 
 import javassist.util.proxy.MethodHandler;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -13,7 +14,7 @@ import static com.niton.reactj.util.ReflectiveUtil.executeCall;
  * @param <T> the type the proxy emulates
  * @param <P> the product type of the proxy
  */
-public abstract class ProxyEngine<T> implements MethodHandler {
+public abstract class ProxyEngine<T> implements MethodHandler, Serializable {
 	private static final String equalsWarning = "'%s' has no `equals()` implementation!";
 
 	private final T backend;
