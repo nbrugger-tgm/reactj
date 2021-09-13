@@ -1,7 +1,7 @@
 package com.niton.reactj.mvc;
 
 /**
- * An general applicable interface to register listeners
+ * A general applicable interface to register listeners
  *
  * @param <E> the type of event this listener will react to
  */

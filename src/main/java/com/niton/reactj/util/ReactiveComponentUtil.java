@@ -3,19 +3,15 @@ package com.niton.reactj.util;
 import com.niton.reactj.ReactiveBinder;
 import com.niton.reactj.ReactiveComponent;
 import com.niton.reactj.annotation.ReactivResolution;
-import com.niton.reactj.annotation.Reactive;
 import com.niton.reactj.annotation.ReactiveListener;
 import com.niton.reactj.exceptions.ReactiveException;
-import com.niton.reactj.special.ReactiveList;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.DEEP;
+import static com.niton.reactj.util.ReflectiveUtil.invalidMethodParameterException;
 
 
 public final class ReactiveComponentUtil {
@@ -30,32 +26,35 @@ public final class ReactiveComponentUtil {
 	public static void createAnnotatedBindings(ReactiveComponent<?> component, ReactiveBinder<?> binder) {
 		Class<?> viewClass = component.getClass();
 
-		ReactivResolution resolution = viewClass.getAnnotation(ReactivResolution.class);
-		boolean searchSuperClasses = resolution != null && resolution.value() == DEEP;
+		ReactivResolution resolution         = viewClass.getAnnotation(ReactivResolution.class);
+		boolean           searchSuperClasses = resolution != null && resolution.value() == DEEP;
 		Method[] methods = MethodUtils.getMethodsWithAnnotation(
-			viewClass,
-			ReactiveListener.class,
-			searchSuperClasses,
-			true
+				viewClass,
+				ReactiveListener.class,
+				searchSuperClasses,
+				true
 		);
 
-		for(Method method : methods) {
+		for (Method method : methods) {
 			processAnnotatedMethod(component, binder, method);
 		}
 	}
 
 	/**
 	 * Attaches an annotated method to the reactive binder (uno-direction)
+	 *
 	 * @param component the component instance the method originates from
-	 * @param binder the binder to bind the method to
-	 * @param method the method to bind
+	 * @param binder    the binder to bind the method to
+	 * @param method    the method to bind
 	 */
-	private static void processAnnotatedMethod(ReactiveComponent<?> component,
-	                                           ReactiveBinder<?> binder,
-	                                           Method method) {
-		if(method.getParameterTypes().length > 1) {
+	private static void processAnnotatedMethod(
+			ReactiveComponent<?> component,
+			ReactiveBinder<?> binder,
+			Method method
+	) {
+		if (method.getParameterTypes().length > 1) {
 			throw new ReactiveException(
-				String.format("@ReactiveListener method '%s' has more than one parameter", method)
+					String.format("@ReactiveListener method '%s' has more than one parameter", method)
 			);
 		}
 
@@ -65,43 +64,23 @@ public final class ReactiveComponentUtil {
 
 	private static void dynamicCall(ReactiveComponent<?> component, Method method, Object val) {
 		try {
-			if(!method.isAccessible())
+			if (!method.isAccessible())
 				method.setAccessible(true);
-			if(method.getParameterTypes().length == 1) {
+			if (method.getParameterTypes().length == 1) {
 				Class<?> paramType = method.getParameterTypes()[0];
-				if(!ReactiveReflectorUtil.isFitting(val, paramType)) {
+				if (!ReactiveReflectorUtil.isFitting(val, paramType)) {
 					throw invalidMethodParameterException(method, val);
 				}
 				method.invoke(component, val);
 			} else {
 				method.invoke(component);
 			}
-		} catch(IllegalAccessException | InvocationTargetException e) {
+		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new ReactiveException(
-				String.format("Failed to call automatic binding (%s): %s", method, e)
+					String.format("Failed to call automatic binding (%s): %s", method, e)
 			);
 		}
 	}
 
-	private static ClassCastException invalidMethodParameterException(Method method, Object val) {
-		String message = String.format("Method %s doesnt accepts type %s",
-		                               getMethodSignature(method),
-		                               val.getClass().getTypeName());
-		return new ClassCastException(message);
-	}
 
-
-	private static String getMethodSignature(Method method) {
-		return String.format("%s.%s(%s)",
-		                     method.getDeclaringClass().getSimpleName(),
-		                     method.getName(),
-		                     getMethodParamSignature(method));
-	}
-
-	private static String getMethodParamSignature(Method method) {
-		return Arrays
-			.stream(method.getParameterTypes())
-			.map(Class::getTypeName)
-			.collect(Collectors.joining(", "));
-	}
 }

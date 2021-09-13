@@ -1,13 +1,14 @@
 package com.niton.reactj.mvc;
 
 import com.niton.reactj.Reactable;
+import com.niton.reactj.ReactiveBinder;
 import com.niton.reactj.ReactiveComponent;
 import com.niton.reactj.ReactiveController;
 
 /**
  * A view with automatic binding
  *
- * @param <V> The base class of the view (eg. JPanel)
+ * @param <V> The base class of the view (e.g. JPanel)
  * @param <M> The model class for this view
  */
 public abstract class ReactiveView<V, M extends Reactable> implements ReactiveComponent<M> {
@@ -15,27 +16,28 @@ public abstract class ReactiveView<V, M extends Reactable> implements ReactiveCo
 	private final V                     view;
 
 	public ReactiveView() {
-		view       = createView();
+		view = createView();
 		controller = new ReactiveController<>(this);
 		registerListeners();
 	}
+
+	/**
+	 * Create the view and the layout.
+	 * <b>Do not try to display anything from the model here. Just create the layout</b><br>
+	 * You should also store references to all components for binding in {@link #createBindings(ReactiveBinder)}
+	 *
+	 * @return the completed view
+	 */
+	protected abstract V createView();
 
 	protected void registerListeners() {
 		//empty by intend as it should only be overwritten if needed
 	}
 
 	/**
-	 * Create the view and the layout.
-	 * <b>Do not try to display anything from the model here. Just create the layout</b>
-	 *
-	 * @return the completed view
+	 * @return the model displayed
 	 */
-	protected abstract V createView();
-
-	/**
-	 * @return the model of the underlying controller
-	 */
-	public M getModel() {
+	public M getData() {
 		return controller.getModel();
 	}
 
@@ -46,7 +48,7 @@ public abstract class ReactiveView<V, M extends Reactable> implements ReactiveCo
 	 * @param object the model to display
 	 */
 	public void setData(M object) {
-		controller.bind(object);
+		controller.setModel(object);
 	}
 
 	public V getView() {

@@ -13,8 +13,7 @@ import static com.niton.reactj.annotation.ReactivResolution.ReactiveResolutions.
 
 
 @ReactivResolution(FLAT)//optional
-public class Person extends ReactiveObject
-	implements Identity<String> {//Identity is needed for list items
+public class Person extends ReactiveObject implements Identity<String> {//Identity is needed for list items
 	public static int ID = 0;
 	private final int id = ID++;
 
@@ -72,14 +71,12 @@ public class Person extends ReactiveObject
 
 	@Override
 	public String toString() {
-		final StringBuffer sb = new StringBuffer("PersonalInformation{");
-		sb.append("age=").append(age);
-		sb.append(", name='").append(name).append('\'');
-		sb.append(", iq=").append(iq);
-		sb.append(", gender=").append(gender);
-		sb.append(", address='").append(address).append('\'');
-		sb.append('}');
-		return sb.toString();
+		return "PersonalInformation{" + "age=" + age +
+		       ", name='" + name + '\'' +
+		       ", iq=" + iq +
+		       ", gender=" + gender +
+		       ", address='" + address + '\'' +
+		       '}';
 	}
 
 	@Override

@@ -16,18 +16,146 @@ public class ReactiveBinder<L> {
 	private final List<SuperBinding<?, L>>              globalDisplaySuperBindings;
 	private final Map<String, List<BiBinding<?, ?>>>    editBindings;
 
+	@FunctionalInterface
+	public interface UpdateFunction {
+		void update(Object obj);
+	}
+
+	/**
+	 * Used to send values to the ReactiveComponent
+	 *
+	 * @param <R>
+	 */
+	@FunctionalInterface
+	public interface DisplayFunction<R> {
+		@SuppressWarnings("unchecked")
+		default void display(Object data) throws ClassCastException {
+			displayTypesafe((R) data);
+		}
+
+		void displayTypesafe(R data);
+	}
+
+	/**
+	 * Converts an object into a different type
+	 *
+	 * @param <F> the type to convert from
+	 * @param <T> the type to convert to
+	 */
+	@FunctionalInterface
+	public interface Converter<F, T> {
+		@SuppressWarnings("unchecked")
+		default T convert(Object toConvert)throws ClassCastException {
+			return convertTypesafe((F) toConvert);
+		}
+
+		T convertTypesafe(F toConvert);
+	}
+
+	/**
+	 * Returns a value from the components
+	 *
+	 * @param <R> the type to receive
+	 */
+	@FunctionalInterface
+	public interface ValueReceiver<R> {
+		R get();
+	}
+
+	@FunctionalInterface
+	public interface SuperValueReceiver<R, B> {
+		R get(B obj);
+	}
+
+	public static class Binding<D, F> {
+		private final DisplayFunction<D> displayFunction;
+		private final Converter<F, D>    toDisplayConverter;
+
+		public Binding(
+				DisplayFunction<D> displayFunctions,
+				Converter<F, D> convertToDisplay
+		) {
+			displayFunction = displayFunctions;
+			toDisplayConverter = convertToDisplay;
+		}
+
+		public D convertToDisplay(Object value) {
+			return toDisplayConverter.convert(value);
+		}
+
+		public void display(Object data) throws ClassCastException{
+			displayFunction.display(data);
+		}
+	}
+
+	public static class SuperBinding<T, M> {
+		private final SuperValueReceiver<T, M> getter;
+		private final DisplayFunction<T>       display;
+
+		public SuperBinding(
+				SuperValueReceiver<T, M> getter,
+				DisplayFunction<T> display
+		) {
+			this.getter = getter;
+			this.display = display;
+		}
+
+		public void display(M model) {
+			display.displayTypesafe(getter.get(model));
+		}
+	}
+
+	public static class BiBinding<M, D> extends Binding<D, M> {
+		private final ValueReceiver<D> receiver;
+		private final Converter<D, M>  toModelConverter;
+
+		public BiBinding(
+				DisplayFunction<D> display,
+				ValueReceiver<D> reciver,
+				Converter<M, D> toDisplayConverter,
+				Converter<D, M> toModelConverter
+		) {
+			super(display, toDisplayConverter);
+			receiver = reciver;
+			this.toModelConverter = toModelConverter;
+		}
+
+		public M convertToModel(Object value) {
+			return toModelConverter.convert(value);
+		}
+
+		public Converter<D, M> getToModelConverter() {
+			return toModelConverter;
+		}
+
+		public ValueReceiver<D> getReceiver() {
+			return receiver;
+		}
+
+		/**
+		 * @return the value from the UI converted to a value for the model
+		 */
+		public M getModelConverted() {
+			return toModelConverter.convertTypesafe(get());
+		}
+
+		public D get() {
+			return receiver.get();
+		}
+	}
+
 	public ReactiveBinder(
-		UpdateFunction update,
-		Map<String, List<Binding<?, ?>>> displayBindings,
-		Map<String, List<SuperBinding<?, L>>> displaySuperBindings,
-		List<SuperBinding<?, L>> globalDisplaySuperBindings,
-		Map<String, List<BiBinding<?, ?>>> editBindings
+			UpdateFunction update,
+			Map<String, List<Binding<?, ?>>> displayBindings,
+			Map<String, List<SuperBinding<?, L>>> displaySuperBindings,
+			List<SuperBinding<?, L>> globalDisplaySuperBindings,
+			Map<String, List<BiBinding<?, ?>>> editBindings
 	) {
-		this.update                     = update;
-		this.displayBindings            = displayBindings;
-		this.displaySuperBindings       = displaySuperBindings;
+		this.update = update;
+		this.displayBindings = displayBindings;
+		this.displaySuperBindings = displaySuperBindings;
 		this.globalDisplaySuperBindings = globalDisplaySuperBindings;
-		this.editBindings               = editBindings;
+		this.editBindings = editBindings;
 	}
 
 	/**
@@ -39,7 +167,8 @@ public class ReactiveBinder<L> {
 	}
 
 	/**
-	 * Binds a property bidirectional. This means that changes in the model are shown in the component and changes in the component are also forwarded to the model
+	 * Binds a property bidirectional. This means that changes in the model are shown in the component and changes in
+	 * the component are also forwarded to the model
 	 *
 	 * @param property           the name of the property to bind to
 	 * @param function           the function used to change the component
@@ -50,16 +179,17 @@ public class ReactiveBinder<L> {
 	 * @param <M>                the type on the model
 	 */
 	public <D, M> void bindBi(
-		String property,
-		DisplayFunction<D> function,
-		ValueReceiver<D> reciver,
-		Converter<D, M> toModelConverter,
-		Converter<M, D> toDisplayConverter
+			String property,
+			DisplayFunction<D> function,
+			ValueReceiver<D> reciver,
+			Converter<D, M> toModelConverter,
+			Converter<M, D> toDisplayConverter
 	) {
 		BiBinding<M, D> binding = new BiBinding<>(function,
 		                                          reciver,
 		                                          toDisplayConverter,
-		                                          toModelConverter);
+		                                          toModelConverter
+		);
 		List<Binding<?, ?>> funcs = displayBindings.getOrDefault(property, new ArrayList<>());
 		funcs.add(binding);
 		displayBindings.put(property, funcs);
@@ -95,9 +225,9 @@ public class ReactiveBinder<L> {
 	 * @param <D>             the type of the prperty in the component
 	 */
 	public <F, D> void bind(
-		String property,
-		DisplayFunction<D> displayFunction,
-		Converter<F, D> transformer
+			String property,
+			DisplayFunction<D> displayFunction,
+			Converter<F, D> transformer
 	) {
 		List<Binding<?, ?>> funcs = displayBindings.getOrDefault(property, new ArrayList<>());
 		funcs.add(new Binding<>(displayFunction, transformer));
@@ -105,25 +235,29 @@ public class ReactiveBinder<L> {
 	}
 
 	/**
-	 * Binds a getter function to a display function. This getter is supplied with the whole model and therefore can assemble a value.
+	 * Binds a getter function to a display function. This getter is supplied with the whole model and therefore can
+	 * assemble a value.
 	 * <br/>
-	 * For example if the class Person has a name and surename the getter could be {@code (Person p)->p.getName()+p.getSurename()}<br/>
+	 * For example if the class Person has a name and surename the getter could be {@code (Person
+	 * p)->p.getName()+p.getSurename()}<br/>
 	 * <p>
-	 * This binding is executed on EVERY change to the model! Due to this being the case, this method is more resource expensive than {@link #bind(SuperValueReceiver, DisplayFunction, String...)} so consider using it instead.
+	 * This binding is executed on EVERY change to the model! Due to this being the case, this method is more resource
+	 * expensive than {@link #bind(SuperValueReceiver, DisplayFunction, String...)} so consider using it instead.
 	 *
 	 * @param getter          a function calculating a value from a reactive object
 	 * @param displayFunction the function to display the value
 	 * @param <D>             the type to display
 	 */
 	public <D> void bind(
-		SuperValueReceiver<D, L> getter,
-		DisplayFunction<D> displayFunction
+			SuperValueReceiver<D, L> getter,
+			DisplayFunction<D> displayFunction
 	) {
 		globalDisplaySuperBindings.add(new SuperBinding<>(getter, displayFunction));
 	}
 
 	/**
-	 * Works the same as {@link #bind(SuperValueReceiver, DisplayFunction)} with the minor difference that it only reacts on the change of certain properties
+	 * Works the same as {@link #bind(SuperValueReceiver, DisplayFunction)} with the minor difference that it only
+	 * reacts on the change of certain properties
 	 *
 	 * @param getter          the function used to contruct a value from the model
 	 * @param displayFunction the function to display the value
@@ -131,20 +265,21 @@ public class ReactiveBinder<L> {
 	 * @param <D>             the type of the displayed values
 	 */
 	public <D> void bind(
-		SuperValueReceiver<D, L> getter,
-		DisplayFunction<D> displayFunction,
-		String... triggers
+			SuperValueReceiver<D, L> getter,
+			DisplayFunction<D> displayFunction,
+			String... triggers
 	) {
-		for(String trigger : triggers) {
+		for (String trigger : triggers) {
 			List<SuperBinding<?, L>> bindings = displaySuperBindings.getOrDefault(trigger,
-			                                                                      new ArrayList<>());
+			                                                                      new ArrayList<>()
+			);
 			bindings.add(new SuperBinding<>(getter, displayFunction));
 			displaySuperBindings.put(trigger, bindings);
 		}
 	}
 
 	/**
-	 * Bind the visibility of an UI element to a condition about the model
+	 * Bind the visibility of a UI element to a condition about the model
 	 *
 	 * @param property       the name of property the condition will be based on
 	 * @param enableFunction the function reference to enable or disable the UI component
@@ -152,153 +287,21 @@ public class ReactiveBinder<L> {
 	 * @param <M>            the type (of the property) present in the model
 	 */
 	public <M> void showIf(
-		String property,
-		DisplayFunction<Boolean> enableFunction,
-		Converter<M, Boolean> condition
+			String property,
+			DisplayFunction<Boolean> enableFunction,
+			Converter<M, Boolean> condition
 	) {
 		bind(property, enableFunction, condition);
 	}
 
 	/**
-	 * Simmilar to the {@code v-if} directive in VUE JS. Creates a binding to show a component only in certain circumstances
+	 * Simmilar to the {@code v-if} directive in VUE JS. Creates a binding to show a component only in certain
+	 * circumstances
 	 *
 	 * @param property       the name of the property to base this decition on
 	 * @param enableFunction the function used to enable/disable the component
 	 */
 	public void showIf(String property, DisplayFunction<Boolean> enableFunction) {
 		bind(property, enableFunction, b -> (boolean) b);
-	}
-
-	@FunctionalInterface
-	public interface UpdateFunction {
-		void update(Object obj);
-	}
-
-	/**
-	 * Used to send values to the ReactiveComponent
-	 *
-	 * @param <R>
-	 */
-	@FunctionalInterface
-	public interface DisplayFunction<R> {
-		default void display(Object data) {
-			displayTypesave((R) data);
-		}
-
-		void displayTypesave(R data);
-	}
-
-	/**
-	 * Converts an object into a different type
-	 *
-	 * @param <F> the type to convert from
-	 * @param <T> the type to convert to
-	 */
-	@FunctionalInterface
-	public interface Converter<F, T> {
-		default T convert(Object toConvert) {
-			return convertTypesave((F) toConvert);
-		}
-
-		T convertTypesave(F toConvert);
-	}
-
-	/**
-	 * Returns a value from the components
-	 *
-	 * @param <R> the type to receive
-	 */
-	@FunctionalInterface
-	public interface ValueReceiver<R> {
-		R get();
-	}
-
-
-	@FunctionalInterface
-	public interface SuperValueReceiver<R, B> {
-		R get(B obj);
-	}
-
-	public static class Binding<D, F> {
-		private final DisplayFunction<D> displayFunction;
-		private final Converter<F, D>    toDisplayConverter;
-
-		public Binding(
-			DisplayFunction<D> displayFunctions,
-			Converter<F, D> convertToDisplay
-		) {
-			displayFunction    = displayFunctions;
-			toDisplayConverter = convertToDisplay;
-		}
-
-		public D convertToDisplay(Object value) {
-			return toDisplayConverter.convert(value);
-		}
-
-		public void display(Object data) {
-			displayFunction.display(data);
-		}
-
-		public DisplayFunction<D> getDisplayFunction() {
-			return displayFunction;
-		}
-
-		public Converter<F, D> getToDisplayConverter() {
-			return toDisplayConverter;
-		}
-	}
-
-	public static class SuperBinding<T, M> {
-		private final SuperValueReceiver<T, M> getter;
-		private final DisplayFunction<T>       display;
-
-		public SuperBinding(SuperValueReceiver<T, M> getter,
-		                    DisplayFunction<T> display) {
-			this.getter  = getter;
-			this.display = display;
-		}
-
-		public void display(M model) {
-			display.displayTypesave(getter.get(model));
-		}
-	}
-
-	public static class BiBinding<M, D> extends Binding<D, M> {
-		private final ValueReceiver<D> receiver;
-		private final Converter<D, M>  toModelConverter;
-
-		public BiBinding(
-			DisplayFunction<D> display,
-			ValueReceiver<D> reciver,
-			Converter<M, D> toDisplayConverter,
-			Converter<D, M> toModelConverter
-		) {
-			super(display, toDisplayConverter);
-			receiver              = reciver;
-			this.toModelConverter = toModelConverter;
-		}
-
-		public M convertToModel(Object value) {
-			return toModelConverter.convert(value);
-		}
-
-		public D get() {
-			return receiver.get();
-		}
-
-		public Converter<D, M> getToModelConverter() {
-			return toModelConverter;
-		}
-
-		public ValueReceiver<D> getReceiver() {
-			return receiver;
-		}
-
-		/**
-		 * @return the value from the UI converted to a value for the model
-		 */
-		public M getModelConverted() {
-			return toModelConverter.convertTypesave(get());
-		}
 	}
 }

@@ -15,20 +15,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <E> the data type of the list (eg. Person)
  */
 public abstract class ReactiveListView
-	<V, C, E extends Reactable & Identity<?>>
-	extends ReactiveView<V, ReactiveList<E>> {
+		<V, C, E extends Reactable & Identity<?>>
+		extends ReactiveView<V, ReactiveList<E>> {
 
 	private final Map<Object, C> viewMap = new ConcurrentHashMap<>();
 
 
 	@Override
-	public void createBindings(ReactiveBinder binder) {
+	public void createBindings(ReactiveBinder<ReactiveList<E>> binder) {
 		ReactiveListModel<E> model = new ReactiveListModel<>(
-			this::addElement,
-			this::removeFromIndex,
-			(e) -> addElement(size(), e),
-			this::remove,
-			this::size
+				this::addElement,
+				this::removeFromIndex,
+				(e) -> addElement(size(), e),
+				this::remove,
+				this::size
 		);
 		model.bind(binder);
 	}
@@ -52,14 +52,13 @@ public abstract class ReactiveListView
 		removeById(element.getID());
 	}
 
-	public abstract void remove(C child);
-
 	public abstract ReactiveView<C, E> createElement(E element);
 
 	public abstract void addAt(C subView, int index);
 
 	/**
-	 * Some UI frameworks such as swing need to repaint after changes. If your framework doesnt requires such a change you can leave this method empty
+	 * Some UI frameworks such as swing need to repaint after changes. If your framework doesnt requires such a change
+	 * you can leave this method empty
 	 */
 	public abstract void refresh();
 
@@ -69,4 +68,6 @@ public abstract class ReactiveListView
 		remove(viewMap.get(id));
 		refresh();
 	}
+
+	public abstract void remove(C child);
 }

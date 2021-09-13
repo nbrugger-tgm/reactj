@@ -84,7 +84,7 @@ public class PersonView extends ReactiveView<JPanel, Person> {
 
 	@Override
 	protected void registerListeners() {
-		selectButton.addActionListener(e -> resetEvent.fire(getModel()));
-		removeButton.addActionListener(e -> removeEvent.fire(getModel()));
+		selectButton.addActionListener(e -> resetEvent.fire(getData()));
+		removeButton.addActionListener(e -> removeEvent.fire(getData()));
 	}
 }

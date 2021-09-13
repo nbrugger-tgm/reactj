@@ -1,21 +1,25 @@
 package com.niton.reactj.examples.CLI;
 
-import com.niton.reactj.*;
+import com.niton.reactj.ReactiveBinder;
+import com.niton.reactj.ReactiveComponent;
+import com.niton.reactj.ReactiveController;
+import com.niton.reactj.ReactiveProxy;
 import com.niton.reactj.annotation.Reactive;
+import com.niton.reactj.proxy.ProxyCreator;
 
 import static com.niton.reactj.examples.CLI.CliApp.Progress;
 
 public class CliApp {
 
 	public static void main(String[] args) throws InterruptedException {
-		ReactiveProxy<Progress> proxy    = ReactiveObject.createProxy(Progress.class);
+		ReactiveProxy<Progress> proxy    = ProxyCreator.wrapper(Progress.class);
 		Progress                progress = proxy.getObject();
 
 		ReactiveController<ReactiveProxy<Progress>> controller = new ReactiveController<>(new ProgressCli());
-		controller.bind(proxy);
+		controller.setModel(proxy);
 
 		while(true) {
-			Thread.sleep((long) (Math.random() * 70));
+			Thread.sleep((long) (Math.random() * 50));
 			progress.setProgress((progress.getProgress() + 0.001));
 			if(progress.getProgress() >= 1) {
 				return;
@@ -40,27 +44,30 @@ public class CliApp {
 
 class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 
-	@Override
-	public void createBindings(ReactiveBinder<ReactiveProxy<Progress>> binder) {
-		binder.bind("percent", this::renderProgress);
-		binder.<Double>showIf("percent", this::displayNearlyDone, p -> p >= 0.8);
-	}
 
-	private void displayNearlyDone(Boolean condition) {
+
+	private void displayDone(Boolean condition) {
 		if(condition) {
-			System.out.print("  !Nearly done!");
+			System.out.print("✔");
 		}
 	}
-
 	private void renderProgress(double percent) {
-		int width = 70;
-		int done  = (int) (percent * width);
+		int width = 50;
+		double done = (percent * width);
+		double port = done%1.0;
+		int fullDone = (int) (done - port);
 		System.out.print("\r");
 		System.out.print('[');
 		for(int i = 0; i < width; i++) {
-			System.out.print(i < done ? "█" : (i == done ? '>' : ' '));
+			System.out.print(i < fullDone ? "█" : (i == fullDone ? '>' : ' '));
 		}
 		System.out.print(']');
 		System.out.print((int) (percent * 100) + "%");
+	}
+
+	@Override
+	public void createBindings(ReactiveBinder<ReactiveProxy<Progress>> binder) {
+		binder.bind("percent", this::renderProgress);
+		binder.<Double>showIf("percent", this::displayDone, p -> p >= 0.999);
 	}
 }

@@ -5,34 +5,34 @@ import com.niton.reactj.special.ListView;
 import javax.swing.*;
 import java.util.function.Function;
 
-public class SwingListView<M> extends ListView<M, JLabel, JPanel> {
-	private final DefaultListModel<M> model = new DefaultListModel<>();
+public class SwingListView<M> extends ListView<M, JComponent, JComponent> {
 	private final JPanel              view  = new JPanel();
+	private final JScrollPane scrollPane = new JScrollPane(view);
 
-	protected SwingListView(Function<M, JLabel> elementCreator) {
+	protected SwingListView(Function<M, JComponent> elementCreator) {
 		super(elementCreator);
 		view.setLayout(new BoxLayout(view, BoxLayout.Y_AXIS));
 	}
 
 	@Override
-	public void add(int index, JLabel model) {
+	public void add(int index, JComponent model) {
 		view.add(model, index);
 		view.repaint();
-		view.validate();
+		scrollPane.validate();
 	}
 
 	@Override
-	public void remove(JLabel model) {
+	public void remove(JComponent model) {
 		view.remove(model);
 		view.repaint();
-		view.validate();
+		scrollPane.validate();
 	}
 
 	@Override
 	public void remove(int index) {
 		view.remove(index);
 		view.repaint();
-		view.validate();
+		scrollPane.validate();
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class SwingListView<M> extends ListView<M, JLabel, JPanel> {
 	}
 
 	@Override
-	public JPanel getView() {
-		return view;
+	public JComponent getView() {
+		return scrollPane;
 	}
 }

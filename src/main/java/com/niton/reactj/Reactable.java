@@ -1,20 +1,17 @@
 package com.niton.reactj;
 
 import com.niton.reactj.exceptions.ReactiveException;
+import com.niton.reactj.mvc.GenericEventManager;
 
 import java.util.Map;
 
+import static java.lang.String.format;
+
 /**
  * This interface enables objects to be reactive.<br>
- * implementing this interface makes it able to bind it to an UI
+ * implementing this interface makes it able to bind it to a UI
  */
 public interface Reactable {
-	/**
-	 * After binding this object will report changes to the given observer
-	 *
-	 * @param observer the observer to bind to this object
-	 */
-	void bind(Observer<?> observer);
 
 	/**
 	 * Get a map of all properties and their values.<br>
@@ -25,35 +22,15 @@ public interface Reactable {
 	Map<String, Object> getState();
 
 	/**
-	 * Unbinds the object from the observer. By doing this the observer will not be notified about changes anymore
-	 *
-	 * @param observer the observer to unbind
-	 */
-	void unbind(Observer<?> observer);
-
-	/**
 	 * Report a change in the state of the object (shoul be called after every setter and mutating method).
 	 * <br>
 	 * This should notify all bound Observers
 	 */
-	void react();
+	default void react() {
+		reactEvent().fire();
+	}
 
-	/**
-	 * React to a certain property
-	 *
-	 * @param property the name of the property to react to
-	 * @param value    the new value
-	 */
-	void react(String property, Object value);
-
-	/**
-	 * Updates a field in this object with the respective name (sentivie to @Reactive)
-	 *
-	 * @param property the name of the property to set (@Reactive respected)
-	 * @param value    the value to change to
-	 * @throws Exception if anything goes wrong
-	 */
-	void set(String property, Object value) throws Exception;
+	GenericEventManager reactEvent();
 
 	/**
 	 * Performs multiple {@link #set(String, Object)} operations. One for every Map Entry
@@ -61,20 +38,22 @@ public interface Reactable {
 	 * @param changed the Map containing all changes
 	 */
 	default void set(Map<String, Object> changed) {
-		for(Map.Entry<String, Object> change : changed.entrySet()) {
+		for (Map.Entry<String, Object> change : changed.entrySet()) {
 			try {
 				set(change.getKey(), change.getValue());
-			} catch(Exception e) {
-				throw new ReactiveException("Set(" + change.getKey() + ", " + change.getValue() + ") failed",
-				                            e);
+			} catch (Exception e) {
+				throw new ReactiveException(format("Set(%s, %s) failed", change.getKey(), change.getValue()), e);
 			}
 		}
 	}
 
 	/**
-	 * Unbind all Observers.
+	 * Updates a field in this object with the respective name (sentivie to @Reactive)
 	 *
-	 * @see #unbind(Observer)
+	 * @param property the name of the property to set (@Reactive respected)
+	 * @param value    the value to change to
+	 *
+	 * @throws Exception if anything goes wrong
 	 */
-	void unbindAll();
+	void set(String property, Object value) throws Exception;
 }

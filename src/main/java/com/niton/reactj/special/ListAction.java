@@ -3,7 +3,7 @@ package com.niton.reactj.special;
 /**
  * For internal use only
  */
-public enum ListActions {
+public enum ListAction {
 	ADD("add"),
 	ADD_INDEX("add_index"),
 	SET_INDEX("set_index"),
@@ -11,11 +11,12 @@ public enum ListActions {
 	REMOVE_OBJECT("remove_object"),
 	CLEAR("clear"),
 	INIT("init"),
-	REPLACE("replace_index");
+	REPLACE("replace_index"),
+	MODIFY("other");
 
 	private final String id;
 
-	ListActions(String identifier) {
+	ListAction(String identifier) {
 		id = identifier;
 	}
 
