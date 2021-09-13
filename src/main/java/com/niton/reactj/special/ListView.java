@@ -11,8 +11,8 @@ import java.util.function.Function;
 /**
  * A list view for simple lists like with Strings or INTs
  *
- * @param <M> The class in the list eg. String
- * @param <E> the component class eg. JLabel
+ * @param <M> The class in the list e.g. String
+ * @param <E> the component class e.g. JLabel
  * @param <C> The container component class eg. JPanel
  */
 public abstract class ListView<M, E, C> implements ReactiveComponent<ReactiveList<M>> {

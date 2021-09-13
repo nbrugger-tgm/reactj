@@ -3,7 +3,7 @@ package com.niton.reactj;
 import java.util.Arrays;
 
 /**
- * This strategies defining the methods that should be reacted to
+ * Defines methods that should be reacted to
  */
 public enum ReactiveStrategy {
 	/**

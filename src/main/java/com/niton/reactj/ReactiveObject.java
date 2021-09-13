@@ -5,7 +5,7 @@ import com.niton.reactj.mvc.GenericEventManager;
 import java.util.Map;
 
 /**
- * The base class to make a Object reactive (usable in ReactiveComponents).
+ * The base class to make an Object reactive (usable in ReactiveComponents).
  * <p>
  * The most common way to use this component is by extending it and call {@link ReactiveObject#react()} whenever needed
  */

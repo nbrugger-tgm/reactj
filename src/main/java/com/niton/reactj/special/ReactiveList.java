@@ -10,7 +10,7 @@ import java.lang.reflect.Proxy;
 import java.util.List;
 
 /**
- * Proxy creating interface. There are no implementations! You have to use ReactiveList.create
+ * Proxy creating interface. There are no implementations! You have to use //todo//
  * <p>
  * This class wraps a list, it isnt a list implementation it just makes a list implementation (for example ArrayList)
  * reactive

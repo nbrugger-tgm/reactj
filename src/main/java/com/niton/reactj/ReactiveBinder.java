@@ -279,7 +279,7 @@ public class ReactiveBinder<L> {
 	}
 
 	/**
-	 * Bind the visibility of an UI element to a condition about the model
+	 * Bind the visibility of a UI element to a condition about the model
 	 *
 	 * @param property       the name of property the condition will be based on
 	 * @param enableFunction the function reference to enable or disable the UI component

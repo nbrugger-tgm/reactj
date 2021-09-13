@@ -27,7 +27,6 @@ public final class ReactiveReflectorUtil {
 
 	/**
 	 * @param val       the object to check the type of
-	 * @param paramType
 	 *
 	 * @return true if val is usable as method parameter with type paramType
 	 */
@@ -119,12 +118,11 @@ public final class ReactiveReflectorUtil {
 	 * Update the field of an object without triggering react()
 	 *
 	 * @param model    the object to update the field
-	 * @param property the name of the field to update regarding to @Reactive
+	 * @param property the name of the field to update (regarding to @Reactive)
 	 * @param value    the value to set the property to
 	 *
-	 * @throws Exception if anything goes wrong for example when using a wrong type for value
 	 */
-	public static void updateField(Object model, String property, Object value) throws Exception {
+	public static void updateField(Object model, String property, Object value) {
 		Class<?> type      = model.getClass();
 		Field[]  fields    = getFields(type);
 		Field    propField = findField(property, fields);

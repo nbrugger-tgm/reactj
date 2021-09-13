@@ -75,7 +75,7 @@ public class ObserverTest {
 
 
 	@Test
-	@DisplayName("Reactive Subject Proxy (no equals imp.)")
+	@DisplayName("Reactive Subject Proxy (no equals() imp.)")
 	public void testNoEqualsReactiveSubjectObserving() {
 		NonEqualSubjectTestData d1 = ProxyCreator.subject(NonEqualSubjectTestData.class);
 		NonEqualSubjectTestData d2 = ProxyCreator.subject(NonEqualSubjectTestData.class);
@@ -83,7 +83,7 @@ public class ObserverTest {
 	}
 
 	public <M extends Reactable> void observerTest(M obj, M newObj) {
-		ObjectObserver<M> testDataObserver = new ObjectObserver<M>();
+		ObjectObserver<M> testDataObserver = new ObjectObserver<>();
 		testDataObserver.addListener(change ->{
 				System.out.println(change.propertyName + " changed to " + change.propertyValue);
 				lastChanged = change.propertyName;

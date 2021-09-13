@@ -42,7 +42,7 @@ public class ProxyCreator {
 	 * This function uses the constructor of the given type. So the type <b>MUST</b> have an accessible constructor. The
 	 * constructor is allowed to have arguments
 	 *
-	 * @param type              The type the ReactiveProxy should emulate (eg. Person.class)
+	 * @param type              The type the ReactiveProxy should emulate (e.g. Person.class)
 	 * @param constructorParams the arguments to pass to the constructor
 	 * @param <C>               the type the Proxy will emulate
 	 *

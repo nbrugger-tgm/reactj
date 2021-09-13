@@ -5,9 +5,11 @@ import com.niton.reactj.mvc.GenericEventManager;
 
 import java.util.Map;
 
+import static java.lang.String.format;
+
 /**
  * This interface enables objects to be reactive.<br>
- * implementing this interface makes it able to bind it to an UI
+ * implementing this interface makes it able to bind it to a UI
  */
 public interface Reactable {
 
@@ -40,9 +42,7 @@ public interface Reactable {
 			try {
 				set(change.getKey(), change.getValue());
 			} catch (Exception e) {
-				throw new ReactiveException("Set(" + change.getKey() + ", " + change.getValue() + ") failed",
-				                            e
-				);
+				throw new ReactiveException(format("Set(%s, %s) failed", change.getKey(), change.getValue()), e);
 			}
 		}
 	}

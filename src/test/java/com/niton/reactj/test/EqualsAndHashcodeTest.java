@@ -265,7 +265,7 @@ public class EqualsAndHashcodeTest {
 			Object read = ois.readObject();
 			assertEquals(o.hashCode(),
 					read.hashCode(),
-					"Deserialized Object should have same hash code as original");
+					"Deserialized Object should have the same hashcode as the original object");
 			assertEquals(o, read, "Deserialized Object should yield true on compare with original");
 		});
 	}

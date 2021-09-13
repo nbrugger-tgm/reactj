@@ -159,7 +159,7 @@ public final class ReactiveController<M extends Reactable> {
 	 *
 	 * @throws Throwable if there is some reflection problems
 	 */
-	public void updateModel() throws Throwable {
+	public void updateModel() {
 		updateModel(null);
 	}
 

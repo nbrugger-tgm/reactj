@@ -58,13 +58,11 @@ public class Person {
 
 	@Override
 	public String toString() {
-		final StringBuffer sb = new StringBuffer("PersonalInformation{");
-		sb.append("age=").append(age);
-		sb.append(", name='").append(name).append('\'');
-		sb.append(", iq=").append(iq);
-		sb.append(", gender=").append(gender);
-		sb.append(", address='").append(address).append('\'');
-		sb.append('}');
-		return sb.toString();
+		return "PersonalInformation{" + "age=" + age +
+		       ", name='" + name + '\'' +
+		       ", iq=" + iq +
+		       ", gender=" + gender +
+		       ", address='" + address + '\'' +
+		       '}';
 	}
 }

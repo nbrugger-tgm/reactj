@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An Observer is used to observe changes in the state of an Object,
- * eg. reports changes to the properties
+ * e.g. reports changes to the properties
  * <p>Only works with {@link Reactable} classes. There are multiple ways to achieve this.</p>
  */
 public class ObjectObserver<M extends Reactable> extends AbstractObserver<ObjectObserver.PropertyObservation, M> {
@@ -92,7 +92,7 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Object
 	}
 
 	/**
-	 * Adds the property to the Map if the actual value is different than the one in cache
+	 * Adds the property to the Map if the actual value is different from the one in cache
 	 *
 	 * @param changed      the map to add the change to if necessary
 	 * @param property     the name of the property to check

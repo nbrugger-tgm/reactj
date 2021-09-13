@@ -13,7 +13,7 @@ public final class ReflectiveUtil {
 	private ReflectiveUtil() {}
 
 	public static ClassCastException invalidMethodParameterException(Method method, Object val) {
-		String message = String.format("Method %s doesnt accepts type %s",
+		String message = String.format("Method %s doesn't accept type %s",
 		                               getMethodSignature(method),
 		                               val.getClass().getTypeName()
 		);

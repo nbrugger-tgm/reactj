@@ -8,7 +8,7 @@ import com.niton.reactj.ReactiveController;
 /**
  * A view with automatic binding
  *
- * @param <V> The base class of the view (eg. JPanel)
+ * @param <V> The base class of the view (e.g. JPanel)
  * @param <M> The model class for this view
  */
 public abstract class ReactiveView<V, M extends Reactable> implements ReactiveComponent<M> {

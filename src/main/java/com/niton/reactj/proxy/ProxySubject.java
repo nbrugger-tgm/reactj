@@ -9,7 +9,7 @@ import java.util.Map;
  * <b>This interface does not adds any functionality!</b><br><br>
  * <p>
  * This interface should <b>only</b> be used when the class is constructed as proxy {@link
- * ReactiveProxyEngine#create(Class, Object...)}<br><br>
+ * ProxyCreator#subject(Class, Object...)}<br><br>
  * <p>
  * "implementing" this interface removes the need to use {@code ReactiveProxy<MyDataType>} as type definition
  */

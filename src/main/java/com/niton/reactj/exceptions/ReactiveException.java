@@ -37,7 +37,7 @@ public class ReactiveException extends RuntimeException {
 
 	private static ReactiveException badBindingTarget(String key, Class<?> original) {
 		return new ReactiveException(String.format(
-				"Bad binding for \"%s\". Target function doesnt accept type %s",
+				"Bad binding for \"%s\". Target function doesn't accept type %s",
 				key,
 				original.getTypeName()
 		));

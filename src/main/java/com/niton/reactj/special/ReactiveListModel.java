@@ -43,7 +43,7 @@ public class ReactiveListModel<E> {
 	}
 
 	/**
-	 * Creates a list model that does supports index based adding
+	 * Creates a list model that does support index based adding
 	 */
 	public ReactiveListModel(
 			IndexAdder<E> intAdder,
