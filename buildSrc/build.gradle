@@ -1,0 +1,24 @@
+plugins {
+    id "groovy-gradle-plugin"
+    id "java-gradle-plugin"
+}
+
+gradlePlugin {
+    plugins {
+        myPlugins {
+            id = 'java-library-module'
+            implementationClass = 'com.niton.gradle.plugins.javalib.ModulePlugin'
+        }
+        register("extra-java-module-info") {
+            id = "extra-java-module-info"
+            implementationClass = "org.gradle.sample.transform.javamodules.ExtraModuleInfoPlugin"
+        }
+    }
+}
+dependencies {
+    implementation 'org.ow2.asm:asm:8.0.1'
+}
+
+repositories {
+    mavenCentral()
+}

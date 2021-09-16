@@ -1,0 +1,29 @@
+plugins {
+    id "java-library-module"
+    id "extra-java-module-info"
+}
+
+dependencies {
+    api project(":utils")
+    api project(":observer")
+    implementation group: 'org.javassist', name: 'javassist', version: '3.28.0-GA'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+    testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
+}
+
+module {
+    name = "core"
+    group = "com.niton.reactj"
+    version = "3.1.0b4"
+}
+
+module.publishing {
+    repo = "https://niton.jfrog.io/artifactory/java-libs"
+    username = "nbrugger@student.tgm.ac.at"
+}
+extraJavaModuleInfo {
+    automaticModule('javassist-3.28.0-GA.jar', 'javasisst');
+}
