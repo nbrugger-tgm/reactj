@@ -1,16 +1,16 @@
 package com.niton.reactj.api.examples.swing;
 
 import com.niton.reactj.api.react.ReactiveBinder;
-import com.niton.reactj.api.react.ReactiveProxy;
 import com.niton.reactj.api.annotation.Reactive;
 import com.niton.reactj.api.mvc.ReactiveView;
+import com.niton.reactj.api.react.ReactiveWrapper;
 import com.niton.reactj.event.EventManager;
 
 import javax.swing.*;
 import java.awt.*;
 
 //For swing components we recommend the com.niton.reactj:swing implementation
-public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
+public class PersonView extends ReactiveView<JPanel, ReactiveWrapper<Person>> {
 
 	public final EventManager<Person> resetEvent = new EventManager<>();
 	private      JPanel               panel;
@@ -47,7 +47,7 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 	}
 
 	@Override
-	public void createBindings(ReactiveBinder<ReactiveProxy<Person>> binder) {
+	public void createBindings(ReactiveBinder<ReactiveWrapper<Person>> binder) {
 		binder.bindBi("surename", surnameInput::setText, surnameInput::getText);
 		surnameInput.getDocument().addUndoableEditListener(binder::react);
 		//surnameInput.addActionListener(bindings::react);

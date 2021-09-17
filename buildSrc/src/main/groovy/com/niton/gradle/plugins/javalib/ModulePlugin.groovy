@@ -56,11 +56,12 @@ class ModulePlugin implements Plugin<Project>{
                     }
                 }
             }
+            pro.tasks.withType(Javadoc) {
+                failOnError = false
+            }
         }
 
-        p.tasks.withType(Javadoc) {
-            failOnError = false
-        }
+
 
 
 

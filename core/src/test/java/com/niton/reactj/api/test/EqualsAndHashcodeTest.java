@@ -60,11 +60,11 @@ public class EqualsAndHashcodeTest {
 	class ReactiveProxySubjectTests {
 		@TestFactory
 		DynamicContainer testProxySubjects() {
-			RProxySubject.WithHashEquals withHash = ProxyCreator.subject(RProxySubject.WithHashEquals.class);
-			RProxySubject.WithHashEquals withHash2 = ProxyCreator.subject(RProxySubject.WithHashEquals.class);
+			RProxySubject.WithHashEquals withHash = ProxyCreator.create(new RProxySubject.WithHashEquals());
+			RProxySubject.WithHashEquals withHash2 = ProxyCreator.create(new RProxySubject.WithHashEquals());
 
-			RProxySubject.WithoutHashEquals withtOutHash = ProxyCreator.subject(RProxySubject.WithoutHashEquals.class);
-			RProxySubject.WithoutHashEquals withtOutHash2 = ProxyCreator.subject(RProxySubject.WithoutHashEquals.class);
+			RProxySubject.WithoutHashEquals withtOutHash = ProxyCreator.create(new RProxySubject.WithoutHashEquals());
+			RProxySubject.WithoutHashEquals withtOutHash2 = ProxyCreator.create(new RProxySubject.WithoutHashEquals());
 
 			RProxySubject.WithHashEquals baseWith = new RProxySubject.WithHashEquals();
 			RProxySubject.WithoutHashEquals baseWithout = new RProxySubject.WithoutHashEquals();
@@ -78,12 +78,12 @@ public class EqualsAndHashcodeTest {
 
 			RProxySubject.WithoutHashEquals[] unique = new RProxySubject.WithoutHashEquals[5];
 			for (int i = 0; i < unique.length; i++) {
-				unique[i] = ProxyCreator.subject(RProxySubject.WithoutHashEquals.class);
+				unique[i] = ProxyCreator.create(new RProxySubject.WithoutHashEquals());
 				unique[i].i = i + 100;
 			}
 			RProxySubject.WithHashEquals[] unique2 = new RProxySubject.WithHashEquals[5];
 			for (int i = 0; i < unique2.length; i++) {
-				unique2[i] = ProxyCreator.subject(RProxySubject.WithHashEquals.class);
+				unique2[i] = ProxyCreator.create(new RProxySubject.WithHashEquals());
 				unique2[i].i = i + 20;
 			}
 			return generateTests(withHash,
@@ -104,14 +104,14 @@ public class EqualsAndHashcodeTest {
 	class ReactiveProxyTests {
 		@TestFactory
 		DynamicContainer testProxySubjects() {
-			RProxy.WithHashEquals withHash = ProxyCreator.wrapper(RProxy.WithHashEquals.class)
+			RProxy.WithHashEquals withHash = ProxyCreator.create(new RProxy.WithHashEquals())
 			                                                    .getObject();
-			RProxy.WithHashEquals withHash2 = ProxyCreator.wrapper(RProxy.WithHashEquals.class)
+			RProxy.WithHashEquals withHash2 = ProxyCreator.create(new RProxy.WithHashEquals())
 			                                                     .getObject();
 
-			RProxy.WithoutHashEquals withOutHash = ProxyCreator.wrapper(RProxy.WithoutHashEquals.class)
+			RProxy.WithoutHashEquals withOutHash = ProxyCreator.create(new RProxy.WithoutHashEquals())
 			                                                          .getObject();
-			RProxy.WithoutHashEquals withOutHash2 = ProxyCreator.wrapper(RProxy.WithoutHashEquals.class)
+			RProxy.WithoutHashEquals withOutHash2 = ProxyCreator.create(new RProxy.WithoutHashEquals())
 			                                                           .getObject();
 
 			RProxy.WithHashEquals baseWith = new RProxy.WithHashEquals();
@@ -126,12 +126,12 @@ public class EqualsAndHashcodeTest {
 
 			RProxy.WithoutHashEquals[] unique = new RProxy.WithoutHashEquals[5];
 			for (int i = 0; i < unique.length; i++) {
-				unique[i] = ProxyCreator.wrapper(RProxy.WithoutHashEquals.class).getObject();
+				unique[i] = ProxyCreator.create(new RProxy.WithoutHashEquals()).getObject();
 				unique[i].i = i + 100;
 			}
 			RProxy.WithHashEquals[] unique2 = new RProxy.WithHashEquals[5];
 			for (int i = 0; i < unique2.length; i++) {
-				unique2[i] = ProxyCreator.wrapper(RProxy.WithHashEquals.class).getObject();
+				unique2[i] = ProxyCreator.create(new RProxy.WithHashEquals()).getObject();
 				unique2[i].i = i + 20;
 			}
 			return generateTests(withHash,

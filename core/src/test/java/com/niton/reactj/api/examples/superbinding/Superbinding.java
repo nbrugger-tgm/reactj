@@ -7,7 +7,7 @@ import com.niton.reactj.api.proxy.ProxySubject;
 
 public class Superbinding {
 	public static void main(String[] args) {
-		Person p = ProxyCreator.subject(Person.class, "Nils", "Brugger");
+		Person p = ProxyCreator.create(new Person("Nils", "Brugger"));
 
 		ReactiveComponent<Person> personCliView = binder -> {
 			binder.bind(Person::fullName, s -> System.out.println("fullName(*) -> " + s));

@@ -5,9 +5,11 @@ module reactj.core {
 	exports com.niton.reactj.api.exceptions;
 	exports com.niton.reactj.api.observer;
 	exports com.niton.reactj.api.react;
+
 	requires transitive reactj.observer;
 	requires transitive reactj.utils;
-	requires transitive javasisst;
-	requires java.se;
+	requires net.bytebuddy;
+	requires org.objenesis;
+	requires jdk.unsupported;
 	requires org.apache.commons.lang3;
 }

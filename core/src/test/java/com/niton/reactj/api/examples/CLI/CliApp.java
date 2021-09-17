@@ -3,19 +3,19 @@ package com.niton.reactj.api.examples.CLI;
 import com.niton.reactj.api.react.ReactiveBinder;
 import com.niton.reactj.api.react.ReactiveComponent;
 import com.niton.reactj.api.react.ReactiveController;
-import com.niton.reactj.api.react.ReactiveProxy;
 import com.niton.reactj.api.annotation.Reactive;
 import com.niton.reactj.api.examples.CLI.CliApp.Progress;
 import com.niton.reactj.api.proxy.ProxyCreator;
+import com.niton.reactj.api.react.ReactiveWrapper;
 
 
 public class CliApp {
 
 	public static void main(String[] args) throws InterruptedException {
-		ReactiveProxy<Progress> proxy    = ProxyCreator.wrapper(Progress.class);
-		Progress                progress = proxy.getObject();
+		ReactiveWrapper<Progress> proxy    = ProxyCreator.create(new Progress());
+		Progress                  progress = proxy.getObject();
 
-		ReactiveController<ReactiveProxy<Progress>> controller = new ReactiveController<>(new ProgressCli());
+		ReactiveController<ReactiveWrapper<Progress>> controller = new ReactiveController<>(new ProgressCli());
 		controller.setModel(proxy);
 
 		while(true) {
@@ -42,7 +42,7 @@ public class CliApp {
 }
 
 
-class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
+class ProgressCli implements ReactiveComponent<ReactiveWrapper<Progress>> {
 
 
 
@@ -66,7 +66,7 @@ class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 	}
 
 	@Override
-	public void createBindings(ReactiveBinder<ReactiveProxy<Progress>> binder) {
+	public void createBindings(ReactiveBinder<ReactiveWrapper<Progress>> binder) {
 		binder.bind("percent", this::renderProgress);
 		binder.<Double>showIf("percent", this::displayDone, p -> p >= 0.999);
 	}

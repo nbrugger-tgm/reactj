@@ -97,7 +97,8 @@ public final class ReactiveReflectorUtil {
 			if (f.isAnnotationPresent(Unreactive.class)) {
 				continue;
 			}
-			state.put(getReactiveName(f), FieldUtils.readField(f, model, true));
+			f.setAccessible(true);
+			state.put(getReactiveName(f), f.get(model));
 		}
 	}
 

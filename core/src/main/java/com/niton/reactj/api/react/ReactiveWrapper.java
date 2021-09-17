@@ -33,7 +33,7 @@ public class ReactiveWrapper<T> implements Reactable, Serializable {
 	}
 
 	@Override
-	public void set(String property, Object value) throws Exception {
+	public void set(String property, Object value) {
 		ReactiveReflectorUtil.updateField(wrappedObject, property, value);
 	}
 

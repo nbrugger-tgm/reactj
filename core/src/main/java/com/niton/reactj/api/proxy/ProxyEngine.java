@@ -1,9 +1,9 @@
 package com.niton.reactj.api.proxy;
 
 
-import javassist.util.proxy.MethodHandler;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -14,7 +14,7 @@ import static com.niton.reactj.api.util.ReflectiveUtil.executeCall;
  *
  * @param <T> the type the proxy emulates
  */
-public abstract class ProxyEngine<T> implements MethodHandler, Serializable {
+public abstract class ProxyEngine<T> implements InvocationHandler, Serializable {
 	private static final String equalsWarning = "'%s' has no `equals()` implementation!";
 
 	private final T original;
@@ -27,9 +27,8 @@ public abstract class ProxyEngine<T> implements MethodHandler, Serializable {
 		return original;
 	}
 
-
 	@Override
-	public Object invoke(Object self, Method method, Method proxyMethod, Object[] args)
+	public Object invoke(Object self, Method method, Object[] args)
 			throws InvocationTargetException, IllegalAccessException {
 		method.setAccessible(true);
 

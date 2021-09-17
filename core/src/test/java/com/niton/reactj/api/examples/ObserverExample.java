@@ -9,7 +9,7 @@ import java.awt.*;
 public class ObserverExample {
 
 	public static void main(String[] args) {
-		Data model = ProxyCreator.subject(Data.class);
+		Data model = ProxyCreator.create(new Data());
 
 		ObjectObserver<Data> observer = new ObjectObserver<>();
 

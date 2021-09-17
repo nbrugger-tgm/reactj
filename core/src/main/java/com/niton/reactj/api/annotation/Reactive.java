@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  *         <b>Fields:</b> Changing the name of a field
  *     </li>
  *     <li>
- *         <b>Methods:</b> Adds an automatic binding<br><i>ONLY WORKS IN {@link com.niton.reactj.ReactiveComponent}</i>
+ *         <b>Methods:</b> Adds an automatic binding<br><i>ONLY WORKS IN {@link com.niton.reactj.api.react.ReactiveComponent}</i>
  *     </li>
  * </ul>
  */

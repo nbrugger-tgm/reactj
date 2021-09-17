@@ -36,7 +36,7 @@ public class ReactiveObject implements Reactable {
 	}
 
 	@Override
-	public void set(String property, Object value) throws Exception {
+	public void set(String property, Object value) {
 		thisWrapper.set(property, value);
 	}
 }

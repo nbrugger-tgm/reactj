@@ -45,8 +45,6 @@ public final class ReflectiveUtil {
 	 *
 	 * @return the return value of the method call
 	 *
-	 * @throws InvocationTargetException
-	 * @throws IllegalAccessException
 	 */
 	public static Object executeCall(Object target, Method method, Object[] args)
 			throws InvocationTargetException, IllegalAccessException {

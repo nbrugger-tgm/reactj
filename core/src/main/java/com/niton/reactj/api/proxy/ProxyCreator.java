@@ -1,229 +1,169 @@
 package com.niton.reactj.api.proxy;
 
-import com.niton.reactj.api.react.ReactiveProxy;
+import com.niton.reactj.api.annotation.Unreactive;
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.api.react.ReactiveProxyEngine;
-import com.niton.reactj.api.util.ReactiveReflectorUtil;
-import javassist.util.proxy.ProxyFactory;
+import com.niton.reactj.api.react.Reactable;
+import com.niton.reactj.api.react.ReactiveWrapper;
+import com.niton.reactj.event.GenericEventManager;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.agent.builder.AgentBuilder.InjectionStrategy;
+import net.bytebuddy.agent.builder.AgentBuilder.InjectionStrategy.UsingReflection;
+import net.bytebuddy.dynamic.loading.ByteArrayClassLoader;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.UsingLookup;
+import net.bytebuddy.dynamic.loading.ClassReloadingStrategy;
+import net.bytebuddy.dynamic.loading.InjectionClassLoader;
+import net.bytebuddy.dynamic.loading.InjectionClassLoader.Strategy;
+import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy.Default;
+import net.bytebuddy.implementation.FieldAccessor;
+import net.bytebuddy.implementation.MethodDelegation;
+import org.apache.commons.lang3.ClassLoaderUtils;
+import org.objenesis.Objenesis;
+import org.objenesis.ObjenesisBase;
+import org.objenesis.ObjenesisStd;
+import org.objenesis.instantiator.ObjectInstantiator;
+import org.objenesis.instantiator.basic.ObjectInputStreamInstantiator;
+import org.objenesis.strategy.InstantiatorStrategy;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
-import static com.niton.reactj.api.exceptions.ReactiveException.constructionException;
-import static com.niton.reactj.api.exceptions.ReactiveException.constructorNotFound;
-import static java.lang.String.format;
+import static java.lang.reflect.Modifier.PRIVATE;
+import static net.bytebuddy.implementation.MethodCall.invoke;
+import static net.bytebuddy.implementation.MethodDelegation.toField;
+import static net.bytebuddy.matcher.ElementMatchers.*;
 
 public class ProxyCreator {
+	private ProxyCreator(){}
 
-	/**
-	 * Works similar ro {@link #wrapper(Class, Object...)} but takes advantage over "Pseudo Proxies"
-	 * (https://github.com/nbrugger-tgm/reactj/issues/31)<br>
-	 * Described more detailed here : https://github.com/nbrugger-tgm/reactj/wiki/Models#proxysubject
-	 *
-	 * @param type              the class to create a proxy for
-	 * @param constructorParams constructor parameters used to build the object
-	 * @param <C>               the type of the object to create a proxy for
-	 *
-	 * @return an instance of {@code <C>} but within a proxy
-	 *
-	 * @throws ReactiveException if stuff goes wrong, many things can cause this. Mostly reflective missfunction
-	 */
-	public static <C extends ProxySubject> C subject(Class<C> type, Object... constructorParams)
-			throws
-			ReactiveException {
-		return wrapper((Class<? extends C>) type, constructorParams).getObject();
-	}
-
-	/**
-	 * Create a new ReactiveProxy from a certain class.
-	 * <p>
-	 * A Proxy manages reactivity automatically. So no need to extend ReactiveObject.<br>
-	 * This function uses the constructor of the given type. So the type <b>MUST</b> have an accessible constructor. The
-	 * constructor is allowed to have arguments
-	 *
-	 * @param type              The type the ReactiveProxy should emulate (e.g. Person.class)
-	 * @param constructorParams the arguments to pass to the constructor
-	 * @param <C>               the type the Proxy will emulate
-	 *
-	 * @return the created proxy
-	 */
-	public static <C> ReactiveProxy<C> wrapper(Class<C> type, Object... constructorParams)
-			throws
-			ReactiveException {
-		checkInstantiatable(type);
-		Class<?>[] paramTypes = Arrays.stream(constructorParams)
-		                              .map(Object::getClass)
-		                              .toArray(Class[]::new);
-
-		Class<?>[] unboxedParamTypes = ReactiveReflectorUtil.unboxTypes(paramTypes);
-
-		C real = tryInstantiation(
-				type,
-				paramTypes,
-				unboxedParamTypes,
-				constructorParams
-		);
-
-		return wrap(real, type, paramTypes, unboxedParamTypes, constructorParams);
-	}
-
-	/**
-	 * @throws IllegalArgumentException if {@code type} is abstract or an interface
-	 */
-	private static <C> void checkInstantiatable(Class<C> type) {
-		if (type.isInterface()) {
-			throw new IllegalArgumentException(
-					format("'%s' is an interface and therefore not instantiatable", type.getSimpleName())
-			);
-		}
-		if (Modifier.isAbstract(type.getModifiers())) {
-			throw new IllegalArgumentException(
-					format("'%s' is an abstract class and therefore not instantiatable", type.getSimpleName())
-			);
-		}
-	}
-
-	private static <C> C tryInstantiation(
-			Class<C> type,
-			Class<?>[] paramTypes,
-			Class<?>[] unboxedParamTypes,
-			Object... parameters
-	) throws ReactiveException {
+	private static final Map<Class<?>, Class<?>>           proxyClasses    = new HashMap<>();
+	private static final Map<Class<?>, ObjectInstantiator<?>> proxyInitiators = new HashMap<>();
+	private static final Map<Class<?>, Field> wraperFields = new HashMap<>();
+	private static final Map<Class<?>, Field> originFields = new HashMap<>();
+	private static final Map<Class<?>, Field> eventFields = new HashMap<>();
+	private static final Map<Module, ClassLoader> proxyLoaders = new HashMap<>();
+	private static final String                            originField     = "PROXY$ORIGIN";
+	private static final String                  eventField   = "PROXY$EVENT_LISTENER";
+	private static final String                  wrapperField = "PROXY$WRAPPER_REF";
+	private static final Method reactMethod;
+	private static final Method eventMethod;
+	private static final Objenesis objenesis = new ObjenesisStd();
+	static {
 		try {
-			if (parameters.length == 0) {
-				return type.newInstance();
-			}
-
-			C real;
-			try {
-				real = instantiate(type, paramTypes, parameters);
-			} catch (NoSuchMethodException e) {
-				//try again with unboxed types
-				real = instantiate(type, unboxedParamTypes, parameters);
-			}
-
-			return real;
-		} catch (Exception e) {
-			throw handle(type, unboxedParamTypes, e);
+			reactMethod = Reactable.class.getMethod("react");
+			eventMethod = Reactable.class.getMethod("reactEvent");
+		} catch (NoSuchMethodException e) {
+			throw new ReactiveException("FATAL: react method not loadable!",e);
 		}
 	}
 
-	private static <C> ReactiveProxy<C> wrap(
-			C original,
-			Class<C> type,
-			Class<?>[] paramTypes,
-			Class<?>[] unboxedParamTypes,
-			Object[] constructorParams
-	) {
-		ReactiveProxyEngine<C> model = new ReactiveProxyEngine<>(original);
-		C proxy = constructProxy(
-				type,
-				paramTypes,
-				unboxedParamTypes,
-				model,
-				constructorParams
-		);
-		return new ReactiveProxy<>(model.getWrapper(), proxy);
-	}
+	public static <T extends ProxySubject> T create(T object){
+		Class<? extends ProxySubject> originClass = object.getClass();
+		Class<?> proxyClass = proxyClasses.computeIfAbsent(originClass, ProxyCreator::createSubjectProxyClass);
+		ObjectInstantiator<?> initiator = proxyInitiators.computeIfAbsent(proxyClass, objenesis::getInstantiatorOf);
 
-	private static <C> C instantiate(Class<C> type, Class<?>[] types, Object[] params)
-			throws
-			NoSuchMethodException,
-			IllegalAccessException,
-			InvocationTargetException,
-			InstantiationException {
-		Constructor<C> constructor = type.getConstructor(types);
-		constructor.setAccessible(true);
-		return constructor.newInstance(params);
-	}
-
-	/**
-	 * Deal with the error
-	 *
-	 * @param exception the exception to deal with
-	 */
-	private static <C> ReactiveException handle(
-			Class<C> type,
-			Class<?>[] types,
-			Exception exception
-	) throws ReactiveException {
-		if (exception instanceof NoSuchMethodException) {
-			return constructorNotFound(type, types);
-		} else {
-			return constructionException(type, exception);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <C> C constructProxy(
-			Class<C> type,
-			Class<?>[] paramTypes,
-			Class<?>[] unboxedParamTypes,
-			ReactiveProxyEngine<C> handler,
-			Object... constructorParams
-	) {
-		ProxyFactory factory = new ProxyFactory();
-		factory.setSuperclass(type);
-		try {
-			C wrapped;
-			try {
-				wrapped = (C) factory.create(paramTypes, constructorParams, handler);
-			} catch (NoSuchMethodException e) {
-				wrapped = (C) factory.create(unboxedParamTypes, constructorParams, handler);
-			}
-			return wrapped;
-		} catch (
-				IllegalAccessException | InstantiationException |
-						InvocationTargetException | NoSuchMethodException e
-		) {
-			throw handle(type, unboxedParamTypes, e);
-		}
-	}
-
-	/**
-	 * Creates a proxy similar to {@link #subject(Class, Object...)} but from a "live" object
-	 *
-	 * @param original the object to create the proxy for
-	 *
-	 * @return the wrapped object
-	 */
-	public static <C extends ProxySubject> C wrapSubject(C original, Object... constructorParams) {
-		return innerWrap(original, constructorParams).getObject();
-	}
-
-	/**
-	 * tries to wrap a live object
-	 *
-	 * @param original          the object to wrap
-	 * @param constructorParams parameters used to create proxy
-	 * @param <C>               the type of the object to wrap
-	 *
-	 * @return the wraped object as proxy
-	 */
-	private static <C> ReactiveProxy<C> innerWrap(C original, Object... constructorParams) {
 		@SuppressWarnings("unchecked")
-		Class<C> type = (Class<C>) original.getClass();
-		Class<?>[] paramTypes = Arrays.stream(constructorParams)
-		                              .map(Object::getClass)
-		                              .toArray(Class[]::new);
-		Class<?>[] unboxedParamTypes = ReactiveReflectorUtil.unboxTypes(paramTypes);
-		return wrap(original, type, paramTypes, unboxedParamTypes, constructorParams);
+		T proxy = (T) initiator.newInstance();
+
+		try {
+			getField(proxyClass,eventFields,eventField).set(proxy, new GenericEventManager());
+			getField(proxyClass,originFields,originField).set(proxy, object);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			//not going to happen
+		}
+		return proxy;
 	}
 
-	/**
-	 * Creates a proxy similar to {@link #wrapper(Class, Object...)} but from a "live object
-	 * instead of creating a new one
-	 *
-	 * @param original          the object to wrap with the proxy
-	 * @param constructorParams the parameters for the construction of the proxy. (must match a constructor from {@code
-	 *                          <C>}
-	 * @param <C>               the type to create the proxy for
-	 *
-	 * @return a reactive proxy covering the original object
-	 */
-	public static <C> ReactiveProxy<C> wrap(C original, Object... constructorParams) {
-		return innerWrap(original, constructorParams);
+	public static <T> ReactiveWrapper<T> create(T object){
+		Class<?> originClass = object.getClass();
+		Class<?> proxyClass = proxyClasses.computeIfAbsent(originClass, ProxyCreator::createProxyClass);
+		ObjectInstantiator<?> initiator = proxyInitiators.computeIfAbsent(proxyClass, objenesis::getInstantiatorOf);
+
+		@SuppressWarnings("unchecked")
+		T proxy = (T) initiator.newInstance();
+
+		ReactiveWrapper<T> wrapper = new ReactiveWrapper<>(proxy);
+		try {
+			getField(proxyClass,wraperFields,wrapperField).set(proxy, wrapper);
+			getField(proxyClass,originFields,originField).set(proxy, object);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			//not going to happen
+		}
+		return wrapper;
+	}
+
+	private static Field getField(Class<?> proxyClass, Map<Class<?>,Field> fieldMap, String field) {
+		return fieldMap.computeIfAbsent(proxyClass, pc -> {
+			Field f;
+			try {
+				f = pc.getDeclaredField(field);
+			} catch (NoSuchFieldException e) {
+				throw new ReactiveException("Can't find wrapper field in proxy", e);
+			}
+			f.setAccessible(true);
+			return f;
+		});
+	}
+
+	private static<T> Class<? extends T> createProxyClass(Class<? extends T> originClass){
+		Module module = originClass.getModule();
+		ProxyCreator.class.getModule().addReads(module);
+		Lookup lookup;
+		try {
+			lookup = MethodHandles.privateLookupIn(originClass, MethodHandles.lookup());
+		} catch (IllegalAccessException e) {
+			throw new ReactiveException("YEE",e);
+		}
+
+		return new ByteBuddy()
+			.subclass(originClass, Default.IMITATE_SUPER_CLASS)
+			.suffix("_PROXY")
+			.defineField(originField, originClass, PRIVATE)
+			.defineField(wrapperField,ReactiveWrapper.class,PRIVATE)
+			.method(
+					not(isAnnotatedWith(Unreactive.class))
+					.and(not(isDeclaredBy(Object.class)))
+					.and(returns(Void.TYPE))
+			)
+				.intercept(
+						MethodDelegation.toField(originField)
+						                .andThen(invoke(reactMethod).onField(wrapperField))
+				)
+			.make()
+			.load(module.getClassLoader(), UsingLookup.of(lookup))
+			.getLoaded();
+	}
+	private static ClassLoader createOpenLoader(Module module){
+		return new ByteArrayClassLoader(null,Map.of());
+	}
+	private static<T> Class<? extends T> createSubjectProxyClass(Class<? extends T> originClass) {
+		return new ByteBuddy()
+				.subclass(originClass, Default.IMITATE_SUPER_CLASS)
+				.suffix("_SUBJECT_PROXY")
+				.defineField(originField, originClass, PRIVATE)
+				.defineField(eventField, GenericEventManager.class, PRIVATE)
+				.method(isDeclaredBy(ProxySubject.class))
+					.intercept(toField(originField))
+				.method(
+						not(isAnnotatedWith(Unreactive.class))
+						.and(not(isDeclaredBy(ProxySubject.class)))
+						.and(not(isDeclaredBy(Object.class)))
+						.and(not(is(reactMethod)))
+				)
+					.intercept(
+							MethodDelegation.toField(originField)
+							.andThen(invoke(reactMethod).onSuper())
+					)
+				.method(is(eventMethod))
+					.intercept(FieldAccessor.ofField(eventField))
+				.make()
+				.load(originClass.getClassLoader())
+				.getLoaded();
 	}
 }
