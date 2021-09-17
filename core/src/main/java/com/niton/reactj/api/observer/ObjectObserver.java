@@ -1,7 +1,7 @@
 package com.niton.reactj.api.observer;
 
 
-import com.niton.reactj.api.Reactable;
+import com.niton.reactj.api.react.Reactable;
 import com.niton.reactj.api.observer.ObjectObserver.PropertyObservation;
 import com.niton.reactj.event.GenericListener;
 import com.niton.reactj.observer.AbstractObserver;
@@ -25,9 +25,23 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Proper
 		public final String propertyName;
 		public final Object propertyValue;
 
-		PropertyObservation(String propertyName, Object propertyValue) {
+		public PropertyObservation(String propertyName, Object propertyValue) {
 			this.propertyName = propertyName;
 			this.propertyValue = propertyValue;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof PropertyObservation)) return false;
+			PropertyObservation that = (PropertyObservation) o;
+			return Objects.equals(propertyName, that.propertyName) &&
+			       Objects.equals(propertyValue, that.propertyValue);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(propertyName, propertyValue);
 		}
 	}
 
@@ -44,6 +58,7 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Proper
 		valueCache.putAll(changed);
 	}
 
+	@Override
 	public void observe(M object) {
 		if (object == null)
 			throw new IllegalArgumentException("Cannot observe null");
@@ -53,6 +68,8 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Proper
 
 	@Override
 	public void stopObservation() {
+		if(observedObject == null)
+			throw new UnsupportedOperationException("Can't stop observation if no object is observed");
 		observedObject.reactEvent().stopListening(updateListener);
 	}
 
@@ -66,6 +83,8 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Proper
 	@Override
 	public void reset() {
 		valueCache.clear();
+		if(isObservingRebind())
+			update();
 	}
 
 	/**

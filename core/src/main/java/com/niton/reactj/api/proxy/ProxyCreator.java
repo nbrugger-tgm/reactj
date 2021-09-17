@@ -1,7 +1,8 @@
 package com.niton.reactj.api.proxy;
 
-import com.niton.reactj.api.ReactiveProxy;
+import com.niton.reactj.api.react.ReactiveProxy;
 import com.niton.reactj.api.exceptions.ReactiveException;
+import com.niton.reactj.api.react.ReactiveProxyEngine;
 import com.niton.reactj.api.util.ReactiveReflectorUtil;
 import javassist.util.proxy.ProxyFactory;
 

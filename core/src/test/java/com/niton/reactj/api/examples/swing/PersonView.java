@@ -1,7 +1,7 @@
 package com.niton.reactj.api.examples.swing;
 
-import com.niton.reactj.api.ReactiveBinder;
-import com.niton.reactj.api.ReactiveProxy;
+import com.niton.reactj.api.react.ReactiveBinder;
+import com.niton.reactj.api.react.ReactiveProxy;
 import com.niton.reactj.api.annotation.Reactive;
 import com.niton.reactj.api.mvc.ReactiveView;
 import com.niton.reactj.event.EventManager;

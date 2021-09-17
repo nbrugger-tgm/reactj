@@ -1,7 +1,7 @@
 package com.niton.reactj.api.proxy;
 
 
-import com.niton.reactj.api.Reactable;
+import com.niton.reactj.api.react.Reactable;
 import com.niton.reactj.event.GenericEventManager;
 
 import java.util.Map;

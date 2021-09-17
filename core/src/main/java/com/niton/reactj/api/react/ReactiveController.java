@@ -1,10 +1,9 @@
-package com.niton.reactj.api;
+package com.niton.reactj.api.react;
 
-import com.niton.reactj.api.ReactiveBinder.BiBinding;
-import com.niton.reactj.api.ReactiveBinder.Binding;
-import com.niton.reactj.api.ReactiveBinder.SuperBinding;
+import com.niton.reactj.api.react.ReactiveBinder.BiBinding;
+import com.niton.reactj.api.react.ReactiveBinder.Binding;
+import com.niton.reactj.api.react.ReactiveBinder.SuperBinding;
 import com.niton.reactj.api.observer.ObjectObserver;
-import com.niton.reactj.api.proxy.ReactiveProxyEngine;
 import com.niton.reactj.api.util.ReactiveComponentUtil;
 
 import java.util.*;

@@ -1,6 +1,7 @@
-package com.niton.reactj.api;
+package com.niton.reactj.api.react;
 
 import com.niton.reactj.api.annotation.Unreactive;
+import com.niton.reactj.api.react.Reactable;
 import com.niton.reactj.api.util.ReactiveReflectorUtil;
 import com.niton.reactj.event.GenericEventManager;
 

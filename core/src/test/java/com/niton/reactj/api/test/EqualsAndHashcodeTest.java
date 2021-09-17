@@ -1,7 +1,7 @@
 package com.niton.reactj.api.test;
 
-import com.niton.reactj.api.ReactiveObject;
-import com.niton.reactj.api.ReactiveWrapper;
+import com.niton.reactj.api.react.ReactiveObject;
+import com.niton.reactj.api.react.ReactiveWrapper;
 import com.niton.reactj.api.proxy.ProxyCreator;
 import com.niton.reactj.api.proxy.ProxySubject;
 import org.junit.jupiter.api.*;

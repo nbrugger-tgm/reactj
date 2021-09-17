@@ -1,7 +1,7 @@
 package com.niton.reactj.api.examples.superbinding;
 
-import com.niton.reactj.api.ReactiveComponent;
-import com.niton.reactj.api.ReactiveController;
+import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.react.ReactiveController;
 import com.niton.reactj.api.proxy.ProxyCreator;
 import com.niton.reactj.api.proxy.ProxySubject;
 

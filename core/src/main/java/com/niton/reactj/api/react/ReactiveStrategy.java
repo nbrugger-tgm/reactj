@@ -1,4 +1,4 @@
-package com.niton.reactj.api;
+package com.niton.reactj.api.react;
 
 import java.util.Arrays;
 

@@ -1,8 +1,8 @@
 package com.niton.reactj.api.mvc;
 
-import com.niton.reactj.api.Reactable;
-import com.niton.reactj.api.ReactiveComponent;
-import com.niton.reactj.api.ReactiveController;
+import com.niton.reactj.api.react.Reactable;
+import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.react.ReactiveController;
 
 /**
  * A view with automatic binding

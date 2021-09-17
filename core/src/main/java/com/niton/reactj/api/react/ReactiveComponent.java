@@ -1,4 +1,7 @@
-package com.niton.reactj.api;
+package com.niton.reactj.api.react;
+
+import com.niton.reactj.api.react.Reactable;
+import com.niton.reactj.api.react.ReactiveBinder;
 
 /**
  * Used to create a component that reacts to a Reactable Model. Most likely used for Views and similar stuff.<br>

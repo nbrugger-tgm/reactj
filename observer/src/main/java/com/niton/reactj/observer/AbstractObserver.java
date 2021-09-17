@@ -70,7 +70,8 @@ public abstract class AbstractObserver<T, O> {
 	protected abstract void update();
 
 	/**
-	 * Resets the observer to a clean state. This should not directly trigger an {@link #update()}
+	 * Resets the observer to a clean state. <br>
+	 * This should trigger an {@link #update()} when {@link #observeOnRebind} is true
 	 */
 	public abstract void reset();
 

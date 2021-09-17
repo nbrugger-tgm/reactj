@@ -1,9 +1,9 @@
 package com.niton.reactj.api.test;
 
-import com.niton.reactj.api.Reactable;
-import com.niton.reactj.api.ReactiveComponent;
-import com.niton.reactj.api.ReactiveController;
-import com.niton.reactj.api.ReactiveProxy;
+import com.niton.reactj.api.react.Reactable;
+import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.react.ReactiveController;
+import com.niton.reactj.api.react.ReactiveProxy;
 import com.niton.reactj.api.annotation.ReactivResolution;
 import com.niton.reactj.api.observer.ObjectObserver;
 import com.niton.reactj.api.proxy.ProxyCreator;

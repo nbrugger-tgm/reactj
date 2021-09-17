@@ -1,6 +1,7 @@
-package com.niton.reactj.api;
+package com.niton.reactj.api.react;
 
 
+import com.niton.reactj.api.annotation.Unreactive;
 import com.niton.reactj.event.GenericEventManager;
 
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Map;
  * The most common way to use this component is by extending it and call {@link ReactiveObject#react()} whenever needed
  */
 public class ReactiveObject implements Reactable {
+	@Unreactive
 	private final ReactiveWrapper<ReactiveObject> thisWrapper = new ReactiveWrapper<>(this);
 
 	/**

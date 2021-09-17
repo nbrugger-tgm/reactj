@@ -1,4 +1,4 @@
-package com.niton.reactj.api;
+package com.niton.reactj.api.react;
 
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.event.GenericEventManager;

@@ -1,7 +1,7 @@
 package com.niton.reactj.api.util;
 
-import com.niton.reactj.api.ReactiveBinder;
-import com.niton.reactj.api.ReactiveComponent;
+import com.niton.reactj.api.react.ReactiveBinder;
+import com.niton.reactj.api.react.ReactiveComponent;
 import com.niton.reactj.api.annotation.ReactivResolution;
 import com.niton.reactj.api.annotation.ReactiveListener;
 import com.niton.reactj.api.exceptions.ReactiveException;

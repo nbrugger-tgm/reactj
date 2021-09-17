@@ -1,9 +1,9 @@
-package com.niton.reactj.api.proxy;
+package com.niton.reactj.api.react;
 
-import com.niton.reactj.api.Reactable;
-import com.niton.reactj.api.ReactiveStrategy;
-import com.niton.reactj.api.ReactiveWrapper;
 import com.niton.reactj.api.annotation.Unreactive;
+import com.niton.reactj.api.proxy.ProxyCreator;
+import com.niton.reactj.api.proxy.ProxyEngine;
+import com.niton.reactj.api.proxy.ProxySubject;
 import com.niton.reactj.api.util.ReflectiveUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.niton.reactj.api.ReactiveStrategy.REACT_ON_SETTER;
+import static com.niton.reactj.api.react.ReactiveStrategy.REACT_ON_SETTER;
 
 /**
  * A proxy providing automatic reacting to method calls.
@@ -43,7 +43,7 @@ public final class ReactiveProxyEngine<M> extends ProxyEngine<M> {
 
 	@Override
 	protected boolean useCustomImplementation(Method method, Object[] args) {
-		return isDefined(method,ProxySubject.class) ||
+		return isDefined(method, ProxySubject.class) ||
 		       isDefined(method, Reactable.class);
 	}
 	public boolean isDefined(Method method, Class<?> type){
