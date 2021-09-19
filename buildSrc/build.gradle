@@ -9,10 +9,6 @@ gradlePlugin {
             id = 'java-library-module'
             implementationClass = 'com.niton.gradle.plugins.javalib.ModulePlugin'
         }
-        register("extra-java-module-info") {
-            id = "extra-java-module-info"
-            implementationClass = "org.gradle.sample.transform.javamodules.ExtraModuleInfoPlugin"
-        }
     }
 }
 dependencies {

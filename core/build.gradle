@@ -1,6 +1,5 @@
 plugins {
     id "java-library-module"
-    id "extra-java-module-info"
 }
 
 dependencies {
@@ -30,7 +29,4 @@ java{
 module.publishing {
     repo = "https://niton.jfrog.io/artifactory/java-libs"
     username = "nbrugger@student.tgm.ac.at"
-}
-extraJavaModuleInfo {
-    automaticModule('javassist-3.28.0-GA.jar', 'javasisst')
 }
