@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 
 import static com.niton.reactj.api.annotation.ReactivResolution.ReactiveResolutions.DEEP;
 import static com.niton.reactj.api.util.ReflectiveUtil.invalidMethodParameterException;
+import static java.lang.String.format;
 
 
 public final class ReactiveComponentUtil {
@@ -54,17 +55,17 @@ public final class ReactiveComponentUtil {
 	) {
 		if (method.getParameterTypes().length > 1) {
 			throw new ReactiveException(
-					String.format("@ReactiveListener method '%s' has more than one parameter", method)
+					format("@ReactiveListener method '%s' has more than one parameter", method)
 			);
 		}
 
 		String mapTarget = method.getAnnotation(ReactiveListener.class).value();
-		binder.bind(mapTarget, (val) -> dynamicCall(component, method, val));
+		binder.bind(mapTarget, val -> dynamicCall(component, method, val));
 	}
 
 	private static void dynamicCall(ReactiveComponent<?> component, Method method, Object val) {
 		try {
-			if (!method.isAccessible())
+			if (!method.canAccess(component))
 				method.setAccessible(true);
 			if (method.getParameterTypes().length == 1) {
 				Class<?> paramType = method.getParameterTypes()[0];
@@ -77,7 +78,8 @@ public final class ReactiveComponentUtil {
 			}
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new ReactiveException(
-					String.format("Failed to call automatic binding (%s): %s", method, e)
+					format("Failed to call automatic binding (%s)", method),
+					e
 			);
 		}
 	}

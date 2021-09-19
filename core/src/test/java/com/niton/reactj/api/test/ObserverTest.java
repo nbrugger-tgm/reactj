@@ -1,43 +1,41 @@
 package com.niton.reactj.api.test;
 
-import com.niton.reactj.api.react.Reactable;
-import com.niton.reactj.api.react.ReactiveComponent;
-import com.niton.reactj.api.react.ReactiveController;
+import com.niton.reactj.api.react.*;
 import com.niton.reactj.api.annotation.ReactivResolution;
 import com.niton.reactj.api.observer.ObjectObserver;
 import com.niton.reactj.api.proxy.ProxyCreator;
 import com.niton.reactj.api.proxy.ProxySubject;
-import com.niton.reactj.api.react.ReactiveWrapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 import java.util.Collections;
+import java.util.Objects;
 
 import static com.niton.reactj.api.annotation.ReactivResolution.ReactiveResolutions.DEEP;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Observer.ObjectObserver")
-public class ObserverTest {
+class ObserverTest {
 	public String                  lastChanged;
 	public Object                  lastValue;
 	public String                  converted;
-	public       int                       changeCounter = 0;
-	public final ReactiveWrapper<TestData> personProxy   = ProxyCreator.create(new TestData());
+	public       int                     changeCounter = 0;
+	public final ReactiveProxy<TestData> personProxy   = ProxyCreator.create(new TestData());
 
 	@Test
 	@DisplayName("Live Object Reactive Proxy")
-	public void testLiveProxyObserving() {
+	void testLiveProxyObserving() {
 		TestData                td   = new TestData();
 		TestData                      td2  = new TestData();
-		ReactiveWrapper<TestData> rtd1 = ProxyCreator.create(td);
-		ReactiveWrapper<TestData> rtd2 = ProxyCreator.create(td2);
+		ReactiveProxy<TestData> rtd1 = ProxyCreator.create(td);
+		ReactiveProxy<TestData> rtd2 = ProxyCreator.create(td2);
 		observerTest(rtd1, rtd2);
 	}
 
 	@Test
 	@DisplayName("Live Object Subject Proxy")
-	public void testLiveProxySubjectObserving() {
+	void testLiveProxySubjectObserving() {
 		SubjectTestData td   = new SubjectTestData();
 		SubjectTestData td2  = new SubjectTestData();
 		SubjectTestData rtd1 = ProxyCreator.create(td);
@@ -47,13 +45,13 @@ public class ObserverTest {
 
 	@Test
 	@DisplayName("Reactive Proxy")
-	public void testProxyObserving() {
+	void testProxyObserving() {
 		observerTest(personProxy, ProxyCreator.create(new TestData()));
 	}
 
 	@Test
 	@DisplayName("Reactive Subject Proxy")
-	public void testReactiveSubjectObserving() {
+	void testReactiveSubjectObserving() {
 		SubjectTestData d1 = ProxyCreator.create(new SubjectTestData());
 		SubjectTestData d2 = ProxyCreator.create(new SubjectTestData());
 		observerTest(d1, d2);
@@ -61,7 +59,7 @@ public class ObserverTest {
 
 	@Test
 	@DisplayName("Reactive Subject method forwarding")
-	public void testReactiveSubjectForwardDomain() throws Exception {
+	void testReactiveSubjectForwardDomain() {
 		SubjectTestData d1       = ProxyCreator.create(new SubjectTestData());
 		d1.set("id", 12);
 		assertEquals(12, d1.getId(), "Call to the reactive part of a Subject should be forwarded");
@@ -76,7 +74,7 @@ public class ObserverTest {
 
 	@Test
 	@DisplayName("Reactive Subject Proxy (no equals() imp.)")
-	public void testNoEqualsReactiveSubjectObserving() {
+	void testNoEqualsReactiveSubjectObserving() {
 		NonEqualSubjectTestData d1 = ProxyCreator.create(new NonEqualSubjectTestData());
 		NonEqualSubjectTestData d2 = ProxyCreator.create(new NonEqualSubjectTestData());
 		observerTest(d1, d2);
@@ -98,7 +96,7 @@ public class ObserverTest {
 		changeCounter = 0;
 
 		@SuppressWarnings("unchecked")
-		TestData td = obj instanceof TestData ? (TestData) obj : (obj instanceof ReactiveWrapper ? ((ReactiveWrapper<? extends TestData>) obj)
+		TestData td = obj instanceof TestData ? (TestData) obj : (obj instanceof ReactiveProxy ? ((ReactiveProxy<? extends TestData>) obj)
 			.getObject() : null);
 		assert td != null;
 
@@ -136,28 +134,28 @@ public class ObserverTest {
 		assertEquals(oldCounter, changeCounter, "Unbound is not working");
 
 		testDataObserver.observe(newObj);
-		assertEquals(testDataObserver.getObserved(), newObj);
+		assertEquals(newObj, testDataObserver.getObserved());
 	}
 
 	@Test
 	@DisplayName("Argument verification")
 	void testArgumentVerification() {
-		ObjectObserver<ReactiveWrapper<TestData>> observer = new ObjectObserver<>();
+		ObjectObserver<ReactiveProxy<TestData>> observer = new ObjectObserver<>();
 		assertThrows(IllegalArgumentException.class, () -> observer.observe(null));
 	}
 
 	@Test
 	@DisplayName("binding")
 	void bindingTest() {
-		ReactiveWrapper<TestData> proxy = ProxyCreator.create(new TestData());
+		ReactiveProxy<TestData> proxy = ProxyCreator.create(new TestData());
 		TestData                      td    = proxy.getObject();
 
-		ReactiveComponent<ReactiveWrapper<TestData>> testComponent = binder -> {
+		ReactiveComponent<ReactiveProxy<TestData>> testComponent = binder -> {
 			binder.bind("id", val -> lastValue = val);
 			binder.bind("c", val -> lastValue = val);
 			binder.bind("c", val -> converted = val, (Color c) -> String.valueOf(c.getRed()));
 		};
-		ReactiveController<ReactiveWrapper<TestData>> controller = new ReactiveController<>(
+		ReactiveController<ReactiveProxy<TestData>> controller = new ReactiveController<>(
 			testComponent);
 		controller.setModel(proxy);
 
@@ -193,16 +191,23 @@ public class ObserverTest {
 		public void setColor(Color c) {
 			this.c = c;
 		}
+
+
+
 	}
 
 	@ReactivResolution(DEEP)
 	public static class SubjectTestData extends TestData implements ProxySubject {
 		@Override
-		public boolean equals(Object obj) {
-			if(!(obj instanceof TestData)) {
-				return false;
-			}
-			return ((TestData) obj).c.equals(c) && ((TestData) obj).id == id;
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof TestData)) return false;
+			TestData testData = (TestData) o;
+			return id == testData.id && Objects.equals(c, testData.c);
+		}
+		@Override
+		public int hashCode() {
+			return Objects.hash(id, c);
 		}
 	}
 

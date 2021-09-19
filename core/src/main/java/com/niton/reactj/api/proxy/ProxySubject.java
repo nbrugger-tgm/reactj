@@ -1,8 +1,9 @@
 package com.niton.reactj.api.proxy;
 
 
+import com.niton.reactj.api.exceptions.ReactiveException;
+import com.niton.reactj.api.exceptions.SubjectCallException;
 import com.niton.reactj.api.react.Reactable;
-import com.niton.reactj.api.util.ReactiveReflectorUtil;
 import com.niton.reactj.event.GenericEventManager;
 
 import java.util.Map;
@@ -16,17 +17,14 @@ import java.util.Map;
  * "implementing" this interface removes the need to use {@code ReactiveProxy<MyDataType>} as type definition
  */
 public interface ProxySubject extends Reactable {
-	
 	@Override
-	default Map<String, Object> getState() {
-		return ReactiveReflectorUtil.getState(this);
-	}
+	default Map<String, Object> getState(){throw new SubjectCallException();}
 
 	@Override
 	default void set(String property, Object value) {
-		ReactiveReflectorUtil.updateField(this,property,value);
+		throw new SubjectCallException();
 	}
 
 	@Override
-	default GenericEventManager reactEvent(){return null;}
+	default GenericEventManager reactEvent(){throw new SubjectCallException();}
 }

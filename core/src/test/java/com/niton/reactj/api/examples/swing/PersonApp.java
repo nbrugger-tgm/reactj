@@ -1,5 +1,6 @@
 package com.niton.reactj.api.examples.swing;
 
+import com.niton.reactj.api.react.ReactiveProxy;
 import com.niton.reactj.api.react.ReactiveStrategy;
 import com.niton.reactj.api.proxy.ProxyCreator;
 import com.niton.reactj.api.react.ReactiveWrapper;
@@ -9,7 +10,7 @@ import java.awt.*;
 
 public class PersonApp {
 	public static void main(String[] args) throws InterruptedException {
-		ReactiveWrapper<Person> proxy = ProxyCreator.create(new Person(12, "Niton"));
+		ReactiveProxy<Person> proxy = ProxyCreator.create(new Person(12, "Niton"));
 
 		//A controller for custom events
 		PersonController ownController = new PersonController();

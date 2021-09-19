@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.internal.impldep.org.eclipse.jgit.api.errors.InvalidConfigurationException
+import org.gradle.jvm.tasks.Jar
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 
 class ModulePlugin implements Plugin<Project>{
@@ -62,7 +63,9 @@ class ModulePlugin implements Plugin<Project>{
         }
 
 
-
+        p.tasks.create("testJar", Jar.class) {
+            from p.sourceSets.test.output
+        }
 
 
         p.jacocoTestReport {

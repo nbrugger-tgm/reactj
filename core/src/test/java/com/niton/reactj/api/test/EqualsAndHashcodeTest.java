@@ -7,10 +7,12 @@ import com.niton.reactj.api.proxy.ProxySubject;
 import org.junit.jupiter.api.*;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicContainer.dynamicContainer;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -73,18 +75,18 @@ public class EqualsAndHashcodeTest {
 			RProxySubject.WithHashEquals changedWith = new RProxySubject.WithHashEquals();
 			RProxySubject.WithoutHashEquals changedWithout = new RProxySubject.WithoutHashEquals();
 
-			changedWith.i = 99;
-			changedWithout.i = 77;
+			changedWith.setI(99);
+			changedWithout.setI(77);
 
 			RProxySubject.WithoutHashEquals[] unique = new RProxySubject.WithoutHashEquals[5];
 			for (int i = 0; i < unique.length; i++) {
 				unique[i] = ProxyCreator.create(new RProxySubject.WithoutHashEquals());
-				unique[i].i = i + 100;
+				unique[i].setI(unique[i].getI()+i+100);
 			}
 			RProxySubject.WithHashEquals[] unique2 = new RProxySubject.WithHashEquals[5];
 			for (int i = 0; i < unique2.length; i++) {
 				unique2[i] = ProxyCreator.create(new RProxySubject.WithHashEquals());
-				unique2[i].i = i + 20;
+				unique2[i].setI(unique2[i].getI()+i+20);
 			}
 			return generateTests(withHash,
 					withHash2,
@@ -104,15 +106,11 @@ public class EqualsAndHashcodeTest {
 	class ReactiveProxyTests {
 		@TestFactory
 		DynamicContainer testProxySubjects() {
-			RProxy.WithHashEquals withHash = ProxyCreator.create(new RProxy.WithHashEquals())
-			                                                    .getObject();
-			RProxy.WithHashEquals withHash2 = ProxyCreator.create(new RProxy.WithHashEquals())
-			                                                     .getObject();
+			RProxy.WithHashEquals withHash = ProxyCreator.create(new RProxy.WithHashEquals()).getObject();
+			RProxy.WithHashEquals withHash2 = ProxyCreator.create(new RProxy.WithHashEquals()).getObject();
 
-			RProxy.WithoutHashEquals withOutHash = ProxyCreator.create(new RProxy.WithoutHashEquals())
-			                                                          .getObject();
-			RProxy.WithoutHashEquals withOutHash2 = ProxyCreator.create(new RProxy.WithoutHashEquals())
-			                                                           .getObject();
+			RProxy.WithoutHashEquals withOutHash = ProxyCreator.create(new RProxy.WithoutHashEquals()).getObject();
+			RProxy.WithoutHashEquals withOutHash2 = ProxyCreator.create(new RProxy.WithoutHashEquals()).getObject();
 
 			RProxy.WithHashEquals baseWith = new RProxy.WithHashEquals();
 			RProxy.WithoutHashEquals baseWithout = new RProxy.WithoutHashEquals();
@@ -121,19 +119,21 @@ public class EqualsAndHashcodeTest {
 			RProxy.WithHashEquals changedWith = new RProxy.WithHashEquals();
 			RProxy.WithoutHashEquals changedWithout = new RProxy.WithoutHashEquals();
 
-			changedWith.i = 99;
-			changedWithout.i = 77;
+			changedWith.setI(99);
+			changedWithout.setI(77);
 
 			RProxy.WithoutHashEquals[] unique = new RProxy.WithoutHashEquals[5];
 			for (int i = 0; i < unique.length; i++) {
 				unique[i] = ProxyCreator.create(new RProxy.WithoutHashEquals()).getObject();
-				unique[i].i = i + 100;
+				unique[i].add(i+100);
 			}
 			RProxy.WithHashEquals[] unique2 = new RProxy.WithHashEquals[5];
 			for (int i = 0; i < unique2.length; i++) {
 				unique2[i] = ProxyCreator.create(new RProxy.WithHashEquals()).getObject();
-				unique2[i].i = i + 20;
+				unique2[i].add(i + 20);
 			}
+			System.out.println(Arrays.toString(unique));
+			System.out.println(Arrays.toString(unique2));
 			return generateTests(withHash,
 					withHash2,
 					withOutHash,
@@ -148,45 +148,70 @@ public class EqualsAndHashcodeTest {
 	}
 
 	public static class RProxySubject {
-		public static class WithoutHashEquals implements ProxySubject, Serializable {
-			public int i = 0;
+		public static class Base{
+			private int i = 0;
+
+			public int getI() {
+				return i;
+			}
+
+			public void setI(int i) {
+				this.i = i;
+			}
+		}
+		public static class WithoutHashEquals extends Base implements ProxySubject, Serializable {
 		}
 
-		public static class WithHashEquals implements ProxySubject, Serializable {
-			public int i = 0;
-
+		public static class WithHashEquals extends Base implements ProxySubject, Serializable {
 			@Override
 			public int hashCode() {
-				return Objects.hash(i);
+				return Objects.hash(getI());
 			}
 
 			public boolean equals(Object o) {
 				if (this == o) return true;
 				if (!(o instanceof RProxySubject.WithHashEquals)) return false;
 				RProxySubject.WithHashEquals yeet = (RProxySubject.WithHashEquals) o;
-				return i == yeet.i;
+				return getI() == yeet.getI();
 			}
 		}
 	}
 
 	public static class RProxy {
-		public static class WithoutHashEquals implements Serializable {
-			public int i = 0;
+		public static class Base{
+			private int i = 0;
+
+			public void add(int i){
+				this.i += i;
+			}
+
+			public void setI(int i) {
+				this.i = i;
+			}
+
+			public int getI() {
+				return i;
+			}
+		}
+		public static class WithoutHashEquals extends Base implements Serializable {
+			@Override
+			public String toString() {
+				return "WithoutHashEquals{" + "i=" + getI() +
+				       '}';
+			}
 		}
 
-		public static class WithHashEquals implements Serializable {
-			public int i = 0;
-
+		public static class WithHashEquals extends Base implements Serializable {
 			@Override
 			public int hashCode() {
-				return Objects.hash(i);
+				return Objects.hash(getI());
 			}
 
 			public boolean equals(Object o) {
 				if (this == o) return true;
 				if (!(o instanceof RProxy.WithHashEquals)) return false;
 				RProxy.WithHashEquals yeet = (RProxy.WithHashEquals) o;
-				return i == yeet.i;
+				return getI() == yeet.getI();
 			}
 		}
 	}
@@ -238,14 +263,25 @@ public class EqualsAndHashcodeTest {
 		assertTrue(unique.length > 1, "Need at least 2 unique objects for hash check");
 		assertEquals(original.hashCode(),
 				reactive.hashCode(),
-				"Hash code of Original Object (" + original + ") and reactive counterpart should be the same");
+				"Hash code of Original Object (" + original + ") and proxy counterpart should be the same");
 		HashMap<Object, Integer> map = new HashMap<>();
 		for (int i = 0; i < unique.length; i++) {
 			map.put(unique[i], i);
 		}
-		assertEquals(unique.length, map.size());
+		assertEquals(
+				unique.length, map.size(),
+				format("Added %s keys to map size afterwards is just %s -> unique key got replaced\n" +
+				       "Unique Keys : %s"
+						, unique.length, map.size(), Arrays.toString(unique))
+		);
 		for (int i = 0; i < unique.length; i++) {
-			assertEquals(i, map.get(unique[i]));
+			assertEquals(i, map.get(unique[i]),
+			             format("Reading from map returned wrong result (from a different key)\n" +
+			                                   "Key '%s'(hash : %s) returned value of key '%s'(hash : %s)\n" +
+			                                   "usedKey.equals(valueKey) : %s",
+			                                          unique[i],unique[i].hashCode(),
+			                                          unique[map.get(unique[i])],unique[map.get(unique[i])].hashCode(),
+			                                          unique[i].equals(unique[map.get(unique[i])])));
 		}
 		map.put(reactive, Integer.MAX_VALUE);
 		assertEquals(map.get(original),
