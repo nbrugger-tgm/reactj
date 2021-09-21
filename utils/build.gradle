@@ -12,3 +12,8 @@ module.publishing {
     repo = "https://niton.jfrog.io/artifactory/java-libs"
     username = "nbrugger@student.tgm.ac.at"
 }
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+    testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
+}
