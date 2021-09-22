@@ -1,0 +1,21 @@
+plugins {
+    id "java-library-module"
+}
+module {
+    group = "com.niton.reactj"
+    version = "4.0.0b4"
+}
+
+module.publishing {
+    repo = "https://niton.jfrog.io/artifactory/java-libs"
+    username = "nbrugger@student.tgm.ac.at"
+}
+
+dependencies {
+    implementation project(":utils")
+    api project(":observer")
+
+    testImplementation project(":observer")
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+    testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
+}

@@ -21,6 +21,7 @@ jobs:
       JVM_OPTS: -Xmx3200m
       TERM: dumb
       CC_TEST_REPORTER_ID: 518e1f28993c76934c9dc7df618443fde8c9fdbcc416e1841023abe47411dd53
+      MODULES: core lists observer utils
 
     steps:
       - checkout
@@ -28,14 +29,21 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
+            - v1-dependencies-{{ checksum "core/build.gradle" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: gradle dependencies
+      - run:
+          name: Setup gradle permissions
+          command: |
+            chmod +x gradlew
 
       - run:
-          name: Setup Code Climate test-reporter
+          name: Download Dependencies
+          command: ./gradlew dependencies
+
+      - run:
+          name: Download Code Climate test-reporter
           command: |
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
@@ -43,22 +51,27 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+          key: v1-dependencies-{{ checksum "core/build.gradle" }}
 
       - run:
           name: Setup Code Climate test-reporter
           command: |
             ./cc-test-reporter before-build
 
-      # run tests!
       - run:
-          name: Run testcases (Gradle)
+          name: Testing (Gradle)#
           command: |
-            gradle test
+            for i in $MODULES; do
+              echo "test: $i"
+              ./gradlew $i:test
+            done
 
       - run:
           name: commit-code-coverage
           command: |
-            export JACOCO_SOURCE_PATH=`pwd`/src/main/java/
-            ./cc-test-reporter format-coverage build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
-            ./cc-test-reporter upload-coverage
+            for i in $MODULES; do
+              echo "$i"
+              export JACOCO_SOURCE_PATH=$(pwd)/$i/src/main/java/
+              ./cc-test-reporter format-coverage $(pwd)/$i/build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
+              ./cc-test-reporter upload-coverage
+            done

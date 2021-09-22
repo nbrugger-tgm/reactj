@@ -1,0 +1,31 @@
+plugins {
+    id "java-library-module"
+}
+
+dependencies {
+    api project(":utils")
+    api project(":observer")
+
+    implementation group: 'org.objenesis', name: 'objenesis', version: '3.2'
+    implementation 'net.bytebuddy:byte-buddy:1.11.15'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+
+    testImplementation project(":observer")
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+    testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
+}
+
+module {
+    group = "com.niton.reactj"
+    version = "4.0.0b4"
+}
+
+java {
+    sourceCompatibility 11
+    targetCompatibility 11
+}
+
+module.publishing {
+    repo = "https://niton.jfrog.io/artifactory/java-libs"
+    username = "nbrugger@student.tgm.ac.at"
+}
