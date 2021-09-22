@@ -1,5 +1,6 @@
 package com.niton.reactj.api.proxy;
 
+import com.niton.reactj.api.exceptions.ReactiveAccessException;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.react.Reactable;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
@@ -15,6 +16,9 @@ public class ProxyForwardImpl {
 	}
 
 	public static class ToOrigin {
+		private ToOrigin() {
+		}
+
 		@RuntimeType
 		public static Object forward(
 				@Origin
@@ -31,9 +35,7 @@ public class ProxyForwardImpl {
 				} catch (IllegalArgumentException e) {
 					throw new ReactiveException("Couldn't forward arguments!", e);
 				} catch (IllegalAccessException accessException) {
-					if (accessException.getMessage().contains("module"))
-						throw new ReactiveException("Proxy method couldn't be accessed (make sure you open your module ot reactj.core)", accessException);
-					throw new ReactiveException("Proxy method couldn't be accessed", accessException);
+					throw new ReactiveAccessException(accessException);
 				}
 			} finally {
 				reactable.react();
@@ -50,7 +52,8 @@ public class ProxyForwardImpl {
 				@FieldValue(ProxyCreator.ORIGIN_FIELD)
 						Object origin,
 				@AllArguments
-						Object[] arg) {
+						Object[] arg
+		) {
 			return arg[0].equals(origin);
 		}
 	}

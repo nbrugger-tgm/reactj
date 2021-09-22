@@ -1,6 +1,6 @@
 package com.niton.reactj.api.test;
 
-import com.niton.reactj.api.annotation.ReactivResolution;
+import com.niton.reactj.api.annotation.ReactiveResolution;
 import com.niton.reactj.api.observer.ObjectObserver;
 import com.niton.reactj.api.proxy.ProxySubject;
 import com.niton.reactj.api.react.Reactable;
@@ -14,7 +14,7 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.Objects;
 
-import static com.niton.reactj.api.annotation.ReactivResolution.ReactiveResolutions.DEEP;
+import static com.niton.reactj.api.annotation.ReactiveResolution.ReactiveResolutionType.DEEP;
 import static com.niton.reactj.api.proxy.ProxyCreator.INSTANCE;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -198,11 +198,9 @@ class ObserverTest {
 		public void setColor(Color c) {
 			this.c = c;
 		}
-
-
 	}
 
-	@ReactivResolution(DEEP)
+	@ReactiveResolution(DEEP)
 	public static class SubjectTestData extends TestData implements ProxySubject {
 		@Override
 		public boolean equals(Object o) {
@@ -218,7 +216,7 @@ class ObserverTest {
 		}
 	}
 
-	@ReactivResolution(DEEP)
+	@ReactiveResolution(DEEP)
 	public static class NonEqualSubjectTestData extends TestData implements ProxySubject {
 
 	}

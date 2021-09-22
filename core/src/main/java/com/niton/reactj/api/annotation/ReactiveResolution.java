@@ -7,13 +7,15 @@ import java.lang.annotation.Target;
 
 /**
  * Used to tell a reactive Object if superclasses should be reactive too
+ * <p>
+ * If not present DEEP is used
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface ReactivResolution {
-	ReactiveResolutions value();
+public @interface ReactiveResolution {
+	ReactiveResolutionType value();
 
-	enum ReactiveResolutions {
+	enum ReactiveResolutionType {
 		/**
 		 * Only fields of the class itself will be considered
 		 */

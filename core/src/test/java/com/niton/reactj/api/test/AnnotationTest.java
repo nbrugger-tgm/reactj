@@ -1,8 +1,8 @@
 package com.niton.reactj.api.test;
 
-import com.niton.reactj.api.annotation.ReactivResolution;
 import com.niton.reactj.api.annotation.Reactive;
 import com.niton.reactj.api.annotation.ReactiveListener;
+import com.niton.reactj.api.annotation.ReactiveResolution;
 import com.niton.reactj.api.annotation.Unreactive;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.react.ReactiveBinder;
@@ -12,8 +12,8 @@ import com.niton.reactj.api.react.ReactiveProxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.niton.reactj.api.annotation.ReactivResolution.ReactiveResolutions.DEEP;
-import static com.niton.reactj.api.annotation.ReactivResolution.ReactiveResolutions.FLAT;
+import static com.niton.reactj.api.annotation.ReactiveResolution.ReactiveResolutionType.DEEP;
+import static com.niton.reactj.api.annotation.ReactiveResolution.ReactiveResolutionType.FLAT;
 import static com.niton.reactj.api.proxy.ProxyCreator.INSTANCE;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -244,7 +244,7 @@ class AnnotationTest {
 		}
 	}
 
-	@ReactivResolution(DEEP)
+	@ReactiveResolution(DEEP)
 	public static class DeepBase extends Base {
 		private int c;
 
@@ -253,7 +253,7 @@ class AnnotationTest {
 		}
 	}
 
-	@ReactivResolution(FLAT)
+	@ReactiveResolution(FLAT)
 	public static class FlatBase extends Base {
 		private int c;
 

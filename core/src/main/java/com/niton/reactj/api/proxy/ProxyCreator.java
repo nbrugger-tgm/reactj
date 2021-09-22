@@ -1,12 +1,12 @@
 package com.niton.reactj.api.proxy;
 
 import com.niton.reactj.api.annotation.Unreactive;
+import com.niton.reactj.api.exceptions.ReactiveAccessException;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.react.Reactable;
 import com.niton.reactj.api.react.ReactiveForwarder;
 import com.niton.reactj.api.react.ReactiveProxy;
 import com.niton.reactj.api.react.ReactiveWrapper;
-import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.UsingLookup;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 import org.objenesis.instantiator.ObjectInstantiator;
@@ -23,14 +23,12 @@ import java.util.Map;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 public class ProxyCreator {
-	public static final  ProxyCreator INSTANCE           = new ProxyCreator();
-	static final         String       ORIGIN_FIELD       = "PROXY$ORIGIN";
-	static final         String       WRAPPER_REF        = "PROXY$WRAPPER_REF";
-	static final         String       PROXY_SUFFIX       = "PROXY";
-	static final         Method       getForwardTargetMethod;
-	static final         Method       cloneMethod;
-	private static final Objenesis    objenesis          = new ObjenesisStd();
-	private static       boolean      allowUnsafeProxies = false;
+	public static final ProxyCreator INSTANCE     = new ProxyCreator();
+	static final        String       ORIGIN_FIELD = "PROXY$ORIGIN";
+	static final        String       WRAPPER_REF  = "PROXY$WRAPPER_REF";
+	static final        String       PROXY_SUFFIX = "PROXY";
+	static final        Method       getForwardTargetMethod;
+	static final        Method       cloneMethod;
 
 	static {
 		try {
@@ -41,19 +39,13 @@ public class ProxyCreator {
 		}
 	}
 
-	private final ProxyBuilder                         builder         = new ProxyBuilder();
-	private final Map<Class<?>, Class<?>>              proxyClasses    = new HashMap<>();
-	private final Map<Class<?>, ObjectInstantiator<?>> proxyInitiators = new HashMap<>();
-	private final Map<Class<?>, Field>                 wrapperFields   = new HashMap<>();
-	private final Map<Class<?>, Field>                 originFields    = new HashMap<>();
-
-	public static boolean isAllowUnsafeProxies() {
-		return allowUnsafeProxies;
-	}
-
-	public static void setAllowUnsafeProxies(boolean allowUnsafeProxies) {
-		ProxyCreator.allowUnsafeProxies = allowUnsafeProxies;
-	}
+	private final Objenesis                            objenesis          = new ObjenesisStd();
+	private final ProxyBuilder                         builder            = new ProxyBuilder();
+	private final Map<Class<?>, Class<?>>              proxyClasses       = new HashMap<>();
+	private final Map<Class<?>, ObjectInstantiator<?>> proxyInitiators    = new HashMap<>();
+	private final Map<Class<?>, Field>                 wrapperFields      = new HashMap<>();
+	private final Map<Class<?>, Field>                 originFields       = new HashMap<>();
+	private       boolean                              allowUnsafeProxies = false;
 
 	static Field getField(Class<?> proxyClass, Map<Class<?>, Field> fieldMap, String field) {
 		return fieldMap.computeIfAbsent(proxyClass, pc -> {
@@ -70,12 +62,16 @@ public class ProxyCreator {
 	private static <T> void verifyOriginClass(Class<? extends T> originClass) {
 		for (Field f : originClass.getFields())
 			if (isMutableInstanceVar(f))
-				throw new ReactiveException(
-						"Class " + originClass.getName() +
-						" contains public writable instance variables, such classes can't be proxied\n" +
-						"If possible encapsulate using getters & setters, if not use ProxyCreator.allowUnsafeProxies\n" +
-						"Be aware that if you use unsafe proxies you need to sync using ProxyCreator.sync()"
-				);
+				publicFieldException(originClass);
+	}
+
+	private static void publicFieldException(Class<?> originClass) {
+		throw new ReactiveException(
+				"Class " + originClass.getName() +
+				" contains public writable instance variables, such classes can't be proxied\n" +
+				"If possible encapsulate using getters & setters, if not use ProxyCreator.allowUnsafeProxies\n" +
+				"Be aware that if you use unsafe proxies you need to sync using ProxyCreator.sync()"
+		);
 	}
 
 	private static boolean isMutableInstanceVar(Field f) {
@@ -88,7 +84,7 @@ public class ProxyCreator {
 		try {
 			lookup = MethodHandles.privateLookupIn(originClass, MethodHandles.lookup());
 		} catch (IllegalAccessException e) {
-			throw new ReactiveException("reactj can't get access to " + module.getName(), e);
+			throw new ReactiveAccessException(e);
 		}
 		return lookup;
 	}
@@ -103,6 +99,14 @@ public class ProxyCreator {
 		modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
 		field.set(target, newValue);
+	}
+
+	public boolean isAllowUnsafeProxies() {
+		return allowUnsafeProxies;
+	}
+
+	public void setAllowUnsafeProxies(boolean allowUnsafeProxies) {
+		this.allowUnsafeProxies = allowUnsafeProxies;
 	}
 
 	/**
@@ -157,13 +161,15 @@ public class ProxyCreator {
 	private <T> void copyFinalFields(T proxy, T origin) {
 		Arrays.stream(proxy.getClass().getFields())//just public ones
 		      .filter(f -> Modifier.isFinal(f.getModifiers()))//just final ones
-		      .forEach(f -> {
-			      try {
-				      setFinal(f, proxy, f.get(origin));
-			      } catch (IllegalAccessException | NoSuchFieldException e) {
-				      throw new ReactiveException("Couldn't copy finals to proxy", e);
-			      }
-		      });
+		      .forEach(f -> copyFinalField(f, proxy, origin));
+	}
+
+	private <T> void copyFinalField(Field f, T proxy, T origin) {
+		try {
+			setFinal(f, proxy, f.get(origin));
+		} catch (IllegalAccessException | NoSuchFieldException e) {
+			throw new ReactiveException("Couldn't copy final field", e);
+		}
 	}
 
 	/**
@@ -179,8 +185,8 @@ public class ProxyCreator {
 			getField(proxyClass, wrapperFields, WRAPPER_REF).set(proxy, new ReactiveWrapper<>(object));
 			getField(proxyClass, originFields, ORIGIN_FIELD).set(proxy, object);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
 			//not going to happen
+			e.printStackTrace();
 		}
 	}
 
@@ -189,28 +195,17 @@ public class ProxyCreator {
 			verifyOriginClass(originClass);
 
 		if (originClass.getName().endsWith(PROXY_SUFFIX))
-			throw new ProxyException(
-					"You can't create a proxy from a proxy",
-					new IllegalArgumentException(originClass.getName())
-			);
+			throw ReactiveException.doubleProxyException(originClass);
+
 		Module module = originClass.getModule();
 		Lookup lookup = getLookup(originClass, module);
 
-		var reactiveMethod =
-				isDeclaredBy(Reactable.class).or(isOverriddenFrom(Reactable.class));
+		var reactiveMethod = isDeclaredBy(Reactable.class).or(isOverriddenFrom(Reactable.class));
+		var fromObject     = isDeclaredBy(Object.class).or(isOverriddenFrom(Object.class));
+		var unreactive     = isAnnotatedWith(Unreactive.class).or(fromObject);
+		var excluded       = is(cloneMethod).and(not(isPublic()));
 
-		var fromObject =
-				isDeclaredBy(Object.class).or(isOverriddenFrom(Object.class));
-
-		var unreactive =
-				isAnnotatedWith(Unreactive.class).or(fromObject);
-
-		var excluded =
-				is(cloneMethod).and(not(isPublic()));
-
-		return builder.buildProxie(originClass, reactiveMethod, unreactive, excluded)
-		              .make()
-		              .load(module.getClassLoader(), UsingLookup.of(lookup))
-		              .getLoaded();
+		return builder.buildProxie(originClass, reactiveMethod, unreactive, excluded, module, lookup);
 	}
+
 }

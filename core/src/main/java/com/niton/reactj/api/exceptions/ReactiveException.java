@@ -1,5 +1,7 @@
 package com.niton.reactj.api.exceptions;
 
+import com.niton.reactj.api.proxy.ProxyException;
+
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -22,7 +24,7 @@ public class ReactiveException extends RuntimeException {
 			Object converted,
 			ClassCastException castException
 	) {
-		Class<?> original = value.getClass();
+		Class<?> original      = value.getClass();
 		Class<?> convertedType = converted.getClass();
 
 		ReactiveException exception;
@@ -66,10 +68,11 @@ public class ReactiveException extends RuntimeException {
 
 	public static <C> ReactiveException constructorNotFound(Class<C> type, Class<?>... paramTypes) {
 		return new ReactiveException(
-				String.format("No constructor(%s) found in class %s",
+				String.format(
+						"No constructor(%s) found in class %s",
 						Arrays.stream(paramTypes)
-								.map(Class::getSimpleName)
-								.collect(Collectors.joining(", ")),
+						      .map(Class::getSimpleName)
+						      .collect(Collectors.joining(", ")),
 						type.getSimpleName()
 				));
 	}
@@ -81,6 +84,13 @@ public class ReactiveException extends RuntimeException {
 		return new ReactiveException(
 				String.format("Couldn't construct %s", type.getSimpleName()),
 				cause
+		);
+	}
+
+	public static ProxyException doubleProxyException(Class<?> originClass) {
+		return new ProxyException(
+				"You can't create a proxy from a proxy",
+				new IllegalArgumentException(originClass.getName())
 		);
 	}
 }

@@ -1,7 +1,6 @@
 package com.niton.reactj.api.observer;
 
 
-import com.niton.reactj.api.observer.ObjectObserver.PropertyObservation;
 import com.niton.reactj.api.react.Reactable;
 import com.niton.reactj.event.GenericListener;
 import com.niton.reactj.observer.AbstractObserver;
@@ -18,8 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ObjectObserver<M extends Reactable> extends AbstractObserver<PropertyObservation, M> {
 
-	private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
-	private final GenericListener updateListener = this::update;
+	private final Map<String, Object> valueCache     = new ConcurrentHashMap<>();
+	private final GenericListener     updateListener = this::update;
 
 	protected Map<String, Object> getValueCache() {
 		return Collections.unmodifiableMap(valueCache);
@@ -82,9 +81,9 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Proper
 	 */
 	private Map<String, Object> getChanges() {
 		final Map<String, Object> changed = new ConcurrentHashMap<>();
-		final Map<String, Object> state = observedObject.getState();
-		for (String property : state.keySet()) {
-			detectChange(changed, property, state.get(property));
+		final Map<String, Object> state   = observedObject.getState();
+		for (Map.Entry<String, Object> property : state.entrySet()) {
+			detectChange(changed, property.getKey(), property.getValue());
 		}
 		return changed;
 	}
@@ -104,27 +103,4 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Proper
 		}
 	}
 
-	public static class PropertyObservation {
-		public final String propertyName;
-		public final Object propertyValue;
-
-		public PropertyObservation(String propertyName, Object propertyValue) {
-			this.propertyName = propertyName;
-			this.propertyValue = propertyValue;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (!(o instanceof PropertyObservation)) return false;
-			PropertyObservation that = (PropertyObservation) o;
-			return Objects.equals(propertyName, that.propertyName) &&
-					Objects.equals(propertyValue, that.propertyValue);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(propertyName, propertyValue);
-		}
-	}
 }

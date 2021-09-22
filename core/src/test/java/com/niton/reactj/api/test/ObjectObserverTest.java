@@ -1,7 +1,7 @@
 package com.niton.reactj.api.test;
 
 import com.niton.reactj.api.observer.ObjectObserver;
-import com.niton.reactj.api.observer.ObjectObserver.PropertyObservation;
+import com.niton.reactj.api.observer.PropertyObservation;
 import com.niton.reactj.api.react.ReactiveObject;
 import com.niton.reactj.api.test.ObjectObserverTest.Subject;
 import com.niton.reactj.observer.testing.ObserverImplTest;

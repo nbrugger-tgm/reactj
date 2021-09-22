@@ -1,5 +1,7 @@
 package com.niton.reactj.api.util;
 
+import com.niton.reactj.api.annotation.ReactiveResolution;
+import com.niton.reactj.api.annotation.ReactiveResolution.ReactiveResolutionType;
 import com.niton.reactj.api.exceptions.ReactiveException;
 
 import java.lang.reflect.InvocationTargetException;
@@ -7,6 +9,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import static com.niton.reactj.api.annotation.ReactiveResolution.ReactiveResolutionType.DEEP;
 import static java.lang.String.format;
 
 public final class ReflectiveUtil {
@@ -14,7 +17,8 @@ public final class ReflectiveUtil {
 	}
 
 	public static ClassCastException invalidMethodParameterException(Method method, Object val) {
-		String message = format("Method %s doesn't accept type %s",
+		String message = format(
+				"Method %s doesn't accept type %s",
 				getMethodSignature(method),
 				val.getClass().getTypeName()
 		);
@@ -22,8 +26,20 @@ public final class ReflectiveUtil {
 	}
 
 
+	/**
+	 * Checks if the class should be scanned deeply
+	 *
+	 * @param type the type to check
+	 * @return true if the class is annotated with {@link ReactiveResolution}({@link ReactiveResolutionType#FLAT})
+	 */
+	public static boolean goDeep(Class<?> type) {
+		return !type.isAnnotationPresent(ReactiveResolution.class) ||
+		       type.getAnnotation(ReactiveResolution.class).value() == DEEP;
+	}
+
 	public static String getMethodSignature(Method method) {
-		return format("%s.%s(%s)",
+		return format(
+				"%s.%s(%s)",
 				method.getDeclaringClass().getSimpleName(),
 				method.getName(),
 				getMethodParamSignature(method)
@@ -48,20 +64,22 @@ public final class ReflectiveUtil {
 	public static Object executeCall(Object target, Method method, Object[] args)
 			throws InvocationTargetException, IllegalAccessException {
 		try {
-			return target.getClass().getMethod(method.getName(),
-							method.getParameterTypes()
-					)
-					.invoke(target, args);
+			return target.getClass().getMethod(
+					             method.getName(),
+					             method.getParameterTypes()
+			             )
+			             .invoke(target, args);
 		} catch (NoSuchMethodException e) {
 			throw new ReactiveException(
-					format("Method %s is not compatible with %s.%s(%s)",
+					format(
+							"Method %s is not compatible with %s.%s(%s)",
 							getMethodSignature(method),
 							target.getClass().getSimpleName(),
 							method.getName(),
 							Arrays.stream(args)
-									.map(Object::getClass)
-									.map(Class::getTypeName)
-									.collect(Collectors.joining())
+							      .map(Object::getClass)
+							      .map(Class::getTypeName)
+							      .collect(Collectors.joining())
 					), e);
 		}
 	}
@@ -70,7 +88,8 @@ public final class ReflectiveUtil {
 		try {
 			return type.getDeclaredMethod(thisMethod.getName(), thisMethod.getParameterTypes());
 		} catch (NoSuchMethodException e) {
-			throw new ReactiveException(format("There is no method in class '%s' that matches : %s",
+			throw new ReactiveException(format(
+					"There is no method in class '%s' that matches : %s",
 					type.getSimpleName(),
 					getMethodSignature(thisMethod)
 			));

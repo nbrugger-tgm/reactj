@@ -1,7 +1,7 @@
 package com.niton.reactj.api.util;
 
-import com.niton.reactj.api.annotation.ReactivResolution;
 import com.niton.reactj.api.annotation.ReactiveListener;
+import com.niton.reactj.api.exceptions.ReactiveAccessException;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.react.ReactiveBinder;
 import com.niton.reactj.api.react.ReactiveComponent;
@@ -10,7 +10,6 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static com.niton.reactj.api.annotation.ReactivResolution.ReactiveResolutions.DEEP;
 import static com.niton.reactj.api.util.ReflectiveUtil.invalidMethodParameterException;
 import static java.lang.String.format;
 
@@ -27,12 +26,10 @@ public final class ReactiveComponentUtil {
 	public static void createAnnotatedBindings(ReactiveComponent<?> component, ReactiveBinder<?> binder) {
 		Class<?> viewClass = component.getClass();
 
-		ReactivResolution resolution = viewClass.getAnnotation(ReactivResolution.class);
-		boolean searchSuperClasses = resolution != null && resolution.value() == DEEP;
 		Method[] methods = MethodUtils.getMethodsWithAnnotation(
 				viewClass,
 				ReactiveListener.class,
-				searchSuperClasses,
+				ReflectiveUtil.goDeep(viewClass),
 				true
 		);
 
@@ -54,13 +51,15 @@ public final class ReactiveComponentUtil {
 			Method method
 	) {
 		if (method.getParameterTypes().length > 1) {
-			throw new ReactiveException(
-					format("@ReactiveListener method '%s' has more than one parameter", method)
-			);
+			throw parameterCountException(method);
 		}
 
 		String mapTarget = method.getAnnotation(ReactiveListener.class).value();
 		binder.bind(mapTarget, val -> dynamicCall(component, method, val));
+	}
+
+	private static ReactiveException parameterCountException(Method method) {
+		return new ReactiveException(format("@ReactiveListener method '%s' has more than one parameter", method));
 	}
 
 	private static void dynamicCall(ReactiveComponent<?> component, Method method, Object val) {
@@ -74,7 +73,9 @@ public final class ReactiveComponentUtil {
 			} else {
 				method.invoke(component);
 			}
-		} catch (IllegalAccessException | InvocationTargetException e) {
+		} catch (IllegalAccessException eac) {
+			throw new ReactiveAccessException(eac);
+		} catch (InvocationTargetException e) {
 			throw new ReactiveException(format("Failed to call automatic binding (%s)", method), e);
 		}
 	}

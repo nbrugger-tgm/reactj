@@ -1,6 +1,5 @@
 package com.niton.reactj.api.util;
 
-import com.niton.reactj.api.annotation.ReactivResolution;
 import com.niton.reactj.api.annotation.Reactive;
 import com.niton.reactj.api.annotation.Unreactive;
 import com.niton.reactj.api.exceptions.ReactiveException;
@@ -33,16 +32,12 @@ public final class ReactiveReflectorUtil {
 	public static boolean isFitting(Object val, Class<?> paramType) {
 		Class<?> base = val.getClass();
 		Class<?> unwrapped = MethodType.methodType(base)
-				.unwrap()
-				.returnType();
-		/*
-		 * True if val.getClass() is usable as first Parameter
-		 */
+		                               .unwrap()
+		                               .returnType();
+
 		boolean unwrappedValid = base.isAssignableFrom(paramType);
-		/*
-		 * True if the unwrapped class fits into the parameter type
-		 */
-		boolean wrappedValid = unwrapped.isAssignableFrom(paramType);
+		boolean wrappedValid   = unwrapped.isAssignableFrom(paramType);
+
 		return unwrappedValid || wrappedValid;
 	}
 
@@ -53,13 +48,12 @@ public final class ReactiveReflectorUtil {
 	 * @return the map containing all (renamed) properties
 	 */
 	public static Map<String, Object> getState(Object model) {
-		HashMap<String, Object> state = new HashMap<>();
-		Class<?> type = model.getClass();
-		String typeName = type.getName();
-		Field[] fields = FIELD_CACHE.get(typeName);
-		if (fields == null) {
-			FIELD_CACHE.put(typeName, fields = loadRelevantFields(type));
-		}
+		HashMap<String, Object> state    = new HashMap<>();
+		Class<?>                type     = model.getClass();
+		String                  typeName = type.getName();
+
+		Field[] fields = FIELD_CACHE.computeIfAbsent(typeName, n -> loadRelevantFields(type));
+
 		try {
 			readState(model, fields, state);
 		} catch (IllegalAccessException e) {
@@ -75,14 +69,10 @@ public final class ReactiveReflectorUtil {
 	 * @return the fields as array
 	 */
 	public static Field[] loadRelevantFields(Class<?> type) {
-		Field[] fields;
-		if (type.isAnnotationPresent(ReactivResolution.class) && type.getDeclaredAnnotation(
-				ReactivResolution.class).value() == ReactivResolution.ReactiveResolutions.FLAT) {
-			fields = type.getDeclaredFields();
-		} else {
-			fields = FieldUtils.getAllFields(type);
-		}
-		return fields;
+		if (ReflectiveUtil.goDeep(type))
+			return FieldUtils.getAllFields(type);
+		else
+			return type.getDeclaredFields();
 	}
 
 
@@ -105,8 +95,8 @@ public final class ReactiveReflectorUtil {
 	 */
 	public static String getReactiveName(Field field) {
 		return field.isAnnotationPresent(Reactive.class) ?
-				field.getAnnotation(Reactive.class).value() :
-				field.getName();
+		       field.getAnnotation(Reactive.class).value() :
+		       field.getName();
 	}
 
 	/**
@@ -117,9 +107,9 @@ public final class ReactiveReflectorUtil {
 	 * @param value    the value to set the property to
 	 */
 	public static void updateField(Object model, String property, Object value) {
-		Class<?> type = model.getClass();
-		Field[] fields = getFields(type);
-		Field propField = findField(property, fields);
+		Class<?> type      = model.getClass();
+		Field[]  fields    = getFields(type);
+		Field    propField = findField(property, fields);
 		try {
 			FieldUtils.writeField(propField, model, value, true);
 		} catch (IllegalAccessException e) {
@@ -129,12 +119,7 @@ public final class ReactiveReflectorUtil {
 
 	private static Field[] getFields(Class<?> type) {
 		String typeName = type.getName();
-		Field[] fields = FIELD_CACHE.get(typeName);
-		if (fields == null) {
-			fields = loadRelevantFields(type);
-			FIELD_CACHE.put(typeName, fields);
-		}
-		return fields;
+		return FIELD_CACHE.computeIfAbsent(typeName, n -> loadRelevantFields(type));
 	}
 
 	private static Field findField(String property, Field[] fields) {

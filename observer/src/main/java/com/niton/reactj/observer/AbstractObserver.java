@@ -10,13 +10,13 @@ import com.niton.reactj.event.Listener;
  * @param <O> the type to be observed
  */
 public abstract class AbstractObserver<T, O> {
-	private final EventManager<T> observeEvent = new EventManager<>();
-	protected O observedObject;
+	private final EventManager<T> observeEvent    = new EventManager<>();
+	protected     O               observedObject;
 	/**
 	 * If this property is true, calling {@link #observe(Object)} will report all changes to listeners.
 	 * Otherwise {@link #observe(Object)} will call {@link #reset()}
 	 */
-	private boolean observeOnRebind = true;
+	private       boolean         observeOnRebind = true;
 
 	public void addListener(Listener<T> listener) {
 		observeEvent.addListener(listener);
@@ -43,11 +43,12 @@ public abstract class AbstractObserver<T, O> {
 	 * @param observable the object to observe
 	 */
 	public void observe(O observable) {
-		if (observable == null) {
+		if (observable == null)
 			throw new IllegalArgumentException("Cannot observe null");
-		}
+
 		if (observedObject != null)
 			stopObservation();
+
 		observedObject = observable;
 		if (observeOnRebind) {
 			update();
