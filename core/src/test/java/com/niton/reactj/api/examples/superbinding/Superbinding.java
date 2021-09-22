@@ -9,22 +9,31 @@ import static java.lang.String.format;
 
 public class Superbinding {
 	public static void main(String[] args) {
-		Person p = ProxyCreator.create(new Person("Nils", "Brugger"));
+		ProxyCreator creator = new ProxyCreator();
+		Person       p       = creator.create(new Person("Nils", "Brugger"));
 
 		ReactiveComponent<Person> personCliView = binder -> {
 			binder.bind(Person::fullName, s -> System.out.println("fullName(*) -> " + s));
-			binder.bind((Person p1) -> p1.getSurname().toUpperCase() + " " + p1.getName(),
-					s -> System.out.println("Concat -> " + s));
-			binder.bind(Person::fullName,
+			binder.bind(
+					(Person p1) -> p1.getSurname().toUpperCase() + " " + p1.getName(),
+					s -> System.out.println("Concat -> " + s)
+			);
+			binder.bind(
+					Person::fullName,
 					s -> System.out.println("fullName(unrelated) -> " + s),
-					"unrelated");
-			binder.bind(Person::fullName,
+					"unrelated"
+			);
+			binder.bind(
+					Person::fullName,
 					s -> System.out.println("fullName(name) -> " + s),
-					"name");
-			binder.bind(Person::fullName,
+					"name"
+			);
+			binder.bind(
+					Person::fullName,
 					s -> System.out.println("fullName(name,surename) -> " + s),
 					"name",
-					"surename");
+					"surename"
+			);
 			binder.bind("name", System.out::println);
 			//binder.bind("surename",System.out::println);
 		};
@@ -44,10 +53,10 @@ public class Superbinding {
 class Person implements ProxySubject {
 	private String name;
 	private String surname;
-	private int unrelated;
+	private int    unrelated;
 
 	public Person(String name, String surename) {
-		this.name = name;
+		this.name    = name;
 		this.surname = surename;
 	}
 

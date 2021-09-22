@@ -6,10 +6,12 @@ import com.niton.reactj.api.proxy.ProxySubject;
 
 import java.awt.*;
 
+
 public class ObserverExample {
 
 	public static void main(String[] args) {
-		Data model = ProxyCreator.create(new Data());
+		ProxyCreator creator = new ProxyCreator();
+		Data         model   = creator.create(new Data());
 
 		ObjectObserver<Data> observer = new ObjectObserver<>();
 
@@ -25,8 +27,8 @@ public class ObserverExample {
 	}
 
 	public static class Data implements ProxySubject {
-		int a = 1;
-		int b = 2;
+		int    a = 1;
+		int    b = 2;
 		Object d = (Runnable) () -> {
 		};
 

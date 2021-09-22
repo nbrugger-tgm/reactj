@@ -12,8 +12,9 @@ import com.niton.reactj.api.react.ReactiveProxy;
 public class CliApp {
 
 	public static void main(String[] args) throws InterruptedException {
-		ReactiveProxy<Progress> proxy = ProxyCreator.create(new Progress());
-		Progress progress = proxy.getObject();
+		ProxyCreator            creator  = new ProxyCreator();
+		ReactiveProxy<Progress> proxy    = creator.create(new Progress());
+		Progress                progress = proxy.getObject();
 
 		ReactiveController<ReactiveProxy<Progress>> controller = new ReactiveController<>(new ProgressCli());
 		controller.setModel(proxy);
@@ -52,10 +53,10 @@ class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 	}
 
 	private void renderProgress(double percent) {
-		int width = 50;
-		double done = (percent * width);
-		double port = done % 1.0;
-		int fullDone = (int) (done - port);
+		int    width    = 50;
+		double done     = (percent * width);
+		double port     = done % 1.0;
+		int    fullDone = (int) (done - port);
 		System.out.print("\r");
 		System.out.print('[');
 		for (int i = 0; i < width; i++) {

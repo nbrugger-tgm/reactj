@@ -5,7 +5,6 @@ import com.niton.reactj.api.annotation.Reactive;
 import com.niton.reactj.api.annotation.ReactiveListener;
 import com.niton.reactj.api.annotation.Unreactive;
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.api.proxy.ProxyCreator;
 import com.niton.reactj.api.react.ReactiveBinder;
 import com.niton.reactj.api.react.ReactiveComponent;
 import com.niton.reactj.api.react.ReactiveController;
@@ -15,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.niton.reactj.api.annotation.ReactivResolution.ReactiveResolutions.DEEP;
 import static com.niton.reactj.api.annotation.ReactivResolution.ReactiveResolutions.FLAT;
+import static com.niton.reactj.api.proxy.ProxyCreator.INSTANCE;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Annotations")
@@ -23,16 +23,16 @@ class AnnotationTest {
 			SET1 = 12,
 			SET2 = 22,
 			SET3 = 83;
-	public final ReactiveProxy<DeepBase> deepProxy = ProxyCreator.create(new DeepBase());
-	public final DeepBase deep = deepProxy.getObject();
+	public final ReactiveProxy<DeepBase> deepProxy = INSTANCE.create(new DeepBase());
+	public final DeepBase                deep      = deepProxy.getObject();
 
-	public final ReactiveProxy<FlatBase> flatProxy = ProxyCreator.create(new FlatBase());
-	public final FlatBase flat = flatProxy.getObject();
+	public final ReactiveProxy<FlatBase> flatProxy = INSTANCE.create(new FlatBase());
+	public final FlatBase                flat      = flatProxy.getObject();
 
 	private boolean
-			aCalled = false,
-			bCalled = false,
-			cCalled = false,
+			aCalled    = false,
+			bCalled    = false,
+			cCalled    = false,
 			testCalled = false;
 
 	private String stringDeposit;
@@ -44,11 +44,13 @@ class AnnotationTest {
 			binder.bind("c", v -> cCalled = true);
 			binder.bind("test", v -> testCalled = true);
 
-			binder.bindBi("c",
+			binder.bindBi(
+					"c",
 					v -> stringDeposit = v,
 					() -> stringDeposit,
 					Integer::parseInt,
-					String::valueOf);
+					String::valueOf
+			);
 			binder.bindBi("test", v -> testDeposit = v, () -> testDeposit);
 		};
 
@@ -59,9 +61,9 @@ class AnnotationTest {
 		controller.stop();
 		controller.setModel(deepProxy);
 
-		aCalled = false;
-		bCalled = false;
-		cCalled = false;
+		aCalled    = false;
+		bCalled    = false;
+		cCalled    = false;
 		testCalled = false;
 
 		controller.update();
@@ -130,9 +132,9 @@ class AnnotationTest {
 		ReactiveController<ReactiveProxy<M>> controller = new ReactiveController<>(deepComponent);
 		controller.setModel(proxy);
 
-		aCalled = false;
-		bCalled = false;
-		cCalled = false;
+		aCalled    = false;
+		bCalled    = false;
+		cCalled    = false;
 		testCalled = false;
 		proxy.getObject().setA(SET1);
 		assertEquals(a, aCalled);
@@ -174,13 +176,14 @@ class AnnotationTest {
 		assertThrows(ReactiveException.class, () -> {
 			new ReactiveController<>(deepComponent);
 		}, "@ReactiveListeners are not allowed to have more than one parameter, and if they have an exception" +
-				"should be thrown");
+		   "should be thrown");
 	}
 
 	@Test
 	@DisplayName("Exception throwing")
 	void errorTesting() {
-		ReactiveComponent<ReactiveProxy<DeepBase>> badTypedComponent = new ReactiveComponent<ReactiveProxy<DeepBase>>() {
+		ReactiveComponent<ReactiveProxy<DeepBase>> badTypedComponent
+				= new ReactiveComponent<ReactiveProxy<DeepBase>>() {
 			@Override
 			public void createBindings(ReactiveBinder<ReactiveProxy<DeepBase>> binder) {
 			}
@@ -196,7 +199,7 @@ class AnnotationTest {
 		assertThrows(ReactiveException.class, () -> {
 			badTypedController.setModel(deepProxy);
 		}, "When a @ReactiveListener has a type that doesn't matches the property " +
-				"it should fail to set such a model");
+		   "it should fail to set such a model");
 
 		ReactiveComponent<ReactiveProxy<DeepBase>> internalErrorComponent =
 				new ReactiveComponent<ReactiveProxy<DeepBase>>() {

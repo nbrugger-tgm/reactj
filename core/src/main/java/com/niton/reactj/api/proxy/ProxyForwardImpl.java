@@ -19,9 +19,9 @@ public class ProxyForwardImpl {
 		public static Object forward(
 				@Origin
 						Method target,
-				@FieldValue(ProxyCreator.wrapperField)
+				@FieldValue(ProxyCreator.WRAPPER_REF)
 						Reactable reactable,
-				@FieldValue(ProxyCreator.originField) Object origin,
+				@FieldValue(ProxyCreator.ORIGIN_FIELD) Object origin,
 				@AllArguments
 						Object[] args
 		) throws InvocationTargetException {
@@ -47,7 +47,7 @@ public class ProxyForwardImpl {
 
 		@RuntimeType
 		public static Object equals(
-				@FieldValue(ProxyCreator.originField)
+				@FieldValue(ProxyCreator.ORIGIN_FIELD)
 						Object origin,
 				@AllArguments
 						Object[] arg) {
