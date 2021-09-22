@@ -1,9 +1,12 @@
 package com.niton.gradle.plugins.javalib
 
 import org.gradle.api.BuildCancelledException
+import org.gradle.api.GradleException
+import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.internal.impldep.org.eclipse.jgit.api.errors.InvalidConfigurationException
 import org.gradle.jvm.tasks.Jar
@@ -23,19 +26,23 @@ class ModulePlugin implements Plugin<Project>{
         ModuleSettings settings = p.extensions.create("module",ModuleSettings)
         ArtifactorySettings publisher = settings.extensions.create("publishing",ArtifactorySettings)
 
-        p.afterEvaluate { pro ->
+        p.afterEvaluate { Project pro ->
             pro.java {
-                sourceCompatibility = settings.javaVersion.get()
-                targetCompatibility = settings.javaVersion.get()
+                sourceCompatibility = settings.javaVersion.orElse(JavaVersion.VERSION_11).get()
+                targetCompatibility = settings.javaVersion.orElse(JavaVersion.VERSION_11).get()
                 withJavadocJar()
                 withSourcesJar()
             }
             pro.publishing {
                 publications {
                     lib(MavenPublication) {
-                        groupId = settings.group
-                        artifactId = settings.name
-                        version = settings.version
+                        if(!settings.group.isPresent() && pro.group == null)
+                            throw new BuildCancelledException("module.group or project.group needs to be set!")
+                        if(!settings.version.isPresent() && pro.version == null)
+                            throw new BuildCancelledException("module.version or project.version needs to be set!")
+                        groupId = settings.group.orElse(pro.group.toString()).get()
+                        artifactId = settings.name.orElse(pro.name).get()
+                        version = settings.version.orElse(pro.version.toString()).get()
                         from pro.components.java
                     }
                 }

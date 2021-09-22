@@ -16,7 +16,7 @@ import static com.niton.reactj.api.exceptions.ReactiveException.bindingException
  * A reactive controller is responsible to communicate changes between ReactableObjects and ReactiveComponents.<br>
  * Use this to connect a View and a Model
  *
- * @param <M> Model Type (might be a {@link ReactiveProxyEngine})
+ * @param <M> Model Type
  */
 public final class ReactiveController<M extends Reactable> {
 	private final ObjectObserver<M>                     observer                   = new ObjectObserver<>();
