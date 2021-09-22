@@ -285,22 +285,17 @@ public class ReactiveBinder<L> {
 			return toModelConverter.convert(value);
 		}
 
-		public Converter<D, M> getToModelConverter() {
-			return toModelConverter;
-		}
-
-		public ValueReceiver<D> getReceiver() {
-			return receiver;
-		}
-
 		/**
 		 * @return the value from the UI converted to a value for the model
 		 */
 		public M getModelConverted() {
-			return toModelConverter.convertTypesafe(get());
+			return toModelConverter.convertTypesafe(getDisplayValue());
 		}
 
-		public D get() {
+		/**
+		 * @return the plain value from the UI
+		 */
+		public D getDisplayValue() {
 			return receiver.get();
 		}
 	}

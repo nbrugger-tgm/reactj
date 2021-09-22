@@ -1,5 +1,6 @@
 package com.niton.reactj.api.react;
 
+import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.observer.ObjectObserver;
 import com.niton.reactj.api.react.ReactiveBinder.BiBinding;
 import com.niton.reactj.api.react.ReactiveBinder.Binding;
@@ -46,22 +47,16 @@ public final class ReactiveController<M extends Reactable> {
 	/**
 	 * Triggers a binding
 	 *
-	 * @param key     the name of the binding to trigger
+	 * @param key     the name of the binding to trigger (used for exception messages)
 	 * @param value   the value to pass to the binding
 	 * @param binding the binding to call
 	 */
 	private static void updateBinding(String key, Object value, Binding<?, ?> binding) {
-		Object converted;
-		try {
-			converted = binding.convertToDisplay(value);
-		} catch (ClassCastException ex) {
-			throw badConverterException(key, value.getClass());
-		}
-
+		Object converted = convertToDisplay(key, value, binding);
 		if (binding instanceof BiBinding) {
+			BiBinding<?, ?> biBinding = (BiBinding<?, ?>) binding;
 			//ignore change when the value is already present
-			Object present = ((BiBinding<?, ?>) binding).getReceiver().get();
-			if (present.equals(value)) {
+			if (biBinding.getDisplayValue().equals(converted)) {
 				return;
 			}
 		}
@@ -73,14 +68,31 @@ public final class ReactiveController<M extends Reactable> {
 	}
 
 	/**
+	 * Converts the value assoiated with key with the converter of the binding (to display type)
+	 *
+	 * @param key     the property name the binder is bound to; used for error messages
+	 * @param value   the value that was recived and needs to be converted
+	 * @param binding the binding to use as converter
+	 * @return the converted value
+	 * @throws ReactiveException when conversion fails
+	 */
+	private static Object convertToDisplay(String key, Object value, Binding<?, ?> binding) {
+		try {
+			return binding.convertToDisplay(value);
+		} catch (ClassCastException ex) {
+			throw badConverterException(key, value.getClass());
+		}
+	}
+
+	/**
 	 * Pulls changes from the Component to the Model
 	 *
 	 * @param unused not used, only present so one can use this method as method reference as listener
 	 */
 	private void updateModel(Object unused) {
-		if (blockReactions) {
+		if (blockReactions)
 			return;
-		}
+
 		Map<String, Object> changed = findUiChanges();
 
 		M subject = observer.getObserved();
@@ -155,8 +167,6 @@ public final class ReactiveController<M extends Reactable> {
 	 * Pulls all changes from the ReactiveComponent (connected by {@link ReactiveBinder#bindBi(String,
 	 * ReactiveBinder.DisplayFunction, ReactiveBinder.ValueReceiver)}) and applies them to the model.
 	 * If everything is done right this method is called automatically, and there is no need to call this by yourself
-	 *
-	 * @throws Throwable if there is some reflection problems
 	 */
 	public void updateModel() {
 		updateModel(null);

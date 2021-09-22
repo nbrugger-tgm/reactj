@@ -159,58 +159,65 @@ class AnnotationTest {
 	}
 
 	@Test
+	@DisplayName("Test too many listener arguments")
+	void tooManyReactiveListenerArgs() {
+		ReactiveComponent<ReactiveProxy<DeepBase>> deepComponent = new ReactiveComponent<ReactiveProxy<DeepBase>>() {
+			@Override
+			public void createBindings(ReactiveBinder<ReactiveProxy<DeepBase>> binder) {
+				//unused for test
+			}
+
+			@ReactiveListener("a")
+			void wrong(int too, int many) {
+			}
+		};
+		assertThrows(ReactiveException.class, () -> {
+			new ReactiveController<>(deepComponent);
+		}, "@ReactiveListeners are not allowed to have more than one parameter, and if they have an exception" +
+				"should be thrown");
+	}
+
+	@Test
 	@DisplayName("Exception throwing")
 	void errorTesting() {
+		ReactiveComponent<ReactiveProxy<DeepBase>> badTypedComponent = new ReactiveComponent<ReactiveProxy<DeepBase>>() {
+			@Override
+			public void createBindings(ReactiveBinder<ReactiveProxy<DeepBase>> binder) {
+			}
+
+
+			@ReactiveListener("test")
+			void wrong(String badArgument) {
+			}
+		};
+		ReactiveController<ReactiveProxy<DeepBase>> badTypedController = new ReactiveController<>(
+				badTypedComponent
+		);
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveComponent<ReactiveProxy<DeepBase>> deepComponent = new ReactiveComponent<ReactiveProxy<DeepBase>>() {
+			badTypedController.setModel(deepProxy);
+		}, "When a @ReactiveListener has a type that doesn't matches the property " +
+				"it should fail to set such a model");
+		badTypedController.stop();
 
-				@Override
-				public void createBindings(ReactiveBinder<ReactiveProxy<DeepBase>> binder) {
-				}
+		ReactiveComponent<ReactiveProxy<DeepBase>> internalErrorComponent =
+				new ReactiveComponent<ReactiveProxy<DeepBase>>() {
+					@Override
+					public void createBindings(ReactiveBinder<ReactiveProxy<DeepBase>> binder) {
 
+					}
 
-				@ReactiveListener("a")
-				void wrong(int too, int many) {
-				}
-			};
-			new ReactiveController<>(deepComponent);
-		});
+					@ReactiveListener("test")
+					void errorProne(int value) {
+						throw new NullPointerException("Intentional error");
+					}
+				};
+
+		ReactiveController<ReactiveProxy<DeepBase>> internalErrorController =
+				new ReactiveController<>(internalErrorComponent);
 		assertThrows(ReactiveException.class, () -> {
-			ReactiveComponent<ReactiveProxy<DeepBase>> deepComponent = new ReactiveComponent<ReactiveProxy<DeepBase>>() {
-				@Override
-				public void createBindings(ReactiveBinder<ReactiveProxy<DeepBase>> binder) {
-				}
-
-
-				@ReactiveListener("test")
-				void wrong(String badArgument) {
-				}
-			};
-			ReactiveController<ReactiveProxy<DeepBase>> cont = new ReactiveController<>(
-					deepComponent
-			);
-			cont.setModel(deepProxy);
-			cont.stop();
-		});
-
-		assertThrows(ReactiveException.class, () -> {
-			ReactiveComponent<ReactiveProxy<DeepBase>> deepComponent = new ReactiveComponent<ReactiveProxy<DeepBase>>() {
-				@Override
-				public void createBindings(ReactiveBinder<ReactiveProxy<DeepBase>> binder) {
-
-				}
-
-
-				@ReactiveListener("test")
-				void errorProne(int value) {
-					throw new NullPointerException("Intentional error");
-				}
-			};
-			ReactiveController<ReactiveProxy<DeepBase>> cont = new ReactiveController<>(deepComponent);
-			cont.setModel(deepProxy);
-			cont.stop();
-		});
-
+			internalErrorController.setModel(deepProxy);
+		}, "When a getter that is proxied throws an exception syncing should fail too");
+		internalErrorController.stop();
 	}
 
 	public static class Base {
@@ -258,6 +265,7 @@ class AnnotationTest {
 		public int c;
 
 		private FailBase(int wrong) {
+			//intentional
 		}
 
 	}

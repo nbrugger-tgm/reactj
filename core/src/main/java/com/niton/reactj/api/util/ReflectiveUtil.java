@@ -14,7 +14,7 @@ public final class ReflectiveUtil {
 	}
 
 	public static ClassCastException invalidMethodParameterException(Method method, Object val) {
-		String message = String.format("Method %s doesn't accept type %s",
+		String message = format("Method %s doesn't accept type %s",
 				getMethodSignature(method),
 				val.getClass().getTypeName()
 		);
@@ -23,7 +23,7 @@ public final class ReflectiveUtil {
 
 
 	public static String getMethodSignature(Method method) {
-		return String.format("%s.%s(%s)",
+		return format("%s.%s(%s)",
 				method.getDeclaringClass().getSimpleName(),
 				method.getName(),
 				getMethodParamSignature(method)
@@ -54,7 +54,7 @@ public final class ReflectiveUtil {
 					.invoke(target, args);
 		} catch (NoSuchMethodException e) {
 			throw new ReactiveException(
-					String.format("Method %s is not compatible with %s.%s(%s)",
+					format("Method %s is not compatible with %s.%s(%s)",
 							getMethodSignature(method),
 							target.getClass().getSimpleName(),
 							method.getName(),

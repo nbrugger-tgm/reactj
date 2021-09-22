@@ -5,13 +5,15 @@ import com.niton.reactj.api.proxy.ProxySubject;
 import com.niton.reactj.api.react.ReactiveComponent;
 import com.niton.reactj.api.react.ReactiveController;
 
+import static java.lang.String.format;
+
 public class Superbinding {
 	public static void main(String[] args) {
 		Person p = ProxyCreator.create(new Person("Nils", "Brugger"));
 
 		ReactiveComponent<Person> personCliView = binder -> {
 			binder.bind(Person::fullName, s -> System.out.println("fullName(*) -> " + s));
-			binder.bind((Person p1) -> p1.getSurename().toUpperCase() + " " + p1.getName(),
+			binder.bind((Person p1) -> p1.getSurname().toUpperCase() + " " + p1.getName(),
 					s -> System.out.println("Concat -> " + s));
 			binder.bind(Person::fullName,
 					s -> System.out.println("fullName(unrelated) -> " + s),
@@ -35,17 +37,18 @@ public class Superbinding {
 		System.out.println("\n----[Change Unrelated]----");
 		p.setUnrelated(2);
 		System.out.println("\n----[Change Surename]----");
-		p.setSurename("Johnson");
+		p.setSurname("Johnson");
 	}
 }
 
 class Person implements ProxySubject {
-	private String name, surename;
+	private String name;
+	private String surname;
 	private int unrelated;
 
 	public Person(String name, String surename) {
 		this.name = name;
-		this.surename = surename;
+		this.surname = surename;
 	}
 
 	public int getUnrelated() {
@@ -64,15 +67,15 @@ class Person implements ProxySubject {
 		this.name = name;
 	}
 
-	public String getSurename() {
-		return surename;
+	public String getSurname() {
+		return surname;
 	}
 
-	public void setSurename(String surename) {
-		this.surename = surename;
+	public void setSurname(String surname) {
+		this.surname = surname;
 	}
 
 	public String fullName() {
-		return String.format("%s %s", name, surename);
+		return format("%s %s", name, surname);
 	}
 }

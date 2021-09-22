@@ -1,11 +1,8 @@
 package com.niton.reactj.api.react;
 
-import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.event.GenericEventManager;
 
 import java.util.Map;
-
-import static java.lang.String.format;
 
 /**
  * This interface enables objects to be reactive.<br>
@@ -39,11 +36,7 @@ public interface Reactable {
 	 */
 	default void set(Map<String, Object> changed) {
 		for (Map.Entry<String, Object> change : changed.entrySet()) {
-			try {
-				set(change.getKey(), change.getValue());
-			} catch (Exception e) {
-				throw new ReactiveException(format("Set(%s, %s) failed", change.getKey(), change.getValue()), e);
-			}
+			set(change.getKey(), change.getValue());
 		}
 	}
 
