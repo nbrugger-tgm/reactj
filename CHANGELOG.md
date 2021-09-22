@@ -1,3 +1,18 @@
+## v4.0.0b5 (2021-09-22)
+
+### Refactor
+
+- make ProxyCreator instance based
+- replace javassist ith bytebuddy
+- use jigsaw modules
+- rename missleading names
+- extend abstraction for observers (#37)
+- add abstraction for observers (#37)
+
+### Feat
+
+- add parameterless events/listeners
+
 ## v3.1.0b4 (2021-08-07)
 
 ### Feat
@@ -93,8 +108,6 @@
 - adapt isFitting method to behave as expected
 - replaced fori by for each
 - add mvc package
-
-## v2.3.0-SNAPSHOT (2020-11-30)
 
 ## v2.2.2-SNAPSHOT (2020-11-24)
 
