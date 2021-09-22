@@ -1,7 +1,6 @@
 package com.niton.reactj.api.react;
 
 import com.niton.reactj.api.annotation.Unreactive;
-import com.niton.reactj.api.react.Reactable;
 import com.niton.reactj.api.util.ReactiveReflectorUtil;
 import com.niton.reactj.event.GenericEventManager;
 
@@ -11,7 +10,7 @@ import java.util.Map;
 public class ReactiveWrapper<T> implements Reactable, Serializable {
 	private final GenericEventManager reactEvent = new GenericEventManager();
 	@Unreactive
-	private final T                   wrappedObject;
+	private final T wrappedObject;
 
 	/**
 	 * Creates a Reactive Object that forwards calls to the given object

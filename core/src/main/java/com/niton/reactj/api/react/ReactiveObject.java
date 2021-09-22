@@ -2,9 +2,6 @@ package com.niton.reactj.api.react;
 
 
 import com.niton.reactj.api.annotation.Unreactive;
-import com.niton.reactj.event.GenericEventManager;
-
-import java.util.Map;
 
 /**
  * The base class to make an Object reactive (usable in ReactiveComponents).

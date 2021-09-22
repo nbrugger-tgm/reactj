@@ -1,24 +1,27 @@
-package com.niton.reactj.api.examples.CLI;
+package com.niton.reactj.api.examples.cli;
 
-import com.niton.reactj.api.react.*;
 import com.niton.reactj.api.annotation.Reactive;
-import com.niton.reactj.api.examples.CLI.CliApp.Progress;
+import com.niton.reactj.api.examples.cli.CliApp.Progress;
 import com.niton.reactj.api.proxy.ProxyCreator;
+import com.niton.reactj.api.react.ReactiveBinder;
+import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.react.ReactiveController;
+import com.niton.reactj.api.react.ReactiveProxy;
 
 
 public class CliApp {
 
 	public static void main(String[] args) throws InterruptedException {
-		ReactiveProxy<Progress> proxy    = ProxyCreator.create(new Progress());
-		Progress                progress = proxy.getObject();
+		ReactiveProxy<Progress> proxy = ProxyCreator.create(new Progress());
+		Progress progress = proxy.getObject();
 
 		ReactiveController<ReactiveProxy<Progress>> controller = new ReactiveController<>(new ProgressCli());
 		controller.setModel(proxy);
 
-		while(true) {
+		while (true) {
 			Thread.sleep((long) (Math.random() * 50));
 			progress.setProgress((progress.getProgress() + 0.001));
-			if(progress.getProgress() >= 1) {
+			if (progress.getProgress() >= 1) {
 				return;
 			}
 		}
@@ -42,20 +45,20 @@ public class CliApp {
 class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 
 
-
 	private void displayDone(Boolean condition) {
-		if(condition) {
+		if (condition) {
 			System.out.print("✔");
 		}
 	}
+
 	private void renderProgress(double percent) {
 		int width = 50;
 		double done = (percent * width);
-		double port = done%1.0;
+		double port = done % 1.0;
 		int fullDone = (int) (done - port);
 		System.out.print("\r");
 		System.out.print('[');
-		for(int i = 0; i < width; i++) {
+		for (int i = 0; i < width; i++) {
 			System.out.print(i < fullDone ? "█" : (i == fullDone ? '>' : ' '));
 		}
 		System.out.print(']');

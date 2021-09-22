@@ -20,7 +20,7 @@ module {
     version = "4.0.0b4"
 }
 
-java{
+java {
     sourceCompatibility 11
     targetCompatibility 11
 }

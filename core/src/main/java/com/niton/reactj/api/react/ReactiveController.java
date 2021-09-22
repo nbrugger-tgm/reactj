@@ -1,9 +1,9 @@
 package com.niton.reactj.api.react;
 
+import com.niton.reactj.api.observer.ObjectObserver;
 import com.niton.reactj.api.react.ReactiveBinder.BiBinding;
 import com.niton.reactj.api.react.ReactiveBinder.Binding;
 import com.niton.reactj.api.react.ReactiveBinder.SuperBinding;
-import com.niton.reactj.api.observer.ObjectObserver;
 import com.niton.reactj.api.util.ReactiveComponentUtil;
 
 import java.util.*;
@@ -19,12 +19,12 @@ import static com.niton.reactj.api.exceptions.ReactiveException.bindingException
  * @param <M> Model Type
  */
 public final class ReactiveController<M extends Reactable> {
-	private final ObjectObserver<M>                     observer                   = new ObjectObserver<>();
-	private final Map<String, List<Binding<?, ?>>>      displayBindings            = new ConcurrentHashMap<>();
-	private final Map<String, List<BiBinding<?, ?>>>    editBindings               = new ConcurrentHashMap<>();
-	private final Map<String, List<SuperBinding<?, M>>> displaySuperBindings       = new ConcurrentHashMap<>();
-	private final List<SuperBinding<?, M>>              globalDisplaySuperBindings = new LinkedList<>();
-	private       boolean                               blockReactions;
+	private final ObjectObserver<M> observer = new ObjectObserver<>();
+	private final Map<String, List<Binding<?, ?>>> displayBindings = new ConcurrentHashMap<>();
+	private final Map<String, List<BiBinding<?, ?>>> editBindings = new ConcurrentHashMap<>();
+	private final Map<String, List<SuperBinding<?, M>>> displaySuperBindings = new ConcurrentHashMap<>();
+	private final List<SuperBinding<?, M>> globalDisplaySuperBindings = new LinkedList<>();
+	private boolean blockReactions;
 
 	/**
 	 * @param component the view or component to control. Most likely a UI element
@@ -32,15 +32,44 @@ public final class ReactiveController<M extends Reactable> {
 	public ReactiveController(ReactiveComponent<M> component) {
 		//Maybe in the future it is needed to add the view as field
 		ReactiveBinder<M> binder = new ReactiveBinder<>(this::updateModel,
-		                                                displayBindings,
-		                                                displaySuperBindings,
-		                                                globalDisplaySuperBindings,
-		                                                editBindings
+				displayBindings,
+				displaySuperBindings,
+				globalDisplaySuperBindings,
+				editBindings
 		);
 		component.createBindings(binder);
 		ReactiveComponentUtil.createAnnotatedBindings(component, binder);
 		observer.addListener(this::updateView);
 		observer.setObserveOnRebind(true);
+	}
+
+	/**
+	 * Triggers a binding
+	 *
+	 * @param key     the name of the binding to trigger
+	 * @param value   the value to pass to the binding
+	 * @param binding the binding to call
+	 */
+	private static void updateBinding(String key, Object value, Binding<?, ?> binding) {
+		Object converted;
+		try {
+			converted = binding.convertToDisplay(value);
+		} catch (ClassCastException ex) {
+			throw badConverterException(key, value.getClass());
+		}
+
+		if (binding instanceof BiBinding) {
+			//ignore change when the value is already present
+			Object present = ((BiBinding<?, ?>) binding).getReceiver().get();
+			if (present.equals(value)) {
+				return;
+			}
+		}
+		try {
+			binding.display(converted);
+		} catch (ClassCastException ex) {
+			throw bindingException(key, value, converted, ex);
+		}
 	}
 
 	/**
@@ -73,7 +102,7 @@ public final class ReactiveController<M extends Reactable> {
 	 */
 	private Map<String, Object> findUiChanges() {
 		Map<String, Object> changed = new HashMap<>();
-		Map<String, Object> state   = observer.getObserved().getState();
+		Map<String, Object> state = observer.getObserved().getState();
 		for (Map.Entry<String, Object> field : state.entrySet()) {
 			if (!editBindings.containsKey(field.getKey())) {
 				continue;
@@ -90,7 +119,7 @@ public final class ReactiveController<M extends Reactable> {
 	 * @param value the value the event carries (value of the changed property)
 	 */
 	private void updateView(final String key, final Object value) {
-		List<Binding<?, ?>>      bindings      = displayBindings.getOrDefault(key, Collections.emptyList());
+		List<Binding<?, ?>> bindings = displayBindings.getOrDefault(key, Collections.emptyList());
 		List<SuperBinding<?, M>> superBindings = displaySuperBindings.getOrDefault(key, Collections.emptyList());
 
 		blockReactions = true;
@@ -119,35 +148,6 @@ public final class ReactiveController<M extends Reactable> {
 				changed.put(field, bindingVal);
 				break;
 			}
-		}
-	}
-
-	/**
-	 * Triggers a binding
-	 *
-	 * @param key     the name of the binding to trigger
-	 * @param value   the value to pass to the binding
-	 * @param binding the binding to call
-	 */
-	private static void updateBinding(String key, Object value, Binding<?, ?> binding) {
-		Object converted;
-		try {
-			converted = binding.convertToDisplay(value);
-		} catch (ClassCastException ex) {
-			throw badConverterException(key, value.getClass());
-		}
-
-		if (binding instanceof BiBinding) {
-			//ignore change when the value is already present
-			Object present = ((BiBinding<?, ?>) binding).getReceiver().get();
-			if (present.equals(value)) {
-				return;
-			}
-		}
-		try {
-			binding.display(converted);
-		} catch (ClassCastException ex) {
-			throw bindingException(key, value, converted, ex);
 		}
 	}
 

@@ -6,18 +6,18 @@ import com.niton.reactj.event.GenericListener;
 
 class GenericEventManagerTest extends EventManagerTest<Void, GenericListener> {
 
-    @Override
-    protected CustomEventManager<Void, GenericListener> createManager() {
-        return new GenericEventManager();
-    }
+	@Override
+	protected CustomEventManager<Void, GenericListener> createManager() {
+		return new GenericEventManager();
+	}
 
-    @Override
-    protected GenericListener createListener(Runnable testCallback) {
-        return testCallback::run;
-    }
+	@Override
+	protected GenericListener createListener(Runnable testCallback) {
+		return testCallback::run;
+	}
 
-    @Override
-    protected Void getDummyEvent() {
-        return null;
-    }
+	@Override
+	protected Void getDummyEvent() {
+		return null;
+	}
 }

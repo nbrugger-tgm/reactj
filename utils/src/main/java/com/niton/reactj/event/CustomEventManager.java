@@ -14,7 +14,7 @@ public abstract class CustomEventManager<E, L> implements Serializable {
 	private final List<L> listeners = new ArrayList<>(1);
 
 	public void listen(L listener) {
-		if(listener == null)
+		if (listener == null)
 			throw new IllegalArgumentException();
 		listeners.add(listener);
 	}

@@ -13,16 +13,18 @@ This library introduces <b>easy</b> reactive Bindings in Java, very useful to cr
 Its just like <b>Vue js</b> for java
 </p>
 
-Documentation: 
-* [Wiki](https://github.com/nbrugger-tgm/reactj/wiki) 
-* [JavaDoc](https://niton.jfrog.io/artifactory/java-libs/com/niton/reactj/3.0.2/reactj-3.0.2-javadoc.jar!/index.html)
-* [Changelog](CHANGELOG.md)
+Documentation:
+
+- [Wiki](https://github.com/nbrugger-tgm/reactj/wiki)
+- [JavaDoc](https://niton.jfrog.io/artifactory/java-libs/com/niton/reactj/4.0.0b4/reactj-4.0.0b4-javadoc.jar!/index.html)
+- [Changelog](CHANGELOG.md)
 
 ## Framework support implementation
 
-- [x] Swing : [reactj-swing](swing)
+- [ ] Swing : *in work*
 - [ ] JavaFx
 - [ ] Qt
+- [ ] Vaadin
 
 > Feel free to contribute custom implementations (they are not hard to create)
 
@@ -30,7 +32,7 @@ Documentation:
 
 ## Usage
 
-*Version* : [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fniton.jfrog.io%2Fartifactory%2Fjava-libs%2Fcom%2Fniton%2Freactj%2Fmaven-metadata.xml)](https://niton.jfrog.io/ui/packages/gav:%2F%2Fcom.niton:reactj?name=react&type=packages)
+[![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fniton.jfrog.io%2Fartifactory%2Fjava-libs%2Fcom%2Fniton%2Freactj%2Fmaven-metadata.xml)](https://niton.jfrog.io/ui/packages/gav:%2F%2Fcom.niton:reactj?name=react&type=packages)
 
 ### Gradle
 
@@ -44,83 +46,95 @@ repositories {
 
 Adding the dependency
 
+*plain*
+
 ```groovy
-implementation 'com.niton:reactj:3.1.0b4'
+implementation 'com.niton.reactj:core:4.0.0b4'
+implementation 'com.niton.reactj:lists:4.0.0b4'
+```
+
+*framework*
+
+```groovy
+implementation 'com.niton.reactj:swing:4.0.0b4'
 ```
 
 ### Maven
 
 ```xml
+
 <repositories>
-  <repository>
-    <id>niton</id>
-    <name>niton</name>
-    <url>https://niton.jfrog.io/artifactory/java-libs/</url>
-  </repository>
+    <repository>
+        <id>niton</id>
+        <name>niton</name>
+        <url>https://niton.jfrog.io/artifactory/java-libs/</url>
+    </repository>
 </repositories>
 ```
 
 Adding the dependency
 
 ```xml
+
 <dependency>
-  <groupId>com.niton</groupId>
-  <artifactId>reactj</artifactId>
-  <version>3.1.0b4</version>
+    <groupId>com.niton.reactj</groupId>
+    <!--For artifactId use your UI framework (swing,javafx,qt or vaadin)-->
+    <artifactId>swing</artifactId>
+    <version>4.0.0b4</version>
 </dependency>
 ```
 
 ### Example
 
-> All functional examples can be found at https://github.com/nbrugger-tgm/reactj-swing/tree/master/src/test/java/com/niton/reactj/examples
+> All functional examples can be found at https://github.com/nbrugger-tgm/reactj/tree/master/core/src/test/java/com/niton/reactj/examples
 
 Create a View (Component)
 
 ```java
 public class DataView extends ReactiveView<JPanel, ReactiveProxy<Data>> {
-    private JPanel            panel; // the panel itself
-    
-    private JTextField        nameInput;
-    private JComboBox<Gender> genderJComboBox;
-    private JButton           selectButton ;
-    
-    //Events this view can emitt
-    public final EventManager<Person> resetEvent = new EventManager<>();
-    
-    @Override
-    protected JPanel createView() {
-        panel           = new JPanel();
-        
-        nameInput       = new JTextField();
-        genderJComboBox = new JComboBox<>(Gender.values());
-        selectButton    = new JButton("Reset");
-        
-        panel.add(nameInput);
-        panel.add(genderJComboBox);
-        panel.add(selectButton);
-        
-        return panel;
-    }
+	private JPanel panel; // the panel itself
 
-    //the reactj swing implementation makes this method a lot easier
-    @Override
-    public void createBindings(ReactiveBinder bindings) {
-        bindings.bindBi("name", nameInput::setText, nameInput::getText);
-        bindings.bindBi("gender", genderJComboBox::setSelectedItem, genderJComboBox::getSelectedItem);
-        
-        //add actions to react to
-        nameInput.getDocument().addUndoableEditListener(bindings::react);
-        genderJComboBox.addActionListener(bindings::react);
-        
-        selectButton.addActionListener(()->resetEvemt.fire(getModel()))
-    }
+	private JTextField nameInput;
+	private JComboBox<Gender> genderJComboBox;
+	private JButton selectButton;
+
+	//Events this view can emitt
+	public final EventManager<Person> resetEvent = new EventManager<>();
+
+	@Override
+	protected JPanel createView() {
+		panel = new JPanel();
+
+		nameInput = new JTextField();
+		genderJComboBox = new JComboBox<>(Gender.values());
+		selectButton = new JButton("Reset");
+
+		panel.add(nameInput);
+		panel.add(genderJComboBox);
+		panel.add(selectButton);
+
+		return panel;
+	}
+
+	//the reactj swing implementation makes this method a lot easier
+	@Override
+	public void createBindings(ReactiveBinder bindings) {
+		bindings.bindBi("name", nameInput::setText, nameInput::getText);
+		bindings.bindBi("gender", genderJComboBox::setSelectedItem, genderJComboBox::getSelectedItem);
+
+		//add actions to react to
+		nameInput.getDocument().addUndoableEditListener(bindings::react);
+		genderJComboBox.addActionListener(bindings::react);
+
+		selectButton.addActionListener(() -> resetEvemt.fire(getModel()));
+	}
 }
 ```
 
 Then we need a Pojo/Model to sync the View with
 
 ```java
-public class Data { 
+public class Data {
 	//change reactive name
 	@Reactive("gender")
 	private Gender personsGender;
@@ -130,29 +144,21 @@ public class Data {
 	@Unreactive
 	private String address;
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setGender(Gender gender) {
-		this.personsGender = gender;
-	}
+	//getter and setters
 }
 ```
 
 Now we need to bind the view to a Person object
 
 ```java
-ReactiveProxy<Data> proxy = ReactiveObject.create(Data.class);
-Data model = proxy.object;
+ReactiveProxy<Data> proxy=ReactiveObject.create(new Data());
+		Data model=proxy.object;
 
-DataView view = new DataView();
-view.setData(proxy);
-
-//now you just need to display the view on a JFrame
+		DataView view=new DataView();
+		view.setData(proxy);
 
 //this will cause the UI to update
-model.setGender(FEMALE);
+		model.setGender(FEMALE);
 ```
 
 ### Full runnable example

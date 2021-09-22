@@ -1,7 +1,6 @@
 package com.niton.reactj.api.proxy;
 
 
-import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.exceptions.SubjectCallException;
 import com.niton.reactj.api.react.Reactable;
 import com.niton.reactj.event.GenericEventManager;
@@ -18,7 +17,9 @@ import java.util.Map;
  */
 public interface ProxySubject extends Reactable {
 	@Override
-	default Map<String, Object> getState(){throw new SubjectCallException();}
+	default Map<String, Object> getState() {
+		throw new SubjectCallException();
+	}
 
 	@Override
 	default void set(String property, Object value) {
@@ -26,5 +27,7 @@ public interface ProxySubject extends Reactable {
 	}
 
 	@Override
-	default GenericEventManager reactEvent(){throw new SubjectCallException();}
+	default GenericEventManager reactEvent() {
+		throw new SubjectCallException();
+	}
 }

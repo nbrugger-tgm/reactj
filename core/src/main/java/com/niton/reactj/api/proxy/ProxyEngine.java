@@ -1,7 +1,6 @@
 package com.niton.reactj.api.proxy;
 
 
-
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -61,7 +60,6 @@ public abstract class ProxyEngine<T> implements InvocationHandler, Serializable 
 	 * @param self       the proxy the method was invoked onto
 	 * @param thisMethod the called method
 	 * @param args       the parameters used for invocation
-	 *
 	 * @return the return value of equals, null if no method was called
 	 */
 	public Object handleEquals(Object self, Method thisMethod, Object[] args)

@@ -1,12 +1,12 @@
 package com.niton.reactj.api.test;
 
-import com.niton.reactj.api.react.ReactiveObject;
 import com.niton.reactj.api.observer.ObjectObserver;
 import com.niton.reactj.api.observer.ObjectObserver.PropertyObservation;
+import com.niton.reactj.api.react.ReactiveObject;
 import com.niton.reactj.api.test.ObjectObserverTest.Subject;
 import com.niton.reactj.observer.testing.ObserverImplTest;
 
-class ObjectObserverTest extends ObserverImplTest<ObjectObserver<Subject>, PropertyObservation,Subject> {
+class ObjectObserverTest extends ObserverImplTest<ObjectObserver<Subject>, PropertyObservation, Subject> {
 
 	@Override
 	protected ObjectObserver<Subject> createObserverInstance() {
@@ -19,9 +19,9 @@ class ObjectObserverTest extends ObserverImplTest<ObjectObserver<Subject>, Prope
 	}
 
 	@Override
-	protected PropertyObservation modify(Subject observable){
-		observable.setVariable(observable.getVariable()+1);
-		return new PropertyObservation("variable",observable.getVariable());
+	protected PropertyObservation modify(Subject observable) {
+		observable.setVariable(observable.getVariable() + 1);
+		return new PropertyObservation("variable", observable.getVariable());
 	}
 
 	static class Subject extends ReactiveObject {

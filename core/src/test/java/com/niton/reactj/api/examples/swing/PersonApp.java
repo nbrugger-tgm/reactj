@@ -1,9 +1,7 @@
 package com.niton.reactj.api.examples.swing;
 
-import com.niton.reactj.api.react.ReactiveProxy;
-import com.niton.reactj.api.react.ReactiveStrategy;
 import com.niton.reactj.api.proxy.ProxyCreator;
-import com.niton.reactj.api.react.ReactiveWrapper;
+import com.niton.reactj.api.react.ReactiveProxy;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,10 +13,10 @@ public class PersonApp {
 		//A controller for custom events
 		PersonController ownController = new PersonController();
 
-		Person     information = proxy.getObject();
-		PersonView component   = new PersonView();
-		PersonView component1  = new PersonView();
-		PersonView component2  = new PersonView();
+		Person information = proxy.getObject();
+		PersonView component = new PersonView();
+		PersonView component1 = new PersonView();
+		PersonView component2 = new PersonView();
 
 		component.resetEvent.listen(ownController);
 		component1.resetEvent.listen(ownController);
@@ -44,7 +42,7 @@ public class PersonApp {
 		information.setIq(120);
 		information.setName("Niton");
 
-		while(true) {
+		while (true) {
 			Thread.sleep(1000);
 			System.out.println(information);
 			information.setAge(information.getAge() + 1);

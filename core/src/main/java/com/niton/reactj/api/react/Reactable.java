@@ -1,7 +1,6 @@
 package com.niton.reactj.api.react;
 
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.api.util.ReactiveReflectorUtil;
 import com.niton.reactj.event.GenericEventManager;
 
 import java.util.Map;
@@ -53,7 +52,6 @@ public interface Reactable {
 	 *
 	 * @param property the name of the property to set (@Reactive respected)
 	 * @param value    the value to change to
-	 *
 	 * @throws Exception if anything goes wrong
 	 */
 	void set(String property, Object value);

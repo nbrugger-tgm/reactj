@@ -25,9 +25,10 @@ public class ObserverExample {
 	}
 
 	public static class Data implements ProxySubject {
-		int    a = 1;
-		int    b = 2;
-		Object d = (Runnable) () -> {};
+		int a = 1;
+		int b = 2;
+		Object d = (Runnable) () -> {
+		};
 
 		public void setA(int a) {
 			this.a = a;

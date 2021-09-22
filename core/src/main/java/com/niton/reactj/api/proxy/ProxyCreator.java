@@ -4,11 +4,17 @@ import com.niton.reactj.api.annotation.Unreactive;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.proxy.ProxyForwardImpl.Equals;
 import com.niton.reactj.api.proxy.ProxyForwardImpl.ToOrigin;
-import com.niton.reactj.api.react.*;
+import com.niton.reactj.api.react.Reactable;
+import com.niton.reactj.api.react.ReactiveForwarder;
+import com.niton.reactj.api.react.ReactiveProxy;
+import com.niton.reactj.api.react.ReactiveWrapper;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.UsingLookup;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy.Default;
-import net.bytebuddy.implementation.*;
+import net.bytebuddy.implementation.ExceptionMethod;
+import net.bytebuddy.implementation.FieldAccessor;
+import net.bytebuddy.implementation.MethodCall;
+import net.bytebuddy.implementation.MethodDelegation;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 import org.objenesis.instantiator.ObjectInstantiator;
@@ -26,25 +32,22 @@ import java.util.Map;
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.PRIVATE;
 import static net.bytebuddy.implementation.DefaultMethodCall.prioritize;
-import static net.bytebuddy.implementation.MethodCall.invoke;
-import static net.bytebuddy.implementation.MethodDelegation.toField;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 public class ProxyCreator {
-	static final Map<Class<?>, Class<?>>              proxyClasses    = new HashMap<>();
+	public static final String originField = "PROXY$ORIGIN";
+	static final Map<Class<?>, Class<?>> proxyClasses = new HashMap<>();
 	static final Map<Class<?>, ObjectInstantiator<?>> proxyInitiators = new HashMap<>();
-	static final Map<Class<?>, Field>                 wraperFields    = new HashMap<>();
-	static final Map<Class<?>, Field>                 originFields    = new HashMap<>();
-
-	public static final String originField  = "PROXY$ORIGIN";
-	static final        String wrapperField = "PROXY$WRAPPER_REF";
+	static final Map<Class<?>, Field> wraperFields = new HashMap<>();
+	static final Map<Class<?>, Field> originFields = new HashMap<>();
+	static final String wrapperField = "PROXY$WRAPPER_REF";
 
 	static final Method getForwardTargetMethod;
 	static final Method cloneMethod;
 
 	private static final Objenesis objenesis = new ObjenesisStd();
-	public static boolean allowUnsafeProxies = false;
 	private static final String proxySuffix = "PROXY";
+	public static boolean allowUnsafeProxies = false;
 
 	static {
 		try {
@@ -55,7 +58,8 @@ public class ProxyCreator {
 		}
 	}
 
-	private ProxyCreator() {}
+	private ProxyCreator() {
+	}
 
 	public static <T extends ProxySubject> T create(T object) {
 		Class<? extends ProxySubject> originClass = object.getClass();
@@ -95,13 +99,13 @@ public class ProxyCreator {
 	}
 
 	public static <T> ReactiveProxy<T> create(T object) {
-		Class<?>              originClass = object.getClass();
-		Class<?>              proxyClass  = proxyClasses.computeIfAbsent(originClass, ProxyCreator::createProxyClass);
-		ObjectInstantiator<?> initiator   = proxyInitiators.computeIfAbsent(proxyClass, objenesis::getInstantiatorOf);
+		Class<?> originClass = object.getClass();
+		Class<?> proxyClass = proxyClasses.computeIfAbsent(originClass, ProxyCreator::createProxyClass);
+		ObjectInstantiator<?> initiator = proxyInitiators.computeIfAbsent(proxyClass, objenesis::getInstantiatorOf);
 
 		@SuppressWarnings("unchecked")
 		T proxy = (T) initiator.newInstance();
-		if(!(proxy instanceof Reactable))
+		if (!(proxy instanceof Reactable))
 			throw new ReactiveException("Create proxy is not reactive");
 		ReactiveWrapper<T> wrapper = new ReactiveWrapper<>(object);
 		try {
@@ -115,10 +119,10 @@ public class ProxyCreator {
 	}
 
 	private static <T> Class<? extends T> createProxyClass(Class<? extends T> originClass) throws ProxyException {
-		if(!allowUnsafeProxies)
+		if (!allowUnsafeProxies)
 			verifyOriginClass(originClass);
-		if(originClass.getName().endsWith(proxySuffix))
-			throw new ProxyException("You can't create a proxy from a proxy",new IllegalArgumentException(originClass.getName()));
+		if (originClass.getName().endsWith(proxySuffix))
+			throw new ProxyException("You can't create a proxy from a proxy", new IllegalArgumentException(originClass.getName()));
 		Module module = originClass.getModule();
 		Lookup lookup = getLookup(originClass, module);
 		var reactiveMethod =
@@ -126,17 +130,17 @@ public class ProxyCreator {
 						.or(isOverriddenFrom(Reactable.class));
 		var fromObject =
 				isDeclaredBy(Object.class)
-				.or(isOverriddenFrom(Object.class));
+						.or(isOverriddenFrom(Object.class));
 		var unreactive =
 				isAnnotatedWith(Unreactive.class)
-				.or(fromObject);
+						.or(fromObject);
 		var excluded =
 				is(cloneMethod)
-				.and(not(isPublic()));
+						.and(not(isPublic()));
 		var proxyClass = new ByteBuddy()
 				.subclass(originClass, Default.IMITATE_SUPER_CLASS)
 				.implement(ReactiveForwarder.class)
-				.name(format("%s_%s",originClass.getName(),proxySuffix))
+				.name(format("%s_%s", originClass.getName(), proxySuffix))
 				.defineField(originField, originClass, PRIVATE)
 				.defineField(wrapperField, ReactiveWrapper.class, PRIVATE)
 
@@ -148,8 +152,8 @@ public class ProxyCreator {
 
 				.method(
 						not(unreactive)
-						.and(not(reactiveMethod))
-						.and(not(is(getForwardTargetMethod)))
+								.and(not(reactiveMethod))
+								.and(not(is(getForwardTargetMethod)))
 				)
 				.intercept(
 						MethodDelegation.to(ToOrigin.class)
@@ -167,8 +171,8 @@ public class ProxyCreator {
 				)
 				.intercept(
 						MethodCall.invokeSelf()
-						          .onField(originField)
-						          .withAllArguments()
+								.onField(originField)
+								.withAllArguments()
 				)
 
 				.method(excluded)
@@ -185,11 +189,11 @@ public class ProxyCreator {
 	}
 
 	private static <T> void verifyOriginClass(Class<? extends T> originClass) {
-		for(Field f : originClass.getFields())
-			if(isMutableInstanceVar(f))
-				throw new ReactiveException("Class "+originClass.getName()+" contains public writable instance variables, such classes can't be proxied\n" +
-				                            "If possible encapsulate using getters & setters, if not use ProxyCreator.allowUnsafeProxies\n" +
-				                            "Be aware that if you use unsafe proxies you need to sync using ProxyCreator.sync()");
+		for (Field f : originClass.getFields())
+			if (isMutableInstanceVar(f))
+				throw new ReactiveException("Class " + originClass.getName() + " contains public writable instance variables, such classes can't be proxied\n" +
+						"If possible encapsulate using getters & setters, if not use ProxyCreator.allowUnsafeProxies\n" +
+						"Be aware that if you use unsafe proxies you need to sync using ProxyCreator.sync()");
 	}
 
 	private static boolean isMutableInstanceVar(Field f) {
@@ -202,23 +206,23 @@ public class ProxyCreator {
 		try {
 			lookup = MethodHandles.privateLookupIn(originClass, MethodHandles.lookup());
 		} catch (IllegalAccessException e) {
-			throw new ReactiveException("reactj can't get access to "+module.getName(), e);
+			throw new ReactiveException("reactj can't get access to " + module.getName(), e);
 		}
 		return lookup;
 	}
 
-	public static void sync(Object proxy){
-		if(!proxy.getClass().getName().endsWith(proxySuffix))
+	public static void sync(Object proxy) {
+		if (!proxy.getClass().getName().endsWith(proxySuffix))
 			throw new IllegalArgumentException("sync() requires an proxy");
 
 		try {
-			Object origin = getField(proxy.getClass(),originFields,originField).get(proxy);
-			for(Field f : origin.getClass().getFields())
-				if(isMutableInstanceVar(f)) {
-						f.set(origin,f.get(proxy));
+			Object origin = getField(proxy.getClass(), originFields, originField).get(proxy);
+			for (Field f : origin.getClass().getFields())
+				if (isMutableInstanceVar(f)) {
+					f.set(origin, f.get(proxy));
 				}
 		} catch (IllegalAccessException e) {
-			throw new ProxyException("Syncing origin to proxy failed",e);
+			throw new ProxyException("Syncing origin to proxy failed", e);
 		}
 	}
 }

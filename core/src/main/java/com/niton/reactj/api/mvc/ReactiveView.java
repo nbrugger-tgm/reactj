@@ -12,7 +12,7 @@ import com.niton.reactj.api.react.ReactiveController;
  */
 public abstract class ReactiveView<V, M extends Reactable> implements ReactiveComponent<M> {
 	private final ReactiveController<M> controller;
-	private final V                     view;
+	private final V view;
 
 	public ReactiveView() {
 		view = createView();

@@ -1,9 +1,9 @@
 package com.niton.reactj.api.examples.superbinding;
 
-import com.niton.reactj.api.react.ReactiveComponent;
-import com.niton.reactj.api.react.ReactiveController;
 import com.niton.reactj.api.proxy.ProxyCreator;
 import com.niton.reactj.api.proxy.ProxySubject;
+import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.react.ReactiveController;
 
 public class Superbinding {
 	public static void main(String[] args) {
@@ -12,17 +12,17 @@ public class Superbinding {
 		ReactiveComponent<Person> personCliView = binder -> {
 			binder.bind(Person::fullName, s -> System.out.println("fullName(*) -> " + s));
 			binder.bind((Person p1) -> p1.getSurename().toUpperCase() + " " + p1.getName(),
-			            s -> System.out.println("Concat -> " + s));
+					s -> System.out.println("Concat -> " + s));
 			binder.bind(Person::fullName,
-			            s -> System.out.println("fullName(unrelated) -> " + s),
-			            "unrelated");
+					s -> System.out.println("fullName(unrelated) -> " + s),
+					"unrelated");
 			binder.bind(Person::fullName,
-			            s -> System.out.println("fullName(name) -> " + s),
-			            "name");
+					s -> System.out.println("fullName(name) -> " + s),
+					"name");
 			binder.bind(Person::fullName,
-			            s -> System.out.println("fullName(name,surename) -> " + s),
-			            "name",
-			            "surename");
+					s -> System.out.println("fullName(name,surename) -> " + s),
+					"name",
+					"surename");
 			binder.bind("name", System.out::println);
 			//binder.bind("surename",System.out::println);
 		};
@@ -44,7 +44,7 @@ class Person implements ProxySubject {
 	private int unrelated;
 
 	public Person(String name, String surename) {
-		this.name     = name;
+		this.name = name;
 		this.surename = surename;
 	}
 

@@ -6,7 +6,10 @@ import com.niton.reactj.api.annotation.ReactiveListener;
 import com.niton.reactj.api.annotation.Unreactive;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.proxy.ProxyCreator;
-import com.niton.reactj.api.react.*;
+import com.niton.reactj.api.react.ReactiveBinder;
+import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.react.ReactiveController;
+import com.niton.reactj.api.react.ReactiveProxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,20 +20,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Annotations")
 class AnnotationTest {
 	public static final int
-		SET1 = 12,
-		SET2 = 22,
-		SET3 = 83;
+			SET1 = 12,
+			SET2 = 22,
+			SET3 = 83;
 	public final ReactiveProxy<DeepBase> deepProxy = ProxyCreator.create(new DeepBase());
-	public final DeepBase                deep      = deepProxy.getObject();
+	public final DeepBase deep = deepProxy.getObject();
 
 	public final ReactiveProxy<FlatBase> flatProxy = ProxyCreator.create(new FlatBase());
-	public final FlatBase                flat      = flatProxy.getObject();
+	public final FlatBase flat = flatProxy.getObject();
 
 	private boolean
-		aCalled    = false,
-		bCalled    = false,
-		cCalled    = false,
-		testCalled = false;
+			aCalled = false,
+			bCalled = false,
+			cCalled = false,
+			testCalled = false;
 
 	private String stringDeposit;
 
@@ -42,10 +45,10 @@ class AnnotationTest {
 			binder.bind("test", v -> testCalled = true);
 
 			binder.bindBi("c",
-			              v -> stringDeposit = v,
-			              () -> stringDeposit,
-			              Integer::parseInt,
-			              String::valueOf);
+					v -> stringDeposit = v,
+					() -> stringDeposit,
+					Integer::parseInt,
+					String::valueOf);
 			binder.bindBi("test", v -> testDeposit = v, () -> testDeposit);
 		};
 
@@ -56,9 +59,9 @@ class AnnotationTest {
 		controller.stop();
 		controller.setModel(deepProxy);
 
-		aCalled    = false;
-		bCalled    = false;
-		cCalled    = false;
+		aCalled = false;
+		bCalled = false;
+		cCalled = false;
 		testCalled = false;
 
 		controller.update();
@@ -86,25 +89,25 @@ class AnnotationTest {
 
 			@ReactiveListener("a")
 			void aListener() {
-				if(!a) {
+				if (!a) {
 					fail("@Reactive rename should erase old name");
 				}
 			}
 
 			@ReactiveListener("test")
 			void aListener(Integer i) {
-				if(!test) {
+				if (!test) {
 					fail("test is not allowed to be called");
-				} else if(i != 0) {
+				} else if (i != 0) {
 					assertEquals(SET1, i);
 				}
 			}
 
 			@ReactiveListener("test")
 			void aListener(int i) {
-				if(!test) {
+				if (!test) {
 					fail("test is not allowed to react");
-				} else if(i != 0) {
+				} else if (i != 0) {
 					assertEquals(SET1, i);
 				}
 
@@ -112,14 +115,14 @@ class AnnotationTest {
 
 			@ReactiveListener("b")
 			void bListener() {
-				if(!b) {
+				if (!b) {
 					fail("@Unreactive disrespected");
 				}
 			}
 
 			@ReactiveListener("c")
 			void someMethod(int val) {
-				if(val != 0) {
+				if (val != 0) {
 					assertEquals(SET3, val);
 				}
 			}
@@ -127,9 +130,9 @@ class AnnotationTest {
 		ReactiveController<ReactiveProxy<M>> controller = new ReactiveController<>(deepComponent);
 		controller.setModel(proxy);
 
-		aCalled    = false;
-		bCalled    = false;
-		cCalled    = false;
+		aCalled = false;
+		bCalled = false;
+		cCalled = false;
 		testCalled = false;
 		proxy.getObject().setA(SET1);
 		assertEquals(a, aCalled);
@@ -184,7 +187,7 @@ class AnnotationTest {
 				}
 			};
 			ReactiveController<ReactiveProxy<DeepBase>> cont = new ReactiveController<>(
-				deepComponent
+					deepComponent
 			);
 			cont.setModel(deepProxy);
 			cont.stop();
@@ -196,7 +199,6 @@ class AnnotationTest {
 				public void createBindings(ReactiveBinder<ReactiveProxy<DeepBase>> binder) {
 
 				}
-
 
 
 				@ReactiveListener("test")
@@ -217,20 +219,20 @@ class AnnotationTest {
 		@Unreactive
 		private int b;
 
-		public void setA(int a) {
-			this.a = a;
-		}
-
 		public int getB() {
 			return b;
+		}
+
+		public void setB(int b) {
+			this.b = b;
 		}
 
 		public int getA() {
 			return a;
 		}
 
-		public void setB(int b) {
-			this.b = b;
+		public void setA(int a) {
+			this.a = a;
 		}
 	}
 

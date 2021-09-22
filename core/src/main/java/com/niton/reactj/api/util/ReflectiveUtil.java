@@ -10,12 +10,13 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 
 public final class ReflectiveUtil {
-	private ReflectiveUtil() {}
+	private ReflectiveUtil() {
+	}
 
 	public static ClassCastException invalidMethodParameterException(Method method, Object val) {
 		String message = String.format("Method %s doesn't accept type %s",
-		                               getMethodSignature(method),
-		                               val.getClass().getTypeName()
+				getMethodSignature(method),
+				val.getClass().getTypeName()
 		);
 		return new ClassCastException(message);
 	}
@@ -23,9 +24,9 @@ public final class ReflectiveUtil {
 
 	public static String getMethodSignature(Method method) {
 		return String.format("%s.%s(%s)",
-		                     method.getDeclaringClass().getSimpleName(),
-		                     method.getName(),
-		                     getMethodParamSignature(method)
+				method.getDeclaringClass().getSimpleName(),
+				method.getName(),
+				getMethodParamSignature(method)
 		);
 	}
 
@@ -42,38 +43,36 @@ public final class ReflectiveUtil {
 	 * @param target the object to execute on
 	 * @param method the method to execute
 	 * @param args   the arguments to pass
-	 *
 	 * @return the return value of the method call
-	 *
 	 */
 	public static Object executeCall(Object target, Method method, Object[] args)
 			throws InvocationTargetException, IllegalAccessException {
 		try {
 			return target.getClass().getMethod(method.getName(),
-			                                   method.getParameterTypes()
-			             )
-			             .invoke(target, args);
+							method.getParameterTypes()
+					)
+					.invoke(target, args);
 		} catch (NoSuchMethodException e) {
 			throw new ReactiveException(
 					String.format("Method %s is not compatible with %s.%s(%s)",
-					              getMethodSignature(method),
-					              target.getClass().getSimpleName(),
-					              method.getName(),
-					              Arrays.stream(args)
-					                    .map(Object::getClass)
-					                    .map(Class::getTypeName)
-					                    .collect(Collectors.joining())
+							getMethodSignature(method),
+							target.getClass().getSimpleName(),
+							method.getName(),
+							Arrays.stream(args)
+									.map(Object::getClass)
+									.map(Class::getTypeName)
+									.collect(Collectors.joining())
 					), e);
 		}
 	}
 
 	public static Method getOriginMethod(Method thisMethod, Class<?> type) {
 		try {
-			return type.getDeclaredMethod(thisMethod.getName(),thisMethod.getParameterTypes());
+			return type.getDeclaredMethod(thisMethod.getName(), thisMethod.getParameterTypes());
 		} catch (NoSuchMethodException e) {
 			throw new ReactiveException(format("There is no method in class '%s' that matches : %s",
-			                                   type.getSimpleName(),
-			                                   getMethodSignature(thisMethod)
+					type.getSimpleName(),
+					getMethodSignature(thisMethod)
 			));
 		}
 	}

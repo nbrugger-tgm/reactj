@@ -17,7 +17,7 @@ public interface ReactiveForwarder extends Reactable {
 	Reactable getReactableTarget();
 
 	@Override
-	default GenericEventManager reactEvent(){
+	default GenericEventManager reactEvent() {
 		return getReactableTarget().reactEvent();
 	}
 
@@ -33,6 +33,6 @@ public interface ReactiveForwarder extends Reactable {
 
 	@Override
 	default void set(String property, Object value) {
-		getReactableTarget().set(property,value);
+		getReactableTarget().set(property, value);
 	}
 }

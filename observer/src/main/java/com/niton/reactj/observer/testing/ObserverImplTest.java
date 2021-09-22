@@ -11,35 +11,38 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Implement this to test your Observer implementation against the spec
+ *
  * @param <O> your observer implementation
  * @param <R> the result of your observer implementation
  * @param <S> the type to observable
  */
 @TestInstance(Lifecycle.PER_CLASS)
-public abstract class ObserverImplTest<O extends AbstractObserver<R,S>,R,S> {
-	private final Listener<R> listener = event-> fired = event;
-	private       R     fired;
+public abstract class ObserverImplTest<O extends AbstractObserver<R, S>, R, S> {
+	private R fired;
+	private final Listener<R> listener = event -> fired = event;
 	private O observer;
 
 	protected abstract O createObserverInstance();
+
 	protected abstract S createObservableInstance();
 
 	/**
 	 * Modifies the observable object in a way to trigger the observer
+	 *
 	 * @param observable the observable to modify
 	 * @return the result expected to be produced by the observer
 	 */
 	protected abstract R modify(S observable);
 
 	@BeforeEach
-	void prepare(){
+	void prepare() {
 		fired = null;
 		observer = createObserverInstance();
 		observer.addListener(listener);
 	}
 
 	@Test
-	void fireOnChange(){
+	void fireOnChange() {
 		observer.setObserveOnRebind(false);
 		observer.observe(createObservableInstance());
 		modify(observer.getObserved());
@@ -47,7 +50,7 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R,S>,R,S> {
 	}
 
 	@Test
-	void fireCorrectEvent(){
+	void fireCorrectEvent() {
 		observer.setObserveOnRebind(false);
 		observer.observe(createObservableInstance());
 		R res = modify(observer.getObserved());
@@ -55,7 +58,7 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R,S>,R,S> {
 	}
 
 	@Test
-	void stopObserving(){
+	void stopObserving() {
 		observer.setObserveOnRebind(false);
 		observer.observe(createObservableInstance());
 		observer.stopObservation();
@@ -64,7 +67,7 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R,S>,R,S> {
 	}
 
 	@Test
-	void reset(){
+	void reset() {
 		S observable = createObservableInstance();
 		modify(observable);
 		observer.setObserveOnRebind(false);
@@ -75,11 +78,12 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R,S>,R,S> {
 		observer.reset();
 		assertNotNull(fired, "Observer is not reporting changes after reset");
 	}
+
 	@Test
 	void dontObserveRebind() {
 		observer.setObserveOnRebind(false);
 		observer.observe(createObservableInstance());
-		assertNull(fired,"when observeRebind is false `observe()` shouldn't call update()");
+		assertNull(fired, "when observeRebind is false `observe()` shouldn't call update()");
 	}
 
 	@Test
@@ -88,12 +92,13 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R,S>,R,S> {
 		S observable = createObservableInstance();
 		modify(observable);
 		observer.observe(observable);
-		assertNotNull(fired,"when observeRebind is true `observe()` should call update()");
+		assertNotNull(fired, "when observeRebind is true `observe()` should call update()");
 	}
+
 	@Test
 	void observe() {
-		assertNull(observer.getObserved(),"Observers shouldn't initially observe an object");
+		assertNull(observer.getObserved(), "Observers shouldn't initially observe an object");
 		observer.observe(createObservableInstance());
-		assertNotNull(observer.getObserved(),"observe() should assign `observedObject`");
+		assertNotNull(observer.getObserved(), "observe() should assign `observedObject`");
 	}
 }

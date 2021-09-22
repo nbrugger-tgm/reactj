@@ -5,5 +5,5 @@ module reactj.observer {
 	exports com.niton.reactj.observer;
 	exports com.niton.reactj.observer.testing;
 
-	opens com.niton.reactj.observer.testing to org.junit.jupiter,org.junit.platform.commons;
+	opens com.niton.reactj.observer.testing to org.junit.platform.commons;
 }

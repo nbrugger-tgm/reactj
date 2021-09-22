@@ -11,12 +11,12 @@ import com.niton.reactj.event.Listener;
  */
 public abstract class AbstractObserver<T, O> {
 	private final EventManager<T> observeEvent = new EventManager<>();
-	protected     O               observedObject;
+	protected O observedObject;
 	/**
 	 * If this property is true, calling {@link #observe(Object)} will report all changes to listeners.
 	 * Otherwise {@link #observe(Object)} will call {@link #reset()}
 	 */
-	private       boolean         observeOnRebind = true;
+	private boolean observeOnRebind = true;
 
 	public void addListener(Listener<T> listener) {
 		observeEvent.addListener(listener);

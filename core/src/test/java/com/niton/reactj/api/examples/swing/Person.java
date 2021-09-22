@@ -9,18 +9,18 @@ import static com.niton.reactj.api.annotation.ReactivResolution.ReactiveResoluti
 //optional
 @ReactivResolution(FLAT)
 public class Person {
-	private int    age;
+	private int age;
 	//change reactive name
 	@Reactive("surename")
 	private String name;
-	private int    iq;
+	private int iq;
 	private Gender gender;
 	//This will not be reacted to
 	@Unreactive
 	private String address;
 
 	public Person(int age, String name) {
-		this.age  = age;
+		this.age = age;
 		this.name = name;
 	}
 
@@ -59,10 +59,10 @@ public class Person {
 	@Override
 	public String toString() {
 		return "PersonalInformation{" + "age=" + age +
-		       ", name='" + name + '\'' +
-		       ", iq=" + iq +
-		       ", gender=" + gender +
-		       ", address='" + address + '\'' +
-		       '}';
+				", name='" + name + '\'' +
+				", iq=" + iq +
+				", gender=" + gender +
+				", address='" + address + '\'' +
+				'}';
 	}
 }

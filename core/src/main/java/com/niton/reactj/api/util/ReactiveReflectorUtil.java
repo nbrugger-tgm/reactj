@@ -26,15 +26,14 @@ public final class ReactiveReflectorUtil {
 	}
 
 	/**
-	 * @param val       the object to check the type of
-	 *
+	 * @param val the object to check the type of
 	 * @return true if val is usable as method parameter with type paramType
 	 */
 	public static boolean isFitting(Object val, Class<?> paramType) {
 		Class<?> base = val.getClass();
 		Class<?> unwrapped = MethodType.methodType(base)
-		                               .unwrap()
-		                               .returnType();
+				.unwrap()
+				.returnType();
 		/*
 		 * True if val.getClass() is usable as first Parameter
 		 */
@@ -50,14 +49,13 @@ public final class ReactiveReflectorUtil {
 	 * Returns the object as Map, by applying @Reactive and @Unreactive annotations
 	 *
 	 * @param model the object to convert
-	 *
 	 * @return the map containing all (renamed) properties
 	 */
 	public static Map<String, Object> getState(Object model) {
-		HashMap<String, Object> state    = new HashMap<>();
-		Class<?>                type     = model.getClass();
-		String                  typeName = type.getName();
-		Field[]                 fields   = FIELD_CACHE.get(typeName);
+		HashMap<String, Object> state = new HashMap<>();
+		Class<?> type = model.getClass();
+		String typeName = type.getName();
+		Field[] fields = FIELD_CACHE.get(typeName);
 		if (fields == null) {
 			FIELD_CACHE.put(typeName, fields = loadRelevantFields(type));
 		}
@@ -73,7 +71,6 @@ public final class ReactiveReflectorUtil {
 	 * Resolves all fields depending on @ReactiveResolution
 	 *
 	 * @param type the type to scan
-	 *
 	 * @return the fields as array
 	 */
 	public static Field[] loadRelevantFields(Class<?> type) {
@@ -106,13 +103,12 @@ public final class ReactiveReflectorUtil {
 	 * Resolves the name by @Reactive
 	 *
 	 * @param field the field to get the name from
-	 *
 	 * @return the name to be used for this field
 	 */
 	public static String getReactiveName(Field field) {
 		return field.isAnnotationPresent(Reactive.class) ?
-		       field.getAnnotation(Reactive.class).value() :
-		       field.getName();
+				field.getAnnotation(Reactive.class).value() :
+				field.getName();
 	}
 
 	/**
@@ -121,12 +117,11 @@ public final class ReactiveReflectorUtil {
 	 * @param model    the object to update the field
 	 * @param property the name of the field to update (regarding to @Reactive)
 	 * @param value    the value to set the property to
-	 *
 	 */
 	public static void updateField(Object model, String property, Object value) {
-		Class<?> type      = model.getClass();
-		Field[]  fields    = getFields(type);
-		Field    propField = findField(property, fields);
+		Class<?> type = model.getClass();
+		Field[] fields = getFields(type);
+		Field propField = findField(property, fields);
 		try {
 			FieldUtils.writeField(propField, model, value, true);
 		} catch (IllegalAccessException e) {
@@ -135,8 +130,8 @@ public final class ReactiveReflectorUtil {
 	}
 
 	private static Field[] getFields(Class<?> type) {
-		String  typeName = type.getName();
-		Field[] fields   = FIELD_CACHE.get(typeName);
+		String typeName = type.getName();
+		Field[] fields = FIELD_CACHE.get(typeName);
 		if (fields == null) {
 			fields = loadRelevantFields(type);
 			FIELD_CACHE.put(typeName, fields);

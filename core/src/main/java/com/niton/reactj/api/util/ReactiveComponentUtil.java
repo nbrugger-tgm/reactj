@@ -1,10 +1,10 @@
 package com.niton.reactj.api.util;
 
-import com.niton.reactj.api.react.ReactiveBinder;
-import com.niton.reactj.api.react.ReactiveComponent;
 import com.niton.reactj.api.annotation.ReactivResolution;
 import com.niton.reactj.api.annotation.ReactiveListener;
 import com.niton.reactj.api.exceptions.ReactiveException;
+import com.niton.reactj.api.react.ReactiveBinder;
+import com.niton.reactj.api.react.ReactiveComponent;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -27,8 +27,8 @@ public final class ReactiveComponentUtil {
 	public static void createAnnotatedBindings(ReactiveComponent<?> component, ReactiveBinder<?> binder) {
 		Class<?> viewClass = component.getClass();
 
-		ReactivResolution resolution         = viewClass.getAnnotation(ReactivResolution.class);
-		boolean           searchSuperClasses = resolution != null && resolution.value() == DEEP;
+		ReactivResolution resolution = viewClass.getAnnotation(ReactivResolution.class);
+		boolean searchSuperClasses = resolution != null && resolution.value() == DEEP;
 		Method[] methods = MethodUtils.getMethodsWithAnnotation(
 				viewClass,
 				ReactiveListener.class,
@@ -67,20 +67,29 @@ public final class ReactiveComponentUtil {
 		try {
 			if (!method.canAccess(component))
 				method.setAccessible(true);
+
 			if (method.getParameterTypes().length == 1) {
-				Class<?> paramType = method.getParameterTypes()[0];
-				if (!ReactiveReflectorUtil.isFitting(val, paramType)) {
-					throw invalidMethodParameterException(method, val);
-				}
+				checkParameterType(method, val);
 				method.invoke(component, val);
 			} else {
 				method.invoke(component);
 			}
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new ReactiveException(
-					format("Failed to call automatic binding (%s)", method),
-					e
-			);
+			throw new ReactiveException(format("Failed to call automatic binding (%s)", method), e);
+		}
+	}
+
+	/**
+	 * Checks if the object can be used as parameter for the given method.
+	 * It is assumed that the given method has <b>exactly</b> one argument
+	 *
+	 * @param method the method to fit the object into
+	 * @param val    the value to use as parameter
+	 */
+	private static void checkParameterType(Method method, Object val) {
+		Class<?> paramType = method.getParameterTypes()[0];
+		if (!ReactiveReflectorUtil.isFitting(val, paramType)) {
+			throw invalidMethodParameterException(method, val);
 		}
 	}
 

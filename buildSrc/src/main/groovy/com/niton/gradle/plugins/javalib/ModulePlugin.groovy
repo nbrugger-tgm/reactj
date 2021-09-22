@@ -1,30 +1,27 @@
 package com.niton.gradle.plugins.javalib
 
 import org.gradle.api.BuildCancelledException
-import org.gradle.api.GradleException
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.javadoc.Javadoc
-import org.gradle.internal.impldep.org.eclipse.jgit.api.errors.InvalidConfigurationException
 import org.gradle.jvm.tasks.Jar
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 
-class ModulePlugin implements Plugin<Project>{
+class ModulePlugin implements Plugin<Project> {
     static Set<String> subPlugins = [
-        'java-library',
-        'maven-publish',
-        'jacoco'
+            'java-library',
+            'maven-publish',
+            'jacoco'
     ]
 
     @Override
     void apply(Project p) {
         applySubPlugins(p)
 
-        ModuleSettings settings = p.extensions.create("module",ModuleSettings)
-        ArtifactorySettings publisher = settings.extensions.create("publishing",ArtifactorySettings)
+        ModuleSettings settings = p.extensions.create("module", ModuleSettings)
+        ArtifactorySettings publisher = settings.extensions.create("publishing", ArtifactorySettings)
 
         p.afterEvaluate { Project pro ->
             pro.java {
@@ -36,9 +33,9 @@ class ModulePlugin implements Plugin<Project>{
             pro.publishing {
                 publications {
                     lib(MavenPublication) {
-                        if(!settings.group.isPresent() && pro.group == null)
+                        if (!settings.group.isPresent() && pro.group == null)
                             throw new BuildCancelledException("module.group or project.group needs to be set!")
-                        if(!settings.version.isPresent() && pro.version == null)
+                        if (!settings.version.isPresent() && pro.version == null)
                             throw new BuildCancelledException("module.version or project.version needs to be set!")
                         groupId = settings.group.orElse(pro.group.toString()).get()
                         artifactId = settings.name.orElse(pro.name).get()
@@ -51,7 +48,7 @@ class ModulePlugin implements Plugin<Project>{
                     maven {
                         name = "Artifactory"
                         credentials {
-                            if(!publisher.getUsername().isPresent())
+                            if (!publisher.getUsername().isPresent())
                                 throw new BuildCancelledException("module.publishing.username needs to be set!")
                             username = publisher.getUsername()
                             def pwdFile = publisher.getTokenFile().get()

@@ -6,18 +6,18 @@ import com.niton.reactj.event.Listener;
 
 class DefaultEventManagerTest extends EventManagerTest<Object, Listener<Object>> {
 
-    @Override
-    protected CustomEventManager<Object, Listener<Object>> createManager() {
-        return new EventManager<>();
-    }
+	@Override
+	protected CustomEventManager<Object, Listener<Object>> createManager() {
+		return new EventManager<>();
+	}
 
-    @Override
-    protected Listener<Object> createListener(Runnable testCallback) {
-        return ev->testCallback.run();
-    }
+	@Override
+	protected Listener<Object> createListener(Runnable testCallback) {
+		return ev -> testCallback.run();
+	}
 
-    @Override
-    protected Object getDummyEvent() {
-        return new Object();
-    }
+	@Override
+	protected Object getDummyEvent() {
+		return new Object();
+	}
 }

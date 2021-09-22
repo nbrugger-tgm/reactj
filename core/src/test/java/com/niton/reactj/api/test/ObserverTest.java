@@ -1,10 +1,13 @@
 package com.niton.reactj.api.test;
 
-import com.niton.reactj.api.react.*;
 import com.niton.reactj.api.annotation.ReactivResolution;
 import com.niton.reactj.api.observer.ObjectObserver;
 import com.niton.reactj.api.proxy.ProxyCreator;
 import com.niton.reactj.api.proxy.ProxySubject;
+import com.niton.reactj.api.react.Reactable;
+import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.react.ReactiveController;
+import com.niton.reactj.api.react.ReactiveProxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,17 +20,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Observer.ObjectObserver")
 class ObserverTest {
-	public String                  lastChanged;
-	public Object                  lastValue;
-	public String                  converted;
-	public       int                     changeCounter = 0;
-	public final ReactiveProxy<TestData> personProxy   = ProxyCreator.create(new TestData());
+	public final ReactiveProxy<TestData> personProxy = ProxyCreator.create(new TestData());
+	public String lastChanged;
+	public Object lastValue;
+	public String converted;
+	public int changeCounter = 0;
 
 	@Test
 	@DisplayName("Live Object Reactive Proxy")
 	void testLiveProxyObserving() {
-		TestData                td   = new TestData();
-		TestData                      td2  = new TestData();
+		TestData td = new TestData();
+		TestData td2 = new TestData();
 		ReactiveProxy<TestData> rtd1 = ProxyCreator.create(td);
 		ReactiveProxy<TestData> rtd2 = ProxyCreator.create(td2);
 		observerTest(rtd1, rtd2);
@@ -36,8 +39,8 @@ class ObserverTest {
 	@Test
 	@DisplayName("Live Object Subject Proxy")
 	void testLiveProxySubjectObserving() {
-		SubjectTestData td   = new SubjectTestData();
-		SubjectTestData td2  = new SubjectTestData();
+		SubjectTestData td = new SubjectTestData();
+		SubjectTestData td2 = new SubjectTestData();
 		SubjectTestData rtd1 = ProxyCreator.create(td);
 		SubjectTestData rtd2 = ProxyCreator.create(td2);
 		observerTest(rtd1, rtd2);
@@ -60,15 +63,15 @@ class ObserverTest {
 	@Test
 	@DisplayName("Reactive Subject method forwarding")
 	void testReactiveSubjectForwardDomain() {
-		SubjectTestData d1       = ProxyCreator.create(new SubjectTestData());
+		SubjectTestData d1 = ProxyCreator.create(new SubjectTestData());
 		d1.set("id", 12);
 		assertEquals(12, d1.getId(), "Call to the reactive part of a Subject should be forwarded");
 		d1.set("id", 15);
 		assertEquals(15, d1.getId(), "Call to the reactive part of a Subject should be forwarded");
 		d1.set(Collections.singletonMap("c", Color.CYAN));
 		assertEquals(Color.CYAN,
-		             d1.getC(),
-		             "Call to the reactive part of a Subject should be forwarded");
+				d1.getC(),
+				"Call to the reactive part of a Subject should be forwarded");
 	}
 
 
@@ -82,22 +85,22 @@ class ObserverTest {
 
 	public <M extends Reactable> void observerTest(M obj, M newObj) {
 		ObjectObserver<M> testDataObserver = new ObjectObserver<>();
-		testDataObserver.addListener(change ->{
-				System.out.println(change.propertyName + " changed to " + change.propertyValue);
-				lastChanged = change.propertyName;
-				lastValue   = change.propertyValue;
-				changeCounter++;
+		testDataObserver.addListener(change -> {
+			System.out.println(change.propertyName + " changed to " + change.propertyValue);
+			lastChanged = change.propertyName;
+			lastValue = change.propertyValue;
+			changeCounter++;
 		});
 
 		testDataObserver.observe(obj);
 
-		lastValue     = null;
-		lastChanged   = null;
+		lastValue = null;
+		lastChanged = null;
 		changeCounter = 0;
 
 		@SuppressWarnings("unchecked")
 		TestData td = obj instanceof TestData ? (TestData) obj : (obj instanceof ReactiveProxy ? ((ReactiveProxy<? extends TestData>) obj)
-			.getObject() : null);
+				.getObject() : null);
 		assert td != null;
 
 
@@ -105,12 +108,10 @@ class ObserverTest {
 		assertNull(lastChanged, "Observer should not be triggered from assigment");
 		assertNull(lastValue, "Observer should not be triggered from assigment");
 
-		try {
+		assertDoesNotThrow(() -> {
 			obj.set("id", 12);
 			assertNull(lastChanged, "set(param,val) should not trigger observer");
-		} catch(Exception throwable) {
-			fail("ID should be set-able", throwable);
-		}
+		}, "ID should be set-able");
 
 		obj.react();
 		assertEquals("id", lastChanged);
@@ -127,8 +128,8 @@ class ObserverTest {
 		int oldCounter = changeCounter;
 		testDataObserver.observe(obj);
 		assertEquals(oldCounter,
-		             changeCounter,
-		             "Rebinding the same object should not create changes");
+				changeCounter,
+				"Rebinding the same object should not create changes");
 		testDataObserver.stopObservation();
 		td.setId(9999);
 		assertEquals(oldCounter, changeCounter, "Unbound is not working");
@@ -148,7 +149,7 @@ class ObserverTest {
 	@DisplayName("binding")
 	void bindingTest() {
 		ReactiveProxy<TestData> proxy = ProxyCreator.create(new TestData());
-		TestData                      td    = proxy.getObject();
+		TestData td = proxy.getObject();
 
 		ReactiveComponent<ReactiveProxy<TestData>> testComponent = binder -> {
 			binder.bind("id", val -> lastValue = val);
@@ -156,7 +157,7 @@ class ObserverTest {
 			binder.bind("c", val -> converted = val, (Color c) -> String.valueOf(c.getRed()));
 		};
 		ReactiveController<ReactiveProxy<TestData>> controller = new ReactiveController<>(
-			testComponent);
+				testComponent);
 		controller.setModel(proxy);
 
 		td.setColor(Color.GREEN);
@@ -169,7 +170,7 @@ class ObserverTest {
 	}
 
 	public static class TestData {
-		protected int   id;
+		protected int id;
 		protected Color c = Color.RED;
 
 		public Color getC() {
@@ -193,7 +194,6 @@ class ObserverTest {
 		}
 
 
-
 	}
 
 	@ReactivResolution(DEEP)
@@ -205,6 +205,7 @@ class ObserverTest {
 			TestData testData = (TestData) o;
 			return id == testData.id && Objects.equals(c, testData.c);
 		}
+
 		@Override
 		public int hashCode() {
 			return Objects.hash(id, c);

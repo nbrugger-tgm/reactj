@@ -1,10 +1,9 @@
 package com.niton.reactj.api.examples.swing;
 
-import com.niton.reactj.api.react.ReactiveBinder;
 import com.niton.reactj.api.annotation.Reactive;
 import com.niton.reactj.api.mvc.ReactiveView;
+import com.niton.reactj.api.react.ReactiveBinder;
 import com.niton.reactj.api.react.ReactiveProxy;
-import com.niton.reactj.api.react.ReactiveWrapper;
 import com.niton.reactj.event.EventManager;
 
 import javax.swing.*;
@@ -14,21 +13,21 @@ import java.awt.*;
 public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 
 	public final EventManager<Person> resetEvent = new EventManager<>();
-	private      JPanel               panel;
-	private      JTextField           surnameInput;
-	private      JTextField           ageInput;
-	private      JTextField           iqField;
-	private      JComboBox<Gender>    genderJComboBox;
-	private      JButton              selectButton;
+	private JPanel panel;
+	private JTextField surnameInput;
+	private JTextField ageInput;
+	private JTextField iqField;
+	private JComboBox<Gender> genderJComboBox;
+	private JButton selectButton;
 
 	@Override
 	protected JPanel createView() {
-		panel           = new JPanel();
-		surnameInput    = new JTextField();
-		ageInput        = new JTextField();
-		iqField         = new JTextField();
+		panel = new JPanel();
+		surnameInput = new JTextField();
+		ageInput = new JTextField();
+		iqField = new JTextField();
 		genderJComboBox = new JComboBox<>(Gender.values());
-		selectButton    = new JButton("Reset");
+		selectButton = new JButton("Reset");
 
 
 		panel.add(surnameInput);
@@ -65,19 +64,19 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 
 		//bidirectional binding (With value conversion)
 		binder.bindBi("age",
-		              ageInput::setText,
-		              ageInput::getText,
-		              Integer::parseInt,
-		              String::valueOf);
+				ageInput::setText,
+				ageInput::getText,
+				Integer::parseInt,
+				String::valueOf);
 		ageInput.addActionListener(binder::react);
 	}
 
 
 	public void adaptColorToGender(Gender g) {
 		Color c = Color.WHITE;
-		if(g == Gender.MALE)
+		if (g == Gender.MALE)
 			c = Color.BLUE;
-		if(g == Gender.FEMALE)
+		if (g == Gender.FEMALE)
 			c = Color.PINK;
 		panel.setBackground(c);
 	}
@@ -85,7 +84,7 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 	@Override
 	protected void registerListeners() {
 		selectButton.addActionListener(e -> resetEvent.fire(getController().getModel()
-		                                                                   .getObject()));
+				.getObject()));
 	}
 
 	@Reactive("age")
