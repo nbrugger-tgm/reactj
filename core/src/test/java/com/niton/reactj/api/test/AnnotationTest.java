@@ -197,7 +197,6 @@ class AnnotationTest {
 			badTypedController.setModel(deepProxy);
 		}, "When a @ReactiveListener has a type that doesn't matches the property " +
 				"it should fail to set such a model");
-		badTypedController.stop();
 
 		ReactiveComponent<ReactiveProxy<DeepBase>> internalErrorComponent =
 				new ReactiveComponent<ReactiveProxy<DeepBase>>() {
@@ -217,7 +216,6 @@ class AnnotationTest {
 		assertThrows(ReactiveException.class, () -> {
 			internalErrorController.setModel(deepProxy);
 		}, "When a getter that is proxied throws an exception syncing should fail too");
-		internalErrorController.stop();
 	}
 
 	public static class Base {
