@@ -13,7 +13,7 @@ abstract class ArtifactorySettings {
 
     ArtifactorySettings() {
         tokenEnvironmentVariable.convention("ARTIFACTORY_API_KEY")
-        tokenFile.convention(new File("../TOKENS"))
+        tokenFile.convention(new File("TOKENS"))
     }
 
 }

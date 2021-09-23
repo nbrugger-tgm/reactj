@@ -8,7 +8,7 @@ module {
 
 module.publishing {
     repo = "https://niton.jfrog.io/artifactory/java-libs"
-    username = "nbrugger@student.tgm.ac.at"
+    username = "nilsbrugger.nb.nb.nb@gmail.com"
 }
 
 dependencies {
