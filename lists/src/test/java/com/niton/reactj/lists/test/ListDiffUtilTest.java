@@ -151,35 +151,9 @@ class ListDiffUtilTest {
 						}),
 						dynamicTest("first last swap", () -> {
 							ListDiffUtil.CUT_SIZE = 5;
-							List<Integer> original = new ArrayList<>(of(1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6));
-							List<Integer> modified = of(6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1);
-							//cannot assert exact changes because splicing might return an imperfect route
-							SortedSet<ListChange<Integer>> diffRes = ListDiffUtil.diff(original, modified);
-							ListDiffUtil.applyChanges(original, diffRes);
-							assertArrayEquals(modified.toArray(), original.toArray());
-							assertArrayEquals(of(
-									new ListChange<>(REMOVE, 0, 1),
-									new ListChange<>(ADD, 0, 6),
-									new ListChange<>(REMOVE, 32, 6),
-									new ListChange<>(ADD, 32, 1)
-
-							).toArray(), diffRes.toArray());
+							testSwap();
 						}),
-						dynamicTest("first last swap without splicing", () -> {
-							List<Integer> original = new ArrayList<>(of(1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6));
-							List<Integer> modified = of(6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1);
-							//cannot assert exact changes because splicing might return an imperfect route
-							SortedSet<ListChange<Integer>> diffRes = ListDiffUtil.diff(original, modified);
-							ListDiffUtil.applyChanges(original, diffRes);
-							assertArrayEquals(modified.toArray(), original.toArray());
-							assertArrayEquals(of(
-									new ListChange<>(REMOVE, 0, 1),
-									new ListChange<>(ADD, 0, 6),
-									new ListChange<>(REMOVE, 32, 6),
-									new ListChange<>(ADD, 32, 1)
-
-							).toArray(), diffRes.toArray());
-						})
+						dynamicTest("first last swap without splicing", this::testSwap)
 				)
 		);
 	}
@@ -191,6 +165,22 @@ class ListDiffUtilTest {
 				changes.toArray(),
 				format("DIFF between %s and %s is wrong", oldList, newList)
 		);
+	}
+
+	void testSwap() {
+		List<Integer> original = new ArrayList<>(of(1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6));
+		List<Integer> modified = of(6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1);
+		//cannot assert exact changes because splicing might return an imperfect route
+		SortedSet<ListChange<Integer>> diffRes = ListDiffUtil.diff(original, modified);
+		ListDiffUtil.applyChanges(original, diffRes);
+		assertArrayEquals(modified.toArray(), original.toArray());
+		assertArrayEquals(of(
+				new ListChange<>(REMOVE, 0, 1),
+				new ListChange<>(ADD, 0, 6),
+				new ListChange<>(REMOVE, 32, 6),
+				new ListChange<>(ADD, 32, 1)
+
+		).toArray(), diffRes.toArray());
 	}
 
 	@BeforeEach
