@@ -21,14 +21,6 @@ public abstract class EventManagerTest<E, L> {
 
 	protected abstract CustomEventManager<E, L> createManager();
 
-	/**
-	 * Creates a listener that calles the `testCallback` when fired.
-	 *
-	 * @param testCallback the runnable to call when the event is triggered
-	 * @return the listener that forwards to the callback
-	 */
-	protected abstract L createListener(Runnable testCallback);
-
 	@Test
 	void listen() {
 		final List<Void> result = new ArrayList<>();
@@ -38,6 +30,14 @@ public abstract class EventManagerTest<E, L> {
 		eventManager.fire(getDummyEvent());
 		assertEquals(1, result.size(), "Listener wasnt called");
 	}
+
+	/**
+	 * Creates a listener that calles the `testCallback` when fired.
+	 *
+	 * @param testCallback the runnable to call when the event is triggered
+	 * @return the listener that forwards to the callback
+	 */
+	protected abstract L createListener(Runnable testCallback);
 
 	/**
 	 * Create an event that can be used in `fire()`

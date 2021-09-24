@@ -19,7 +19,7 @@ module.publishing {
 
 dependencies {
     implementation project(":utils")
-    compileOnly "org.junit.jupiter:junit-jupiter-api:5.7.2"
+    implementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"

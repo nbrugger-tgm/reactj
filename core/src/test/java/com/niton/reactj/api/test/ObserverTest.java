@@ -26,63 +26,60 @@ class ObserverTest {
 	public       String                  converted;
 	public       int                     changeCounter = 0;
 
+	public static class TestData {
+		protected int   id;
+		protected Color c = Color.RED;
+
+		public Color getC() {
+			return c;
+		}
+
+		public void setC(Color c) {
+			this.c = c;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
+		}
+
+		public void setColor(Color c) {
+			this.c = c;
+		}
+	}
+
+	@ReactiveResolution(DEEP)
+	public static class SubjectTestData extends TestData implements ProxySubject {
+		@Override
+		public int hashCode() {
+			return Objects.hash(id, c);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof TestData)) return false;
+			TestData testData = (TestData) o;
+			return id == testData.id && Objects.equals(c, testData.c);
+		}
+	}
+
+	@ReactiveResolution(DEEP)
+	public static class NonEqualSubjectTestData extends TestData implements ProxySubject {
+
+	}
+
 	@Test
 	@DisplayName("Live Object Reactive Proxy")
 	void testLiveProxyObserving() {
-		TestData                td   = new TestData();
-		TestData                td2  = new TestData();
+		TestData td = new TestData();
+		TestData td2 = new TestData();
 		ReactiveProxy<TestData> rtd1 = INSTANCE.create(td);
 		ReactiveProxy<TestData> rtd2 = INSTANCE.create(td2);
 		observerTest(rtd1, rtd2);
-	}
-
-	@Test
-	@DisplayName("Live Object Subject Proxy")
-	void testLiveProxySubjectObserving() {
-		SubjectTestData td   = new SubjectTestData();
-		SubjectTestData td2  = new SubjectTestData();
-		SubjectTestData rtd1 = INSTANCE.create(td);
-		SubjectTestData rtd2 = INSTANCE.create(td2);
-		observerTest(rtd1, rtd2);
-	}
-
-	@Test
-	@DisplayName("Reactive Proxy")
-	void testProxyObserving() {
-		observerTest(personProxy, INSTANCE.create(new TestData()));
-	}
-
-	@Test
-	@DisplayName("Reactive Subject Proxy")
-	void testReactiveSubjectObserving() {
-		SubjectTestData d1 = INSTANCE.create(new SubjectTestData());
-		SubjectTestData d2 = INSTANCE.create(new SubjectTestData());
-		observerTest(d1, d2);
-	}
-
-	@Test
-	@DisplayName("Reactive Subject method forwarding")
-	void testReactiveSubjectForwardDomain() {
-		SubjectTestData d1 = INSTANCE.create(new SubjectTestData());
-		d1.set("id", 12);
-		assertEquals(12, d1.getId(), "Call to the reactive part of a Subject should be forwarded");
-		d1.set("id", 15);
-		assertEquals(15, d1.getId(), "Call to the reactive part of a Subject should be forwarded");
-		d1.set(Collections.singletonMap("c", Color.CYAN));
-		assertEquals(
-				Color.CYAN,
-				d1.getC(),
-				"Call to the reactive part of a Subject should be forwarded"
-		);
-	}
-
-
-	@Test
-	@DisplayName("Reactive Subject Proxy (no equals() imp.)")
-	void testNoEqualsReactiveSubjectObserving() {
-		NonEqualSubjectTestData d1 = INSTANCE.create(new NonEqualSubjectTestData());
-		NonEqualSubjectTestData d2 = INSTANCE.create(new NonEqualSubjectTestData());
-		observerTest(d1, d2);
 	}
 
 	public <M extends Reactable> void observerTest(M obj, M newObj) {
@@ -90,21 +87,21 @@ class ObserverTest {
 		testDataObserver.addListener(change -> {
 			System.out.println(change.propertyName + " changed to " + change.propertyValue);
 			lastChanged = change.propertyName;
-			lastValue   = change.propertyValue;
+			lastValue = change.propertyValue;
 			changeCounter++;
 		});
 
 		testDataObserver.observe(obj);
 
-		lastValue     = null;
-		lastChanged   = null;
+		lastValue = null;
+		lastChanged = null;
 		changeCounter = 0;
 
 		@SuppressWarnings("unchecked")
 		TestData td = obj instanceof TestData ?
-		              (TestData) obj :
-		              (obj instanceof ReactiveProxy ? ((ReactiveProxy<? extends TestData>) obj)
-				              .getObject() : null);
+				(TestData) obj :
+				(obj instanceof ReactiveProxy ? ((ReactiveProxy<? extends TestData>) obj)
+						.getObject() : null);
 		assert td != null;
 
 
@@ -145,6 +142,54 @@ class ObserverTest {
 	}
 
 	@Test
+	@DisplayName("Live Object Subject Proxy")
+	void testLiveProxySubjectObserving() {
+		SubjectTestData td = new SubjectTestData();
+		SubjectTestData td2 = new SubjectTestData();
+		SubjectTestData rtd1 = INSTANCE.create(td);
+		SubjectTestData rtd2 = INSTANCE.create(td2);
+		observerTest(rtd1, rtd2);
+	}
+
+	@Test
+	@DisplayName("Reactive Proxy")
+	void testProxyObserving() {
+		observerTest(personProxy, INSTANCE.create(new TestData()));
+	}
+
+	@Test
+	@DisplayName("Reactive Subject Proxy")
+	void testReactiveSubjectObserving() {
+		SubjectTestData d1 = INSTANCE.create(new SubjectTestData());
+		SubjectTestData d2 = INSTANCE.create(new SubjectTestData());
+		observerTest(d1, d2);
+	}
+
+	@Test
+	@DisplayName("Reactive Subject method forwarding")
+	void testReactiveSubjectForwardDomain() {
+		SubjectTestData d1 = INSTANCE.create(new SubjectTestData());
+		d1.set("id", 12);
+		assertEquals(12, d1.getId(), "Call to the reactive part of a Subject should be forwarded");
+		d1.set("id", 15);
+		assertEquals(15, d1.getId(), "Call to the reactive part of a Subject should be forwarded");
+		d1.set(Collections.singletonMap("c", Color.CYAN));
+		assertEquals(
+				Color.CYAN,
+				d1.getC(),
+				"Call to the reactive part of a Subject should be forwarded"
+		);
+	}
+
+	@Test
+	@DisplayName("Reactive Subject Proxy (no equals() imp.)")
+	void testNoEqualsReactiveSubjectObserving() {
+		NonEqualSubjectTestData d1 = INSTANCE.create(new NonEqualSubjectTestData());
+		NonEqualSubjectTestData d2 = INSTANCE.create(new NonEqualSubjectTestData());
+		observerTest(d1, d2);
+	}
+
+	@Test
 	@DisplayName("Argument verification")
 	void testArgumentVerification() {
 		ObjectObserver<ReactiveProxy<TestData>> observer = new ObjectObserver<>();
@@ -155,7 +200,7 @@ class ObserverTest {
 	@DisplayName("binding")
 	void bindingTest() {
 		ReactiveProxy<TestData> proxy = INSTANCE.create(new TestData());
-		TestData                td    = proxy.getObject();
+		TestData td = proxy.getObject();
 
 		ReactiveComponent<ReactiveProxy<TestData>> testComponent = binder -> {
 			binder.bind("id", val -> lastValue = val);
@@ -173,52 +218,6 @@ class ObserverTest {
 		td.setId(123);
 		assertEquals(123, lastValue);
 		assertEquals("0", converted);
-	}
-
-	public static class TestData {
-		protected int   id;
-		protected Color c = Color.RED;
-
-		public Color getC() {
-			return c;
-		}
-
-		public void setC(Color c) {
-			this.c = c;
-		}
-
-		public int getId() {
-			return id;
-		}
-
-		public void setId(int id) {
-			this.id = id;
-		}
-
-		public void setColor(Color c) {
-			this.c = c;
-		}
-	}
-
-	@ReactiveResolution(DEEP)
-	public static class SubjectTestData extends TestData implements ProxySubject {
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (!(o instanceof TestData)) return false;
-			TestData testData = (TestData) o;
-			return id == testData.id && Objects.equals(c, testData.c);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(id, c);
-		}
-	}
-
-	@ReactiveResolution(DEEP)
-	public static class NonEqualSubjectTestData extends TestData implements ProxySubject {
-
 	}
 
 }

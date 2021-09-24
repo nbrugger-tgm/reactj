@@ -11,6 +11,12 @@ class AbstractObserverTest {
 	private boolean observationStopped;
 	private boolean observationFired;
 
+	static class Observable {
+	}
+
+	static class ObserverResult {
+	}
+
 	@BeforeEach
 	void resetState() {
 		observationStopped = false;
@@ -61,12 +67,6 @@ class AbstractObserverTest {
 		assertNull(observer.getObserved(), "Observers shouldn't initially observe an object");
 		observer.observe(new Observable());
 		assertNotNull(observer.getObserved(), "observe() should assign `observedObject`");
-	}
-
-	static class Observable {
-	}
-
-	static class ObserverResult {
 	}
 
 }

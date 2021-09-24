@@ -13,12 +13,12 @@ import java.awt.*;
 public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 
 	public final EventManager<Person> resetEvent = new EventManager<>();
-	private JPanel panel;
-	private JTextField surnameInput;
-	private JTextField ageInput;
-	private JTextField iqField;
-	private JComboBox<Gender> genderJComboBox;
-	private JButton selectButton;
+	private      JPanel               panel;
+	private      JTextField           surnameInput;
+	private      JTextField           ageInput;
+	private      JTextField           iqField;
+	private      JComboBox<Gender>    genderJComboBox;
+	private      JButton              selectButton;
 
 	@Override
 	protected JPanel createView() {
@@ -47,6 +47,12 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 	}
 
 	@Override
+	protected void registerListeners() {
+		selectButton.addActionListener(e -> resetEvent.fire(getController().getModel()
+				.getObject()));
+	}
+
+	@Override
 	public void createBindings(ReactiveBinder<ReactiveProxy<Person>> binder) {
 		binder.bindBi("surename", surnameInput::setText, surnameInput::getText);
 		surnameInput.getDocument().addUndoableEditListener(binder::react);
@@ -71,7 +77,6 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 		ageInput.addActionListener(binder::react);
 	}
 
-
 	public void adaptColorToGender(Gender g) {
 		Color c = Color.WHITE;
 		if (g == Gender.MALE)
@@ -79,12 +84,6 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 		if (g == Gender.FEMALE)
 			c = Color.PINK;
 		panel.setBackground(c);
-	}
-
-	@Override
-	protected void registerListeners() {
-		selectButton.addActionListener(e -> resetEvent.fire(getController().getModel()
-				.getObject()));
 	}
 
 	@Reactive("age")

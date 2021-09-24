@@ -63,8 +63,8 @@ public class ProxyBuilder {
 				)
 				.intercept(
 						MethodCall.invokeSelf()
-						          .onField(ORIGIN_FIELD)
-						          .withAllArguments()
+								.onField(ORIGIN_FIELD)
+								.withAllArguments()
 				)
 
 				.method(excluded)

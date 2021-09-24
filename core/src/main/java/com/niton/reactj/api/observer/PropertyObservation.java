@@ -7,8 +7,13 @@ public class PropertyObservation {
 	public final Object propertyValue;
 
 	public PropertyObservation(String propertyName, Object propertyValue) {
-		this.propertyName  = propertyName;
+		this.propertyName = propertyName;
 		this.propertyValue = propertyValue;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(propertyName, propertyValue);
 	}
 
 	@Override
@@ -17,11 +22,6 @@ public class PropertyObservation {
 		if (!(o instanceof PropertyObservation)) return false;
 		PropertyObservation that = (PropertyObservation) o;
 		return Objects.equals(propertyName, that.propertyName) &&
-		       Objects.equals(propertyValue, that.propertyValue);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(propertyName, propertyValue);
+				Objects.equals(propertyValue, that.propertyValue);
 	}
 }

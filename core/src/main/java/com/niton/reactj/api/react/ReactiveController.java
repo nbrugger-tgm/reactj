@@ -47,6 +47,85 @@ public final class ReactiveController<M extends Reactable> {
 	}
 
 	/**
+	 * Pulls changes from the Component to the Model
+	 *
+	 * @param unused not used, only present so one can use this method as method reference as listener
+	 */
+	private void updateModel(Object unused) {
+		if (blockReactions)
+			return;
+
+		Map<String, Object> changed = findUiChanges();
+
+		M subject = observer.getObserved();
+		if (!changed.isEmpty()) {
+			subject.set(changed);
+			subject.react();
+			observer.updateCache(changed);
+		}
+	}
+
+	private void updateView(PropertyObservation change) {
+		updateView(change.propertyName, change.propertyValue);
+	}
+
+	/**
+	 * Searches for things that changed in the UI
+	 *
+	 * @return the changes as map (key: changed property, value: new value)
+	 */
+	private Map<String, Object> findUiChanges() {
+		Map<String, Object> changed = new HashMap<>();
+		Map<String, Object> state = observer.getObserved().getState();
+		for (Map.Entry<String, Object> field : state.entrySet()) {
+			if (!editBindings.containsKey(field.getKey())) {
+				continue;
+			}
+			findBindingChanges(changed, field.getKey(), field.getValue());
+		}
+		return changed;
+	}
+
+	/**
+	 * Sends a signal to all bindings with the regarding key
+	 *
+	 * @param key   the key to react to (the name of the changed property)
+	 * @param value the value the event carries (value of the changed property)
+	 */
+	private void updateView(final String key, final Object value) {
+		List<Binding<?, ?>> bindings = displayBindings.getOrDefault(key, Collections.emptyList());
+		List<SuperBinding<?, M>> superBindings = displaySuperBindings.getOrDefault(key, Collections.emptyList());
+
+		blockReactions = true;
+		superBindings.forEach(e -> e.display(observer.getObserved()));
+		globalDisplaySuperBindings.forEach(e -> e.display(observer.getObserved()));
+		bindings.forEach(e -> updateBinding(key, value, e));
+		blockReactions = false;
+	}
+
+	/**
+	 * Finds changes for a specific field among many bindings (but only the first one is accepted)
+	 *
+	 * @param changed  the map to put the change into (if found)
+	 * @param field    the name of the field/property
+	 * @param oldValue the value to compare against to find a change
+	 */
+	private void findBindingChanges(
+			Map<String, Object> changed,
+			String field,
+			Object oldValue
+	) {
+		List<BiBinding<?, ?>> editBind = editBindings.get(field);
+		for (BiBinding<?, ?> biBinding : editBind) {
+			Object bindingVal = biBinding.getModelConverted();
+			if (!Objects.equals(bindingVal, oldValue)) {
+				changed.put(field, bindingVal);
+				break;
+			}
+		}
+	}
+
+	/**
 	 * Triggers a binding
 	 *
 	 * @param key     the name of the binding to trigger (used for exception messages)
@@ -83,85 +162,6 @@ public final class ReactiveController<M extends Reactable> {
 			return binding.convertToDisplay(value);
 		} catch (ClassCastException ex) {
 			throw badConverterException(key, value.getClass());
-		}
-	}
-
-	/**
-	 * Pulls changes from the Component to the Model
-	 *
-	 * @param unused not used, only present so one can use this method as method reference as listener
-	 */
-	private void updateModel(Object unused) {
-		if (blockReactions)
-			return;
-
-		Map<String, Object> changed = findUiChanges();
-
-		M subject = observer.getObserved();
-		if (!changed.isEmpty()) {
-			subject.set(changed);
-			subject.react();
-			observer.updateCache(changed);
-		}
-	}
-
-	private void updateView(PropertyObservation change) {
-		updateView(change.propertyName, change.propertyValue);
-	}
-
-	/**
-	 * Searches for things that changed in the UI
-	 *
-	 * @return the changes as map (key: changed property, value: new value)
-	 */
-	private Map<String, Object> findUiChanges() {
-		Map<String, Object> changed = new HashMap<>();
-		Map<String, Object> state   = observer.getObserved().getState();
-		for (Map.Entry<String, Object> field : state.entrySet()) {
-			if (!editBindings.containsKey(field.getKey())) {
-				continue;
-			}
-			findBindingChanges(changed, field.getKey(), field.getValue());
-		}
-		return changed;
-	}
-
-	/**
-	 * Sends a signal to all bindings with the regarding key
-	 *
-	 * @param key   the key to react to (the name of the changed property)
-	 * @param value the value the event carries (value of the changed property)
-	 */
-	private void updateView(final String key, final Object value) {
-		List<Binding<?, ?>>      bindings      = displayBindings.getOrDefault(key, Collections.emptyList());
-		List<SuperBinding<?, M>> superBindings = displaySuperBindings.getOrDefault(key, Collections.emptyList());
-
-		blockReactions = true;
-		superBindings.forEach(e -> e.display(observer.getObserved()));
-		globalDisplaySuperBindings.forEach(e -> e.display(observer.getObserved()));
-		bindings.forEach(e -> updateBinding(key, value, e));
-		blockReactions = false;
-	}
-
-	/**
-	 * Finds changes for a specific field among many bindings (but only the first one is accepted)
-	 *
-	 * @param changed  the map to put the change into (if found)
-	 * @param field    the name of the field/property
-	 * @param oldValue the value to compare against to find a change
-	 */
-	private void findBindingChanges(
-			Map<String, Object> changed,
-			String field,
-			Object oldValue
-	) {
-		List<BiBinding<?, ?>> editBind = editBindings.get(field);
-		for (BiBinding<?, ?> biBinding : editBind) {
-			Object bindingVal = biBinding.getModelConverted();
-			if (!Objects.equals(bindingVal, oldValue)) {
-				changed.put(field, bindingVal);
-				break;
-			}
 		}
 	}
 

@@ -25,18 +25,6 @@ public final class ReflectiveUtil {
 		return new ClassCastException(message);
 	}
 
-
-	/**
-	 * Checks if the class should be scanned deeply
-	 *
-	 * @param type the type to check
-	 * @return true if the class is annotated with {@link ReactiveResolution}({@link ReactiveResolutionType#FLAT})
-	 */
-	public static boolean goDeep(Class<?> type) {
-		return !type.isAnnotationPresent(ReactiveResolution.class) ||
-		       type.getAnnotation(ReactiveResolution.class).value() == DEEP;
-	}
-
 	public static String getMethodSignature(Method method) {
 		return format(
 				"%s.%s(%s)",
@@ -54,6 +42,17 @@ public final class ReflectiveUtil {
 	}
 
 	/**
+	 * Checks if the class should be scanned deeply
+	 *
+	 * @param type the type to check
+	 * @return true if the class is annotated with {@link ReactiveResolution}({@link ReactiveResolutionType#FLAT})
+	 */
+	public static boolean goDeep(Class<?> type) {
+		return !type.isAnnotationPresent(ReactiveResolution.class) ||
+				type.getAnnotation(ReactiveResolution.class).value() == DEEP;
+	}
+
+	/**
 	 * Call {@code target.method(args)}
 	 *
 	 * @param target the object to execute on
@@ -65,10 +64,10 @@ public final class ReflectiveUtil {
 			throws InvocationTargetException, IllegalAccessException {
 		try {
 			return target.getClass().getMethod(
-					             method.getName(),
-					             method.getParameterTypes()
-			             )
-			             .invoke(target, args);
+							method.getName(),
+							method.getParameterTypes()
+					)
+					.invoke(target, args);
 		} catch (NoSuchMethodException e) {
 			throw new ReactiveException(
 					format(
@@ -77,9 +76,9 @@ public final class ReflectiveUtil {
 							target.getClass().getSimpleName(),
 							method.getName(),
 							Arrays.stream(args)
-							      .map(Object::getClass)
-							      .map(Class::getTypeName)
-							      .collect(Collectors.joining())
+									.map(Object::getClass)
+									.map(Class::getTypeName)
+									.collect(Collectors.joining())
 					), e);
 		}
 	}

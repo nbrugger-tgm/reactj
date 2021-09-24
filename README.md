@@ -94,9 +94,9 @@ Create a View (Component)
 public class DataView extends ReactiveView<JPanel, ReactiveProxy<Data>> {
 	private JPanel panel; // the panel itself
 
-	private JTextField nameInput;
+	private JTextField        nameInput;
 	private JComboBox<Gender> genderJComboBox;
-	private JButton selectButton;
+	private JButton           selectButton;
 
 	//Events this view can emitt
 	public final EventManager<Person> resetEvent = new EventManager<>();

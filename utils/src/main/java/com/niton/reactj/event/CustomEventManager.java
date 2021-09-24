@@ -13,14 +13,14 @@ import java.util.List;
 public abstract class CustomEventManager<E, L> implements Serializable {
 	private final List<L> listeners = new ArrayList<>(1);
 
+	public void addListener(L listener) {
+		listen(listener);
+	}
+
 	public void listen(L listener) {
 		if (listener == null)
 			throw new IllegalArgumentException();
 		listeners.add(listener);
-	}
-
-	public void addListener(L listener) {
-		listen(listener);
 	}
 
 	public void stopListening(L listener) {
