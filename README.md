@@ -1,3 +1,6 @@
+> This README is about version 3! While most of the content remains valid, the code examples are most certainly outdated. Version 4 will be a breaking release.
+> version 3 is a stable DEVELOPER release, version 4 will be the public release. To track progress go to the "Projects" tab
+
 <center>
 	<h1 align="center">React J</h1>
 </center>
