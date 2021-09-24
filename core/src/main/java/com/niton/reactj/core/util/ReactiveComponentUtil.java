@@ -5,7 +5,6 @@ import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.react.ReactiveComponent;
 import com.niton.reactj.core.annotation.ReactiveListener;
 import com.niton.reactj.core.react.ReactiveBinder;
-import com.niton.reactj.utils.reflections.ReflectiveUtil;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -30,7 +29,7 @@ public final class ReactiveComponentUtil {
 		Method[] methods = MethodUtils.getMethodsWithAnnotation(
 				viewClass,
 				ReactiveListener.class,
-				ReflectiveUtil.goDeep(viewClass),
+				ReactiveReflectorUtil.goDeep(viewClass),
 				true
 		);
 
