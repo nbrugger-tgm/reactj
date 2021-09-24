@@ -22,24 +22,24 @@ public class ListDiffUtil {
 	}
 
 	private static <T> SortedSet<ListChange<T>> diff(List<T> oldState, List<T> newState, int baseOffset) {
-		oldState = new ArrayList<>(oldState);
-		newState = new ArrayList<>(newState);
-		int offset = cutUnchanged(oldState, newState) + baseOffset;
-		int m = oldState.size();
-		int n = newState.size();
+		List<T> oldTrimmedState = new ArrayList<>(oldState);
+		List<T> newTrimmedState = new ArrayList<>(newState);
+		int offset = cutUnchanged(oldTrimmedState, newTrimmedState) + baseOffset;
+		int m = oldTrimmedState.size();
+		int n = newTrimmedState.size();
 		TreeSet<ListChange<T>> changes = new TreeSet<>();
 
-		if (handleLinearChanges(oldState, newState, m, n, changes, offset))
+		if (handleLinearChanges(oldTrimmedState, newTrimmedState, m, n, changes, offset))
 			return changes;
 
 		if (min(m, n) > CUT_SIZE) {
-			Optional<SortedSet<ListChange<T>>> divRes = divideTask(oldState, newState, m, n, changes, offset);
+			Optional<SortedSet<ListChange<T>>> divRes = divideTask(oldTrimmedState, newTrimmedState, m, n, changes, offset);
 			if (divRes.isPresent())
 				return changes;
 		}
 
-		int[][] costs = calcCostMatrix(oldState, newState, m, n);
-		findChanges(costs, changes, oldState, newState, offset);
+		int[][] costs = calcCostMatrix(oldTrimmedState, newTrimmedState, m, n);
+		findChanges(costs, changes, oldTrimmedState, newTrimmedState, offset);
 
 		return changes;
 	}

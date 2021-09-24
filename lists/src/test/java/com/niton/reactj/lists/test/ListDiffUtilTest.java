@@ -92,7 +92,7 @@ class ListDiffUtilTest {
 	}
 
 	private DynamicContainer splicingTest() {
-		return dynamicContainer("splitting", List.of(
+		return dynamicContainer("splitting", of(
 						dynamicTest("center changes", () -> {
 							int size = 600;
 							List<Integer> largeList = new ArrayList<>(size);
