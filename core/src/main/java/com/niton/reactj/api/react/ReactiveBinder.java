@@ -10,11 +10,134 @@ import java.util.Map;
  * @param <L> the type of the reactive model to bind to
  */
 public class ReactiveBinder<L> {
-	private final UpdateFunction update;
-	private final Map<String, List<Binding<?, ?>>> displayBindings;
+	private final UpdateFunction                        update;
+	private final Map<String, List<Binding<?, ?>>>      displayBindings;
 	private final Map<String, List<SuperBinding<?, L>>> displaySuperBindings;
-	private final List<SuperBinding<?, L>> globalDisplaySuperBindings;
-	private final Map<String, List<BiBinding<?, ?>>> editBindings;
+	private final List<SuperBinding<?, L>>              globalDisplaySuperBindings;
+	private final Map<String, List<BiBinding<?, ?>>>    editBindings;
+
+	@FunctionalInterface
+	public interface UpdateFunction {
+		void update(Object obj);
+	}
+
+	/**
+	 * Used to send values to the ReactiveComponent
+	 *
+	 * @param <R>
+	 */
+	@FunctionalInterface
+	public interface DisplayFunction<R> {
+		@SuppressWarnings("unchecked")
+		default void display(Object data) {
+			displayTypesafe((R) data);
+		}
+
+		void displayTypesafe(R data);
+	}
+
+	/**
+	 * Converts an object into a different type
+	 *
+	 * @param <F> the type to convert from
+	 * @param <T> the type to convert to
+	 */
+	@FunctionalInterface
+	public interface Converter<F, T> {
+		@SuppressWarnings("unchecked")
+		default T convert(Object toConvert) {
+			return convertTypesafe((F) toConvert);
+		}
+
+		T convertTypesafe(F toConvert);
+	}
+
+	/**
+	 * Returns a value from the components
+	 *
+	 * @param <R> the type to receive
+	 */
+	@FunctionalInterface
+	public interface ValueReceiver<R> {
+		R get();
+	}
+
+	@FunctionalInterface
+	public interface SuperValueReceiver<R, B> {
+		R get(B obj);
+	}
+
+	public static class Binding<D, F> {
+		private final DisplayFunction<D> displayFunction;
+		private final Converter<F, D>    toDisplayConverter;
+
+		public Binding(
+				DisplayFunction<D> displayFunctions,
+				Converter<F, D> convertToDisplay
+		) {
+			displayFunction = displayFunctions;
+			toDisplayConverter = convertToDisplay;
+		}
+
+		public D convertToDisplay(Object value) {
+			return toDisplayConverter.convert(value);
+		}
+
+		public void display(Object data) {
+			displayFunction.display(data);
+		}
+	}
+
+	public static class SuperBinding<T, M> {
+		private final SuperValueReceiver<T, M> getter;
+		private final DisplayFunction<T>       display;
+
+		public SuperBinding(
+				SuperValueReceiver<T, M> getter,
+				DisplayFunction<T> display
+		) {
+			this.getter = getter;
+			this.display = display;
+		}
+
+		public void display(M model) {
+			display.displayTypesafe(getter.get(model));
+		}
+	}
+
+	public static class BiBinding<M, D> extends Binding<D, M> {
+		private final ValueReceiver<D> receiver;
+		private final Converter<D, M>  toModelConverter;
+
+		public BiBinding(
+				DisplayFunction<D> display,
+				ValueReceiver<D> reciver,
+				Converter<M, D> toDisplayConverter,
+				Converter<D, M> toModelConverter
+		) {
+			super(display, toDisplayConverter);
+			receiver = reciver;
+			this.toModelConverter = toModelConverter;
+		}
+
+		public M convertToModel(Object value) {
+			return toModelConverter.convert(value);
+		}
+
+		/**
+		 * @return the value from the UI converted to a value for the model
+		 */
+		public M getModelConverted() {
+			return toModelConverter.convertTypesafe(getDisplayValue());
+		}
+
+		/**
+		 * @return the plain value from the UI
+		 */
+		public D getDisplayValue() {
+			return receiver.get();
+		}
+	}
 
 	public ReactiveBinder(
 			UpdateFunction update,
@@ -175,128 +298,5 @@ public class ReactiveBinder<L> {
 	 */
 	public void showIf(String property, DisplayFunction<Boolean> enableFunction) {
 		bind(property, enableFunction, b -> (boolean) b);
-	}
-
-	@FunctionalInterface
-	public interface UpdateFunction {
-		void update(Object obj);
-	}
-
-	/**
-	 * Used to send values to the ReactiveComponent
-	 *
-	 * @param <R>
-	 */
-	@FunctionalInterface
-	public interface DisplayFunction<R> {
-		@SuppressWarnings("unchecked")
-		default void display(Object data) {
-			displayTypesafe((R) data);
-		}
-
-		void displayTypesafe(R data);
-	}
-
-	/**
-	 * Converts an object into a different type
-	 *
-	 * @param <F> the type to convert from
-	 * @param <T> the type to convert to
-	 */
-	@FunctionalInterface
-	public interface Converter<F, T> {
-		@SuppressWarnings("unchecked")
-		default T convert(Object toConvert) {
-			return convertTypesafe((F) toConvert);
-		}
-
-		T convertTypesafe(F toConvert);
-	}
-
-	/**
-	 * Returns a value from the components
-	 *
-	 * @param <R> the type to receive
-	 */
-	@FunctionalInterface
-	public interface ValueReceiver<R> {
-		R get();
-	}
-
-	@FunctionalInterface
-	public interface SuperValueReceiver<R, B> {
-		R get(B obj);
-	}
-
-	public static class Binding<D, F> {
-		private final DisplayFunction<D> displayFunction;
-		private final Converter<F, D> toDisplayConverter;
-
-		public Binding(
-				DisplayFunction<D> displayFunctions,
-				Converter<F, D> convertToDisplay
-		) {
-			displayFunction = displayFunctions;
-			toDisplayConverter = convertToDisplay;
-		}
-
-		public D convertToDisplay(Object value) {
-			return toDisplayConverter.convert(value);
-		}
-
-		public void display(Object data) {
-			displayFunction.display(data);
-		}
-	}
-
-	public static class SuperBinding<T, M> {
-		private final SuperValueReceiver<T, M> getter;
-		private final DisplayFunction<T> display;
-
-		public SuperBinding(
-				SuperValueReceiver<T, M> getter,
-				DisplayFunction<T> display
-		) {
-			this.getter = getter;
-			this.display = display;
-		}
-
-		public void display(M model) {
-			display.displayTypesafe(getter.get(model));
-		}
-	}
-
-	public static class BiBinding<M, D> extends Binding<D, M> {
-		private final ValueReceiver<D> receiver;
-		private final Converter<D, M> toModelConverter;
-
-		public BiBinding(
-				DisplayFunction<D> display,
-				ValueReceiver<D> reciver,
-				Converter<M, D> toDisplayConverter,
-				Converter<D, M> toModelConverter
-		) {
-			super(display, toDisplayConverter);
-			receiver = reciver;
-			this.toModelConverter = toModelConverter;
-		}
-
-		public M convertToModel(Object value) {
-			return toModelConverter.convert(value);
-		}
-
-		/**
-		 * @return the value from the UI converted to a value for the model
-		 */
-		public M getModelConverted() {
-			return toModelConverter.convertTypesafe(getDisplayValue());
-		}
-
-		/**
-		 * @return the plain value from the UI
-		 */
-		public D getDisplayValue() {
-			return receiver.get();
-		}
 	}
 }

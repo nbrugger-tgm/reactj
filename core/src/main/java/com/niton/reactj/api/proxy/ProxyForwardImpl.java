@@ -12,9 +12,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ProxyForwardImpl {
-	private ProxyForwardImpl() {
-	}
-
 	public static class ToOrigin {
 		private ToOrigin() {
 		}
@@ -56,5 +53,8 @@ public class ProxyForwardImpl {
 		) {
 			return arg[0].equals(origin);
 		}
+	}
+
+	private ProxyForwardImpl() {
 	}
 }

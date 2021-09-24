@@ -22,12 +22,12 @@ public interface ProxySubject extends Reactable {
 	}
 
 	@Override
-	default void set(String property, Object value) {
+	default GenericEventManager reactEvent() {
 		throw new SubjectCallException();
 	}
 
 	@Override
-	default GenericEventManager reactEvent() {
+	default void set(String property, Object value) {
 		throw new SubjectCallException();
 	}
 }

@@ -8,9 +8,9 @@ import com.niton.reactj.api.react.ReactiveProxy;
 public class CliApp {
 
 	public static void main(String[] args) throws InterruptedException {
-		ProxyCreator            creator  = new ProxyCreator();
-		ReactiveProxy<Progress> proxy    = creator.create(new Progress());
-		Progress                progress = proxy.getObject();
+		ProxyCreator creator = new ProxyCreator();
+		ReactiveProxy<Progress> proxy = creator.create(new Progress());
+		Progress progress = proxy.getObject();
 
 		ReactiveController<ReactiveProxy<Progress>> controller = new ReactiveController<>(new ProgressCli());
 		controller.setModel(proxy);

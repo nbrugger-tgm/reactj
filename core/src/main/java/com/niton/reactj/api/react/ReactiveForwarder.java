@@ -14,13 +14,6 @@ import java.util.Map;
  * </p>
  */
 public interface ReactiveForwarder extends Reactable {
-	Reactable getReactableTarget();
-
-	@Override
-	default GenericEventManager reactEvent() {
-		return getReactableTarget().reactEvent();
-	}
-
 	@Override
 	default Map<String, Object> getState() {
 		return getReactableTarget().getState();
@@ -30,6 +23,13 @@ public interface ReactiveForwarder extends Reactable {
 	default void react() {
 		getReactableTarget().react();
 	}
+
+	@Override
+	default GenericEventManager reactEvent() {
+		return getReactableTarget().reactEvent();
+	}
+
+	Reactable getReactableTarget();
 
 	@Override
 	default void set(String property, Object value) {

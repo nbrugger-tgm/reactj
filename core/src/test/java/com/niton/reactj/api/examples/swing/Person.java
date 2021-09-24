@@ -20,7 +20,7 @@ public class Person {
 	private String address;
 
 	public Person(int age, String name) {
-		this.age  = age;
+		this.age = age;
 		this.name = name;
 	}
 
@@ -59,10 +59,10 @@ public class Person {
 	@Override
 	public String toString() {
 		return "PersonalInformation{" + "age=" + age +
-		       ", name='" + name + '\'' +
-		       ", iq=" + iq +
-		       ", gender=" + gender +
-		       ", address='" + address + '\'' +
-		       '}';
+				", name='" + name + '\'' +
+				", iq=" + iq +
+				", gender=" + gender +
+				", address='" + address + '\'' +
+				'}';
 	}
 }

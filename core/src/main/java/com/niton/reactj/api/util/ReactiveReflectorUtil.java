@@ -32,11 +32,11 @@ public final class ReactiveReflectorUtil {
 	public static boolean isFitting(Object val, Class<?> paramType) {
 		Class<?> base = val.getClass();
 		Class<?> unwrapped = MethodType.methodType(base)
-		                               .unwrap()
-		                               .returnType();
+				.unwrap()
+				.returnType();
 
 		boolean unwrappedValid = base.isAssignableFrom(paramType);
-		boolean wrappedValid   = unwrapped.isAssignableFrom(paramType);
+		boolean wrappedValid = unwrapped.isAssignableFrom(paramType);
 
 		return unwrappedValid || wrappedValid;
 	}
@@ -48,9 +48,9 @@ public final class ReactiveReflectorUtil {
 	 * @return the map containing all (renamed) properties
 	 */
 	public static Map<String, Object> getState(Object model) {
-		HashMap<String, Object> state    = new HashMap<>();
-		Class<?>                type     = model.getClass();
-		String                  typeName = type.getName();
+		HashMap<String, Object> state = new HashMap<>();
+		Class<?> type = model.getClass();
+		String typeName = type.getName();
 
 		Field[] fields = FIELD_CACHE.computeIfAbsent(typeName, n -> loadRelevantFields(type));
 
@@ -95,8 +95,8 @@ public final class ReactiveReflectorUtil {
 	 */
 	public static String getReactiveName(Field field) {
 		return field.isAnnotationPresent(Reactive.class) ?
-		       field.getAnnotation(Reactive.class).value() :
-		       field.getName();
+				field.getAnnotation(Reactive.class).value() :
+				field.getName();
 	}
 
 	/**
@@ -107,9 +107,9 @@ public final class ReactiveReflectorUtil {
 	 * @param value    the value to set the property to
 	 */
 	public static void updateField(Object model, String property, Object value) {
-		Class<?> type      = model.getClass();
-		Field[]  fields    = getFields(type);
-		Field    propField = findField(property, fields);
+		Class<?> type = model.getClass();
+		Field[] fields = getFields(type);
+		Field propField = findField(property, fields);
 		try {
 			FieldUtils.writeField(propField, model, value, true);
 		} catch (IllegalAccessException e) {

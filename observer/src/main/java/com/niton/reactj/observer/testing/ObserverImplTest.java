@@ -18,11 +18,26 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @TestInstance(Lifecycle.PER_CLASS)
 public abstract class ObserverImplTest<O extends AbstractObserver<R, S>, R, S> {
-	private R fired;
+	private       R           fired;
 	private final Listener<R> listener = event -> fired = event;
-	private O observer;
+	private       O           observer;
+
+	@BeforeEach
+	void prepare() {
+		fired = null;
+		observer = createObserverInstance();
+		observer.addListener(listener);
+	}
 
 	protected abstract O createObserverInstance();
+
+	@Test
+	void fireOnChange() {
+		observer.setObserveOnRebind(false);
+		observer.observe(createObservableInstance());
+		modify(observer.getObserved());
+		assertNotNull(fired, "Modifying the observed object should call listeners on the observer");
+	}
 
 	protected abstract S createObservableInstance();
 
@@ -33,21 +48,6 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R, S>, R, S> {
 	 * @return the result expected to be produced by the observer
 	 */
 	protected abstract R modify(S observable);
-
-	@BeforeEach
-	void prepare() {
-		fired = null;
-		observer = createObserverInstance();
-		observer.addListener(listener);
-	}
-
-	@Test
-	void fireOnChange() {
-		observer.setObserveOnRebind(false);
-		observer.observe(createObservableInstance());
-		modify(observer.getObserved());
-		assertNotNull(fired, "Modifying the observed object should call listeners on the observer");
-	}
 
 	@Test
 	void fireCorrectEvent() {

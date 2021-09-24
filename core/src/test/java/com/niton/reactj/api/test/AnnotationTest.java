@@ -39,6 +39,56 @@ class AnnotationTest {
 
 	private int testDeposit;
 
+	public static class Base {
+		@Reactive("test")
+		private int a;
+		@Unreactive
+		private int b;
+
+		public int getB() {
+			return b;
+		}
+
+		public void setB(int b) {
+			this.b = b;
+		}
+
+		public int getA() {
+			return a;
+		}
+
+		public void setA(int a) {
+			this.a = a;
+		}
+	}
+
+	@ReactiveResolution(DEEP)
+	public static class DeepBase extends Base {
+		private int c;
+
+		public void setC(int c) {
+			this.c = c;
+		}
+	}
+
+	@ReactiveResolution(FLAT)
+	public static class FlatBase extends Base {
+		private int c;
+
+		public void setC(int c) {
+			this.c = c;
+		}
+	}
+
+	public static class FailBase extends Base {
+		public int c;
+
+		private FailBase(int wrong) {
+			//intentional
+		}
+
+	}
+
 	void testBiBinding() throws Throwable {
 		ReactiveComponent<ReactiveProxy<DeepBase>> deepComponent = binder -> {
 			binder.bind("c", v -> cCalled = true);
@@ -61,9 +111,9 @@ class AnnotationTest {
 		controller.stop();
 		controller.setModel(deepProxy);
 
-		aCalled    = false;
-		bCalled    = false;
-		cCalled    = false;
+		aCalled = false;
+		bCalled = false;
+		cCalled = false;
 		testCalled = false;
 
 		controller.update();
@@ -77,6 +127,14 @@ class AnnotationTest {
 		stringDeposit = "987";
 		controller.updateModel();
 		assertEquals(987, deep.c);
+	}
+
+	@Test
+	@DisplayName("@ReactiveResolution FLAT")
+	void testFlat() {
+		test(flatProxy, false, false, false);
+		flat.setC(SET3);
+		assertTrue(cCalled);
 	}
 
 	<M extends Base> void test(ReactiveProxy<M> proxy, boolean a, boolean b, boolean test) {
@@ -132,24 +190,15 @@ class AnnotationTest {
 		ReactiveController<ReactiveProxy<M>> controller = new ReactiveController<>(deepComponent);
 		controller.setModel(proxy);
 
-		aCalled    = false;
-		bCalled    = false;
-		cCalled    = false;
+		aCalled = false;
+		bCalled = false;
+		cCalled = false;
 		testCalled = false;
 		proxy.getObject().setA(SET1);
 		assertEquals(a, aCalled);
 		assertEquals(test, testCalled);
 		proxy.getObject().setB(SET2);
 		assertEquals(b, bCalled);
-	}
-
-
-	@Test
-	@DisplayName("@ReactiveResolution FLAT")
-	void testFlat() {
-		test(flatProxy, false, false, false);
-		flat.setC(SET3);
-		assertTrue(cCalled);
 	}
 
 	@Test
@@ -176,7 +225,7 @@ class AnnotationTest {
 		assertThrows(ReactiveException.class, () -> {
 			new ReactiveController<>(deepComponent);
 		}, "@ReactiveListeners are not allowed to have more than one parameter, and if they have an exception" +
-		   "should be thrown");
+				"should be thrown");
 	}
 
 	@Test
@@ -199,7 +248,7 @@ class AnnotationTest {
 		assertThrows(ReactiveException.class, () -> {
 			badTypedController.setModel(deepProxy);
 		}, "When a @ReactiveListener has a type that doesn't matches the property " +
-		   "it should fail to set such a model");
+				"it should fail to set such a model");
 
 		ReactiveComponent<ReactiveProxy<DeepBase>> internalErrorComponent =
 				new ReactiveComponent<ReactiveProxy<DeepBase>>() {
@@ -219,55 +268,5 @@ class AnnotationTest {
 		assertThrows(ReactiveException.class, () -> {
 			internalErrorController.setModel(deepProxy);
 		}, "When a getter that is proxied throws an exception syncing should fail too");
-	}
-
-	public static class Base {
-		@Reactive("test")
-		private int a;
-		@Unreactive
-		private int b;
-
-		public int getB() {
-			return b;
-		}
-
-		public void setB(int b) {
-			this.b = b;
-		}
-
-		public int getA() {
-			return a;
-		}
-
-		public void setA(int a) {
-			this.a = a;
-		}
-	}
-
-	@ReactiveResolution(DEEP)
-	public static class DeepBase extends Base {
-		private int c;
-
-		public void setC(int c) {
-			this.c = c;
-		}
-	}
-
-	@ReactiveResolution(FLAT)
-	public static class FlatBase extends Base {
-		private int c;
-
-		public void setC(int c) {
-			this.c = c;
-		}
-	}
-
-	public static class FailBase extends Base {
-		public int c;
-
-		private FailBase(int wrong) {
-			//intentional
-		}
-
 	}
 }
