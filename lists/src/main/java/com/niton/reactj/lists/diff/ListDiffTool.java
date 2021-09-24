@@ -224,26 +224,26 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 	}
 
 	private ListDiff<T> diff(List<T> oldState, List<T> newState, int baseOffset) {
-		oldState = new ArrayList<>(oldState);
-		newState = new ArrayList<>(newState);
+		ArrayList<T> oldList = new ArrayList<>(oldState);
+		ArrayList<T> newList = new ArrayList<>(newState);
 
-		int offset = trimEqualEntries(oldState, newState) + baseOffset;
-		int m = oldState.size();
-		int n = newState.size();
+		int offset = trimEqualEntries(oldList, newList) + baseOffset;
+		int m = oldList.size();
+		int n = newList.size();
 
 		ListDiff<T> changes = new ListDiff<>();
 
-		if (handleLinearChanges(oldState, newState, m, n, changes, offset))
+		if (handleLinearChanges(oldList, newList, m, n, changes, offset))
 			return changes;
 
 		if (min(m, n) > maxSpliceSize) {
-			Optional<SortedSet<ListChange<T>>> divRes = divideTask(oldState, newState, m, n, changes, offset);
+			Optional<SortedSet<ListChange<T>>> divRes = divideTask(oldList, newList, m, n, changes, offset);
 			if (divRes.isPresent())
 				return changes;
 		}
 
-		int[][] costs = calcCostMatrix(oldState, newState, m, n);
-		findChanges(costs, changes, oldState, newState, offset);
+		int[][] costs = calcCostMatrix(oldList, newList, m, n);
+		findChanges(costs, changes, oldList, newList, offset);
 
 		return changes;
 	}
