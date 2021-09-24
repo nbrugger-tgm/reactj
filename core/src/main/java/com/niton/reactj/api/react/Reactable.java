@@ -1,6 +1,6 @@
 package com.niton.reactj.api.react;
 
-import com.niton.reactj.event.GenericEventManager;
+import com.niton.reactj.utils.event.GenericEventEmitter;
 
 import java.util.Map;
 
@@ -10,13 +10,6 @@ import java.util.Map;
  */
 public interface Reactable {
 
-	/**
-	 * Get a map of all properties and their values.<br>
-	 * {@code Map<NameOfField,ValueOfField>} The name should be influenced by {@code @Reactive("name")}
-	 *
-	 * @return the state of the object
-	 */
-	Map<String, Object> getState();
 
 	/**
 	 * Report a change in the state of the object (shoul be called after every setter and mutating method).
@@ -27,7 +20,7 @@ public interface Reactable {
 		reactEvent().fire();
 	}
 
-	GenericEventManager reactEvent();
+	GenericEventEmitter reactEvent();
 
 	/**
 	 * Performs multiple {@link #set(String, Object)} operations. One for every Map Entry
@@ -48,4 +41,12 @@ public interface Reactable {
 	 * @throws Exception if anything goes wrong
 	 */
 	void set(String property, Object value);
+
+	/**
+	 * Get a map of all properties and their values.<br>
+	 * {@code Map<NameOfField,ValueOfField>} The name should be influenced by {@code @Reactive("name")}
+	 *
+	 * @return the state of the object
+	 */
+	Map<String, Object> getState();
 }

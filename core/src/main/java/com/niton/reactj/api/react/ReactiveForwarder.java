@@ -1,6 +1,7 @@
 package com.niton.reactj.api.react;
 
-import com.niton.reactj.event.GenericEventManager;
+import com.niton.reactj.core.react.ReactiveWrapper;
+import com.niton.reactj.utils.event.GenericEventEmitter;
 
 import java.util.Map;
 
@@ -15,24 +16,24 @@ import java.util.Map;
  */
 public interface ReactiveForwarder extends Reactable {
 	@Override
-	default Map<String, Object> getState() {
-		return getReactableTarget().getState();
-	}
-
-	@Override
 	default void react() {
 		getReactableTarget().react();
 	}
 
 	@Override
-	default GenericEventManager reactEvent() {
+	default GenericEventEmitter reactEvent() {
 		return getReactableTarget().reactEvent();
 	}
-
-	Reactable getReactableTarget();
 
 	@Override
 	default void set(String property, Object value) {
 		getReactableTarget().set(property, value);
 	}
+
+	@Override
+	default Map<String, Object> getState() {
+		return getReactableTarget().getState();
+	}
+
+	Reactable getReactableTarget();
 }

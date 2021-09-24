@@ -1,8 +1,8 @@
 package com.niton.reactj.api.test;
 
-import com.niton.reactj.api.proxy.ProxySubject;
-import com.niton.reactj.api.react.ReactiveObject;
-import com.niton.reactj.api.react.ReactiveWrapper;
+import com.niton.reactj.core.proxy.ProxySubject;
+import com.niton.reactj.core.react.ReactiveObject;
+import com.niton.reactj.core.react.ReactiveWrapper;
 import org.junit.jupiter.api.*;
 
 import java.io.*;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.niton.reactj.api.proxy.ProxyCreator.INSTANCE;
+import static com.niton.reactj.core.proxy.ProxyCreator.INSTANCE;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicContainer.dynamicContainer;

@@ -1,22 +1,23 @@
 package com.niton.reactj.api.test;
 
-import com.niton.reactj.api.annotation.Reactive;
-import com.niton.reactj.api.annotation.ReactiveListener;
-import com.niton.reactj.api.annotation.ReactiveResolution;
-import com.niton.reactj.api.annotation.Unreactive;
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.api.react.ReactiveBinder;
 import com.niton.reactj.api.react.ReactiveComponent;
-import com.niton.reactj.api.react.ReactiveController;
-import com.niton.reactj.api.react.ReactiveProxy;
+import com.niton.reactj.core.annotation.Reactive;
+import com.niton.reactj.core.annotation.ReactiveListener;
+import com.niton.reactj.core.annotation.ReactiveResolution;
+import com.niton.reactj.core.annotation.Unreactive;
+import com.niton.reactj.core.react.ReactiveBinder;
+import com.niton.reactj.core.react.ReactiveController;
+import com.niton.reactj.core.react.ReactiveProxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.niton.reactj.api.annotation.ReactiveResolution.ReactiveResolutionType.DEEP;
-import static com.niton.reactj.api.annotation.ReactiveResolution.ReactiveResolutionType.FLAT;
-import static com.niton.reactj.api.proxy.ProxyCreator.INSTANCE;
+import static com.niton.reactj.core.annotation.ReactiveResolution.ReactiveResolutionType.DEEP;
+import static com.niton.reactj.core.annotation.ReactiveResolution.ReactiveResolutionType.FLAT;
+import static com.niton.reactj.core.proxy.ProxyCreator.INSTANCE;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("ALL")
 @DisplayName("Annotations")
 class AnnotationTest {
 	public static final int
@@ -71,6 +72,7 @@ class AnnotationTest {
 		}
 	}
 
+	@SuppressWarnings("FieldCanBeLocal")
 	@ReactiveResolution(FLAT)
 	public static class FlatBase extends Base {
 		private int c;

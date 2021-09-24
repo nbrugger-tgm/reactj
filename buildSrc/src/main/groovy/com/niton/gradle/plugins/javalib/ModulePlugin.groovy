@@ -66,6 +66,7 @@ class ModulePlugin implements Plugin<Project> {
             }
         }
 
+        setupTesting(p)
 
         p.tasks.create("testJar", Jar.class) {
             from p.sourceSets.test.output
@@ -97,6 +98,16 @@ class ModulePlugin implements Plugin<Project> {
 
         p.repositories {
             mavenCentral()
+        }
+    }
+
+
+    void setupTesting(p) {
+        p.dependencies {
+            compileOnly 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+
+            testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+            testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
         }
     }
 
