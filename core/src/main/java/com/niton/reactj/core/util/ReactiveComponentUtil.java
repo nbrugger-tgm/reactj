@@ -2,7 +2,7 @@ package com.niton.reactj.core.util;
 
 import com.niton.reactj.api.exceptions.ReactiveAccessException;
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.mvc.ReactiveComponent;
 import com.niton.reactj.core.annotation.ReactiveListener;
 import com.niton.reactj.core.react.ReactiveBinder;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static com.niton.reactj.utils.reflections.ReflectiveUtil.invalidMethodParameterException;
+import static com.niton.reactj.utils.reflections.ReflectiveUtil.isFitting;
 import static java.lang.String.format;
 
 
@@ -89,7 +90,7 @@ public final class ReactiveComponentUtil {
 	 */
 	private static void checkParameterType(Method method, Object val) {
 		Class<?> paramType = method.getParameterTypes()[0];
-		if (!ReactiveReflectorUtil.isFitting(val, paramType)) {
+		if (!isFitting(val, paramType)) {
 			throw invalidMethodParameterException(method, val);
 		}
 	}

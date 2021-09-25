@@ -1,6 +1,5 @@
 package com.niton.reactj.api.exceptions;
 
-import com.niton.reactj.api.proxy.ProxyException;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -84,13 +83,6 @@ public class ReactiveException extends RuntimeException {
 		return new ReactiveException(
 				String.format("Couldn't construct %s", type.getSimpleName()),
 				cause
-		);
-	}
-
-	public static ProxyException doubleProxyException(Class<?> originClass) {
-		return new ProxyException(
-				"You can't create a proxy from a proxy",
-				new IllegalArgumentException(originClass.getName())
 		);
 	}
 }

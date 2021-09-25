@@ -1,8 +1,9 @@
 package com.niton.reactj.api.test;
 
+import com.niton.reactj.api.react.ReactiveObject;
+import com.niton.reactj.api.react.ReactiveWrapper;
+import com.niton.reactj.core.proxy.ProxyCreator;
 import com.niton.reactj.core.proxy.ProxySubject;
-import com.niton.reactj.core.react.ReactiveObject;
-import com.niton.reactj.core.react.ReactiveWrapper;
 import org.junit.jupiter.api.*;
 
 import java.io.*;
@@ -11,7 +12,6 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.niton.reactj.core.proxy.ProxyCreator.INSTANCE;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicContainer.dynamicContainer;
@@ -22,7 +22,8 @@ public class EqualsAndHashcodeTest {
 	/**
 	 * If this is true also classes without a {@code equals} or {@code hashCode} implementation will be tested
 	 */
-	public static final boolean testHashless = false;
+	public static final boolean      testHashless = false;
+	private final       ProxyCreator creator      = ProxyCreator.INSTANCE;
 
 	@Nested
 	@DisplayName("Reactive Object")
@@ -64,11 +65,11 @@ public class EqualsAndHashcodeTest {
 	class ReactiveProxySubjectTests {
 		@TestFactory
 		DynamicContainer testProxySubjects() {
-			RProxySubject.WithHashEquals withHash = INSTANCE.create(new RProxySubject.WithHashEquals());
-			RProxySubject.WithHashEquals withHash2 = INSTANCE.create(new RProxySubject.WithHashEquals());
+			RProxySubject.WithHashEquals withHash = creator.create(new RProxySubject.WithHashEquals());
+			RProxySubject.WithHashEquals withHash2 = creator.create(new RProxySubject.WithHashEquals());
 
-			RProxySubject.WithoutHashEquals withtOutHash = INSTANCE.create(new RProxySubject.WithoutHashEquals());
-			RProxySubject.WithoutHashEquals withtOutHash2 = INSTANCE.create(new RProxySubject.WithoutHashEquals());
+			RProxySubject.WithoutHashEquals withtOutHash = creator.create(new RProxySubject.WithoutHashEquals());
+			RProxySubject.WithoutHashEquals withtOutHash2 = creator.create(new RProxySubject.WithoutHashEquals());
 
 			RProxySubject.WithHashEquals baseWith = new RProxySubject.WithHashEquals();
 			RProxySubject.WithoutHashEquals baseWithout = new RProxySubject.WithoutHashEquals();
@@ -82,12 +83,12 @@ public class EqualsAndHashcodeTest {
 
 			RProxySubject.WithoutHashEquals[] unique = new RProxySubject.WithoutHashEquals[5];
 			for (int i = 0; i < unique.length; i++) {
-				unique[i] = INSTANCE.create(new RProxySubject.WithoutHashEquals());
+				unique[i] = creator.create(new RProxySubject.WithoutHashEquals());
 				unique[i].setI(unique[i].getI() + i + 100);
 			}
 			RProxySubject.WithHashEquals[] unique2 = new RProxySubject.WithHashEquals[5];
 			for (int i = 0; i < unique2.length; i++) {
-				unique2[i] = INSTANCE.create(new RProxySubject.WithHashEquals());
+				unique2[i] = creator.create(new RProxySubject.WithHashEquals());
 				unique2[i].setI(unique2[i].getI() + i + 20);
 			}
 			return generateTests(
@@ -110,11 +111,11 @@ public class EqualsAndHashcodeTest {
 	class ReactiveProxyTests {
 		@TestFactory
 		DynamicContainer testProxySubjects() {
-			RProxy.WithHashEquals withHash = INSTANCE.create(new RProxy.WithHashEquals()).getObject();
-			RProxy.WithHashEquals withHash2 = INSTANCE.create(new RProxy.WithHashEquals()).getObject();
+			RProxy.WithHashEquals withHash = creator.create(new RProxy.WithHashEquals()).getObject();
+			RProxy.WithHashEquals withHash2 = creator.create(new RProxy.WithHashEquals()).getObject();
 
-			RProxy.WithoutHashEquals withOutHash = INSTANCE.create(new RProxy.WithoutHashEquals()).getObject();
-			RProxy.WithoutHashEquals withOutHash2 = INSTANCE.create(new RProxy.WithoutHashEquals()).getObject();
+			RProxy.WithoutHashEquals withOutHash = creator.create(new RProxy.WithoutHashEquals()).getObject();
+			RProxy.WithoutHashEquals withOutHash2 = creator.create(new RProxy.WithoutHashEquals()).getObject();
 
 			RProxy.WithHashEquals baseWith = new RProxy.WithHashEquals();
 			RProxy.WithoutHashEquals baseWithout = new RProxy.WithoutHashEquals();
@@ -128,16 +129,14 @@ public class EqualsAndHashcodeTest {
 
 			RProxy.WithoutHashEquals[] unique = new RProxy.WithoutHashEquals[5];
 			for (int i = 0; i < unique.length; i++) {
-				unique[i] = INSTANCE.create(new RProxy.WithoutHashEquals()).getObject();
+				unique[i] = creator.create(new RProxy.WithoutHashEquals()).getObject();
 				unique[i].add(i + 100);
 			}
 			RProxy.WithHashEquals[] unique2 = new RProxy.WithHashEquals[5];
 			for (int i = 0; i < unique2.length; i++) {
-				unique2[i] = INSTANCE.create(new RProxy.WithHashEquals()).getObject();
+				unique2[i] = creator.create(new RProxy.WithHashEquals()).getObject();
 				unique2[i].add(i + 20);
 			}
-			System.out.println(Arrays.toString(unique));
-			System.out.println(Arrays.toString(unique2));
 			return generateTests(
 					withHash,
 					withHash2,

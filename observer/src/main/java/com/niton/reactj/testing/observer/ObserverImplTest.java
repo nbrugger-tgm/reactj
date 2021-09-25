@@ -22,6 +22,14 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R, S>, R, S> {
 	private final Listener<R> listener = event -> fired = event;
 	private       O           observer;
 
+	protected R getFired() {
+		return fired;
+	}
+
+	protected O getObserver() {
+		return observer;
+	}
+
 	@BeforeEach
 	void prepare() {
 		fired = null;

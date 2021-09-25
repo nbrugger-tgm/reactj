@@ -1,10 +1,11 @@
 package com.niton.reactj.core.react;
 
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.api.react.Reactable;
-import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.mvc.ReactiveComponent;
+import com.niton.reactj.api.observer.Reactable;
 import com.niton.reactj.core.observer.ObjectObserver;
 import com.niton.reactj.core.observer.PropertyObservation;
+import com.niton.reactj.core.observer.Reflective;
 import com.niton.reactj.core.react.ReactiveBinder.BiBinding;
 import com.niton.reactj.core.react.ReactiveBinder.Binding;
 import com.niton.reactj.core.react.ReactiveBinder.SuperBinding;
@@ -22,7 +23,7 @@ import static com.niton.reactj.api.exceptions.ReactiveException.bindingException
  *
  * @param <M> Model Type
  */
-public final class ReactiveController<M extends Reactable> {
+public final class ReactiveController<M extends Reflective & Reactable> {
 	private final ObjectObserver<M>                     observer                   = new ObjectObserver<>();
 	private final Map<String, List<Binding<?, ?>>>      displayBindings            = new ConcurrentHashMap<>();
 	private final Map<String, List<BiBinding<?, ?>>>    editBindings               = new ConcurrentHashMap<>();

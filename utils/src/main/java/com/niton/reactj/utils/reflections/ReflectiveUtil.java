@@ -2,14 +2,19 @@ package com.niton.reactj.utils.reflections;
 
 import com.niton.reactj.utils.exceptions.ReflectiveCallException;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
 public final class ReflectiveUtil {
+
 	private ReflectiveUtil() {
 	}
 
@@ -87,5 +92,67 @@ public final class ReflectiveUtil {
 					getMethodSignature(thisMethod)
 			));
 		}
+	}
+
+	/**
+	 * @param val the object to check the type of
+	 * @return true if val is usable as method parameter with type paramType
+	 */
+	public static boolean isFitting(Object val, Class<?> paramType) {
+		Class<?> base = val.getClass();
+		Class<?> unwrapped = MethodType.methodType(base)
+				.unwrap()
+				.returnType();
+
+		boolean unwrappedValid = base.isAssignableFrom(paramType);
+		boolean wrappedValid = unwrapped.isAssignableFrom(paramType);
+
+		return unwrappedValid || wrappedValid;
+	}
+
+
+	public static Class<?>[] unboxTypes(Class<?>... paramTypes) {
+		return Arrays
+				.stream(paramTypes)
+				.map(c -> MethodType.methodType(c).unwrap().returnType())
+				.toArray(Class[]::new);
+	}
+
+	public static boolean isMutableInstanceVar(Field f) {
+		return !isStatic(f) && !isFinal(f);
+	}
+
+	public static boolean isStatic(Field f) {
+		return Modifier.isStatic(f.getModifiers());
+	}
+
+	public static boolean isFinal(Field f) {
+		return Modifier.isFinal(f.getModifiers());
+	}
+
+	public static <T> MethodHandles.Lookup getLookup(Class<? extends T> originClass, Module module) {
+		ReflectiveUtil.class.getModule().addReads(module);
+		MethodHandles.Lookup lookup;
+		//try {
+		lookup = MethodHandles.lookup();//(originClass, MethodHandles.lookup());
+		//} catch (IllegalAccessException e) {
+		//	throw new ReactiveAccessException(e);
+		//}
+		System.out.println("ReflectiveUtil.getLookup");
+		System.out.println("originClass = " + originClass + ", module = " + module);
+		System.out.println("lookup() -> " + lookup.lookupClass().getModule());
+		return lookup;
+	}
+
+	/**
+	 * THIS IS PURE EVIL ... but necessary
+	 */
+	public static void setFinal(Field field, Object target, Object newValue)
+			throws NoSuchFieldException, IllegalAccessException {
+		Field modifiersField = Field.class.getDeclaredField("modifiers");
+		modifiersField.setAccessible(true);
+		modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+		field.set(target, newValue);
 	}
 }

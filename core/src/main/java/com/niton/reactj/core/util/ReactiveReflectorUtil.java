@@ -5,9 +5,9 @@ import com.niton.reactj.core.annotation.Reactive;
 import com.niton.reactj.core.annotation.ReactiveResolution;
 import com.niton.reactj.core.annotation.ReactiveResolution.ReactiveResolutionType;
 import com.niton.reactj.core.annotation.Unreactive;
+import com.niton.reactj.utils.reflections.ReflectiveUtil;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,25 +23,10 @@ import static java.lang.reflect.Modifier.isStatic;
  * Serves several methods for reflective access specifically for @Annotations
  */
 public final class ReactiveReflectorUtil {
+
 	private static final Map<String, Field[]> FIELD_CACHE = new ConcurrentHashMap<>();
 
 	private ReactiveReflectorUtil() {
-	}
-
-	/**
-	 * @param val the object to check the type of
-	 * @return true if val is usable as method parameter with type paramType
-	 */
-	public static boolean isFitting(Object val, Class<?> paramType) {
-		Class<?> base = val.getClass();
-		Class<?> unwrapped = MethodType.methodType(base)
-				.unwrap()
-				.returnType();
-
-		boolean unwrappedValid = base.isAssignableFrom(paramType);
-		boolean wrappedValid = unwrapped.isAssignableFrom(paramType);
-
-		return unwrappedValid || wrappedValid;
 	}
 
 	/**
@@ -73,9 +58,13 @@ public final class ReactiveReflectorUtil {
 	 */
 	public static Field[] loadRelevantFields(Class<?> type) {
 		if (goDeep(type))
-			return FieldUtils.getAllFields(type);
+			return Arrays.stream(FieldUtils.getAllFields(type))
+					.filter(f -> !ReflectiveUtil.isFinal(f))
+					.toArray(Field[]::new);
 		else
-			return type.getDeclaredFields();
+			return Arrays.stream(type.getDeclaredFields())
+					.filter(f -> !ReflectiveUtil.isFinal(f))
+					.toArray(Field[]::new);
 	}
 
 	public static void readState(Object model, Field[] fields, Map<String, Object> state)
@@ -132,13 +121,13 @@ public final class ReactiveReflectorUtil {
 
 	private static Field[] getFields(Class<?> type) {
 		String typeName = type.getName();
-		return FIELD_CACHE.computeIfAbsent(typeName, n -> loadRelevantFields(type));
+		return FIELD_CACHE.computeIfAbsent(typeName, n -> ReactiveReflectorUtil.loadRelevantFields(type));
 	}
 
 	private static Field findField(String property, Field[] fields) {
 		Field propField = null;
 		for (Field f : fields) {
-			if (getReactiveName(f).equals(property)) {
+			if (ReactiveReflectorUtil.getReactiveName(f).equals(property)) {
 				propField = f;
 				break;
 			}
@@ -149,10 +138,4 @@ public final class ReactiveReflectorUtil {
 		return propField;
 	}
 
-	public static Class<?>[] unboxTypes(Class<?>... paramTypes) {
-		return Arrays
-				.stream(paramTypes)
-				.map(c -> MethodType.methodType(c).unwrap().returnType())
-				.toArray(Class[]::new);
-	}
 }

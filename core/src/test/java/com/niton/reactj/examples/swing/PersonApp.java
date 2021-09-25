@@ -1,14 +1,14 @@
 package com.niton.reactj.examples.swing;
 
 import com.niton.reactj.core.proxy.ProxyCreator;
-import com.niton.reactj.core.react.ReactiveProxy;
+import com.niton.reactj.core.proxy.ReactiveProxy;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class PersonApp {
 	public static void main(String[] args) throws InterruptedException {
-		ProxyCreator creator = new ProxyCreator();
+		ProxyCreator creator = ProxyCreator.besideOrigin();
 		ReactiveProxy<Person> proxy = creator.create(new Person(12, "Niton"));
 
 		//A controller for custom events

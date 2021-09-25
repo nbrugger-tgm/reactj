@@ -2,14 +2,16 @@ package com.niton.reactj.api.observer;
 
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.event.Listener;
+import com.niton.reactj.utils.event.GenericListener;
 
 /**
  * The interface to use in order to create an observer.
  *
  * @param <T> type of the result of an observation
- * @param <O> the type to be observed
+ * @param <O> the type to be observed (should implement {@link Reactable})
  */
 public abstract class AbstractObserver<T, O> {
+	private final GenericListener updateListener  = this::update;
 	private final EventEmitter<T> observeEvent    = new EventEmitter<>();
 	protected     O               observedObject;
 	/**
@@ -48,8 +50,9 @@ public abstract class AbstractObserver<T, O> {
 
 		if (observedObject != null)
 			stopObservation();
-
 		observedObject = observable;
+		if (observable instanceof Reactable)
+			((Reactable) observable).reactEvent().addListener(updateListener);
 		if (observeOnRebind) {
 			update();
 		} else {
@@ -60,7 +63,10 @@ public abstract class AbstractObserver<T, O> {
 	/**
 	 * Stop observing <i>the current subject</i>
 	 */
-	public abstract void stopObservation();
+	public void stopObservation() {
+		if (observedObject instanceof Reactable)
+			((Reactable) observedObject).reactEvent().stopListening(updateListener);
+	}
 
 	/**
 	 * This method is called when a change in the observer was observed and should be processed.

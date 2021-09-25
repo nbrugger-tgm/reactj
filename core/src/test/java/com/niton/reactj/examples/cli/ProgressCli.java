@@ -1,8 +1,8 @@
 package com.niton.reactj.examples.cli;
 
-import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.mvc.ReactiveComponent;
+import com.niton.reactj.core.proxy.ReactiveProxy;
 import com.niton.reactj.core.react.ReactiveBinder;
-import com.niton.reactj.core.react.ReactiveProxy;
 
 class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 

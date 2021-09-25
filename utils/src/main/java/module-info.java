@@ -7,4 +7,6 @@ module reactj.utils {
 	exports com.niton.reactj.utils.event;
 	exports com.niton.reactj.utils.diff;
 	exports com.niton.reactj.utils.reflections;
+	exports com.niton.reactj.api.exceptions;
+	exports com.niton.reactj.utils.exceptions;
 }

@@ -1,14 +1,14 @@
 package com.niton.reactj.api.test;
 
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.mvc.ReactiveComponent;
 import com.niton.reactj.core.annotation.Reactive;
 import com.niton.reactj.core.annotation.ReactiveListener;
 import com.niton.reactj.core.annotation.ReactiveResolution;
 import com.niton.reactj.core.annotation.Unreactive;
+import com.niton.reactj.core.proxy.ReactiveProxy;
 import com.niton.reactj.core.react.ReactiveBinder;
 import com.niton.reactj.core.react.ReactiveController;
-import com.niton.reactj.core.react.ReactiveProxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
