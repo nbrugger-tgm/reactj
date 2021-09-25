@@ -1,0 +1,28 @@
+plugins {
+    id "java-library-module"
+}
+
+dependencies {
+    api project(":utils")
+    api project(":observer")
+
+    implementation group: 'org.objenesis', name: 'objenesis', version: '3.2'
+    implementation 'net.bytebuddy:byte-buddy:1.11.15'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+
+}
+
+module {
+    group = "com.niton.reactj"
+    version = "4.0.0b5"
+}
+
+java {
+    sourceCompatibility 11
+    targetCompatibility 11
+}
+
+module.publishing {
+    repo = "https://niton.jfrog.io/artifactory/java-libs"
+    username = "nilsbrugger.nb.nb.nb@gmail.com"
+}

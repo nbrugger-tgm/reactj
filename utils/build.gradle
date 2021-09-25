@@ -1,0 +1,16 @@
+plugins {
+    id "java-library-module"
+}
+
+module {
+    group = "com.niton.reactj"
+    version = "4.0.0b5"
+}
+
+module.publishing {
+    repo = "https://niton.jfrog.io/artifactory/java-libs"
+    username = "nilsbrugger.nb.nb.nb@gmail.com"
+}
+
+dependencies {
+}
