@@ -4,12 +4,12 @@ plugins {
 
 module {
     group = "com.niton.reactj"
-    version = "4.0.0b5"
+    version = "4.0.0b6"
 }
 
 module.publishing {
     repo = "https://niton.jfrog.io/artifactory/java-libs"
-    username = "nilsbrugger.nb.nb.nb@gmail.com"
+    username = "nbrugger@student.tgm.ac.at"
 }
 
 dependencies {

@@ -1,3 +1,9 @@
+## v4.0.0b6 (2021-09-25)
+
+### Refactor
+
+- unify package structure between modules (#44)
+
 ## v4.0.0b5 (2021-09-22)
 
 ### Refactor

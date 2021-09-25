@@ -50,7 +50,7 @@ class ModulePlugin implements Plugin<Project> {
                         credentials {
                             if (!publisher.getUsername().isPresent())
                                 throw new BuildCancelledException("module.publishing.username needs to be set!")
-                            username = publisher.getUsername()
+                            username = publisher.getUsername().get()
                             def pwdFile = publisher.getTokenFile().get()
                             if (pwdFile.exists())
                                 password = pwdFile.readLines().get(0)
