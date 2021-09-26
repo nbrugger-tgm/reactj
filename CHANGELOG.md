@@ -1,3 +1,9 @@
+## v4.0.0b7 (2021-09-26)
+
+### Feat
+
+- list proxy support & proxy access rework (#45)
+
 ## v4.0.0b6 (2021-09-25)
 
 ### Refactor
