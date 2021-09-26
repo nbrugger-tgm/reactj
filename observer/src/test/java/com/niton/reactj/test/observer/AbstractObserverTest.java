@@ -20,8 +20,8 @@ class AbstractObserverTest {
 	@BeforeEach
 	void resetState() {
 		observationStopped = false;
-		observationFired = false;
-		observer = new AbstractObserver<>() {
+		observationFired   = false;
+		observer           = new AbstractObserver<>() {
 			@Override
 			public void stopObservation() {
 				observationStopped = true;

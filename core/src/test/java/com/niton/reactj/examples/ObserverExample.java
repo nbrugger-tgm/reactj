@@ -30,7 +30,7 @@ public class ObserverExample {
 
 	public static void main(String[] args) {
 		ProxyCreator creator = ProxyCreator.besideOrigin();
-		Data model = creator.create(new Data());
+		Data         model   = creator.create(new Data());
 
 		ObjectObserver<Data> observer = new ObjectObserver<>();
 

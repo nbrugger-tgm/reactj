@@ -19,6 +19,7 @@ public interface Reflective {
 	 *
 	 * @param property the name of the property to set (@Reactive respected)
 	 * @param value    the value to change to
+	 *
 	 * @throws Exception if anything goes wrong
 	 */
 	void set(String property, Object value);

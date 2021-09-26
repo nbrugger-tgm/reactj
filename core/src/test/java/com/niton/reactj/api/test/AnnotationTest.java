@@ -12,8 +12,7 @@ import com.niton.reactj.core.react.ReactiveController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.niton.reactj.core.annotation.ReactiveResolution.ReactiveResolutionType.DEEP;
-import static com.niton.reactj.core.annotation.ReactiveResolution.ReactiveResolutionType.FLAT;
+import static com.niton.reactj.core.annotation.ReactiveResolution.ReactiveResolutionType.*;
 import static com.niton.reactj.core.proxy.ProxyCreator.INSTANCE;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -113,9 +112,9 @@ class AnnotationTest {
 		controller.stop();
 		controller.setModel(deepProxy);
 
-		aCalled = false;
-		bCalled = false;
-		cCalled = false;
+		aCalled    = false;
+		bCalled    = false;
+		cCalled    = false;
 		testCalled = false;
 
 		controller.update();
@@ -192,9 +191,9 @@ class AnnotationTest {
 		ReactiveController<ReactiveProxy<M>> controller = new ReactiveController<>(deepComponent);
 		controller.setModel(proxy);
 
-		aCalled = false;
-		bCalled = false;
-		cCalled = false;
+		aCalled    = false;
+		bCalled    = false;
+		cCalled    = false;
 		testCalled = false;
 		proxy.getObject().setA(SET1);
 		assertEquals(a, aCalled);
@@ -227,7 +226,7 @@ class AnnotationTest {
 		assertThrows(ReactiveException.class, () -> {
 			new ReactiveController<>(deepComponent);
 		}, "@ReactiveListeners are not allowed to have more than one parameter, and if they have an exception" +
-				"should be thrown");
+				             "should be thrown");
 	}
 
 	@Test
@@ -250,7 +249,7 @@ class AnnotationTest {
 		assertThrows(ReactiveException.class, () -> {
 			badTypedController.setModel(deepProxy);
 		}, "When a @ReactiveListener has a type that doesn't matches the property " +
-				"it should fail to set such a model");
+				             "it should fail to set such a model");
 
 		ReactiveComponent<ReactiveProxy<DeepBase>> internalErrorComponent =
 				new ReactiveComponent<ReactiveProxy<DeepBase>>() {

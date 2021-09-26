@@ -64,7 +64,7 @@ public class ObjectObserver<M extends Reactable & Reflective> extends AbstractOb
 	 */
 	private Map<String, Object> getChanges() {
 		final Map<String, Object> changed = new ConcurrentHashMap<>();
-		final Map<String, Object> state = observedObject.getState();
+		final Map<String, Object> state   = observedObject.getState();
 		for (Map.Entry<String, Object> property : state.entrySet()) {
 			detectChange(changed, property.getKey(), property.getValue());
 		}

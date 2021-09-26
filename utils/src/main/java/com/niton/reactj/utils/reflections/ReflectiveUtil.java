@@ -50,16 +50,17 @@ public final class ReflectiveUtil {
 	 * @param target the object to execute on
 	 * @param method the method to execute
 	 * @param args   the arguments to pass
+	 *
 	 * @return the return value of the method call
 	 */
 	public static Object executeCall(Object target, Method method, Object[] args)
 			throws InvocationTargetException, IllegalAccessException {
 		try {
 			return target.getClass().getMethod(
-							method.getName(),
-							method.getParameterTypes()
-					)
-					.invoke(target, args);
+					             method.getName(),
+					             method.getParameterTypes()
+			             )
+			             .invoke(target, args);
 		} catch (NoSuchMethodException e) {
 			throw new IllegalArgumentException(
 					format(
@@ -68,9 +69,9 @@ public final class ReflectiveUtil {
 							target.getClass().getSimpleName(),
 							method.getName(),
 							Arrays.stream(args)
-									.map(Object::getClass)
-									.map(Class::getTypeName)
-									.collect(Collectors.joining())
+							      .map(Object::getClass)
+							      .map(Class::getTypeName)
+							      .collect(Collectors.joining())
 					), e);
 		}
 	}
@@ -80,6 +81,7 @@ public final class ReflectiveUtil {
 	 *
 	 * @param thisMethod the method to search
 	 * @param type       the class to search in
+	 *
 	 * @return the method that will return `type` as {@link Method#getDeclaringClass()}
 	 */
 	public static Method getOriginMethod(Method thisMethod, Class<?> type) {
@@ -96,16 +98,17 @@ public final class ReflectiveUtil {
 
 	/**
 	 * @param val the object to check the type of
+	 *
 	 * @return true if val is usable as method parameter with type paramType
 	 */
 	public static boolean isFitting(Object val, Class<?> paramType) {
 		Class<?> base = val.getClass();
 		Class<?> unwrapped = MethodType.methodType(base)
-				.unwrap()
-				.returnType();
+		                               .unwrap()
+		                               .returnType();
 
 		boolean unwrappedValid = base.isAssignableFrom(paramType);
-		boolean wrappedValid = unwrapped.isAssignableFrom(paramType);
+		boolean wrappedValid   = unwrapped.isAssignableFrom(paramType);
 
 		return unwrappedValid || wrappedValid;
 	}

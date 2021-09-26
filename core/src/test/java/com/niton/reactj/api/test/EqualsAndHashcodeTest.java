@@ -30,19 +30,19 @@ public class EqualsAndHashcodeTest {
 	class ReactiveObjectTests {
 		@TestFactory
 		DynamicContainer testReactiveObjects() {
-			RObject.WithHashEquals withHash = new RObject.WithHashEquals();
-			RObject.WithHashEquals withHash2 = new RObject.WithHashEquals();
-			RObject.WithoutHashEquals withOutHash = new RObject.WithoutHashEquals();
-			RObject.WithoutHashEquals withOutHash2 = new RObject.WithoutHashEquals();
-			ReactiveWrapper<RObject.WithHashEquals> ro = new ReactiveWrapper<>(withHash);
-			RObject.WithoutHashEquals[] unique = new RObject.WithoutHashEquals[5];
+			RObject.WithHashEquals                  withHash     = new RObject.WithHashEquals();
+			RObject.WithHashEquals                  withHash2    = new RObject.WithHashEquals();
+			RObject.WithoutHashEquals               withOutHash  = new RObject.WithoutHashEquals();
+			RObject.WithoutHashEquals               withOutHash2 = new RObject.WithoutHashEquals();
+			ReactiveWrapper<RObject.WithHashEquals> ro           = new ReactiveWrapper<>(withHash);
+			RObject.WithoutHashEquals[]             unique       = new RObject.WithoutHashEquals[5];
 			for (int i = 0; i < unique.length; i++) {
-				unique[i] = new RObject.WithoutHashEquals();
+				unique[i]   = new RObject.WithoutHashEquals();
 				unique[i].i = i + 5;
 			}
 			RObject.WithHashEquals[] unique2 = new RObject.WithHashEquals[5];
 			for (int i = 0; i < unique2.length; i++) {
-				unique2[i] = new RObject.WithHashEquals();
+				unique2[i]   = new RObject.WithHashEquals();
 				unique2[i].i = i + 5;
 			}
 			return generateTests(
@@ -65,17 +65,17 @@ public class EqualsAndHashcodeTest {
 	class ReactiveProxySubjectTests {
 		@TestFactory
 		DynamicContainer testProxySubjects() {
-			RProxySubject.WithHashEquals withHash = creator.create(new RProxySubject.WithHashEquals());
+			RProxySubject.WithHashEquals withHash  = creator.create(new RProxySubject.WithHashEquals());
 			RProxySubject.WithHashEquals withHash2 = creator.create(new RProxySubject.WithHashEquals());
 
-			RProxySubject.WithoutHashEquals withtOutHash = creator.create(new RProxySubject.WithoutHashEquals());
+			RProxySubject.WithoutHashEquals withtOutHash  = creator.create(new RProxySubject.WithoutHashEquals());
 			RProxySubject.WithoutHashEquals withtOutHash2 = creator.create(new RProxySubject.WithoutHashEquals());
 
-			RProxySubject.WithHashEquals baseWith = new RProxySubject.WithHashEquals();
+			RProxySubject.WithHashEquals    baseWith    = new RProxySubject.WithHashEquals();
 			RProxySubject.WithoutHashEquals baseWithout = new RProxySubject.WithoutHashEquals();
 
 
-			RProxySubject.WithHashEquals changedWith = new RProxySubject.WithHashEquals();
+			RProxySubject.WithHashEquals    changedWith    = new RProxySubject.WithHashEquals();
 			RProxySubject.WithoutHashEquals changedWithout = new RProxySubject.WithoutHashEquals();
 
 			changedWith.setI(99);
@@ -111,17 +111,17 @@ public class EqualsAndHashcodeTest {
 	class ReactiveProxyTests {
 		@TestFactory
 		DynamicContainer testProxySubjects() {
-			RProxy.WithHashEquals withHash = creator.create(new RProxy.WithHashEquals()).getObject();
+			RProxy.WithHashEquals withHash  = creator.create(new RProxy.WithHashEquals()).getObject();
 			RProxy.WithHashEquals withHash2 = creator.create(new RProxy.WithHashEquals()).getObject();
 
-			RProxy.WithoutHashEquals withOutHash = creator.create(new RProxy.WithoutHashEquals()).getObject();
+			RProxy.WithoutHashEquals withOutHash  = creator.create(new RProxy.WithoutHashEquals()).getObject();
 			RProxy.WithoutHashEquals withOutHash2 = creator.create(new RProxy.WithoutHashEquals()).getObject();
 
-			RProxy.WithHashEquals baseWith = new RProxy.WithHashEquals();
+			RProxy.WithHashEquals    baseWith    = new RProxy.WithHashEquals();
 			RProxy.WithoutHashEquals baseWithout = new RProxy.WithoutHashEquals();
 
 
-			RProxy.WithHashEquals changedWith = new RProxy.WithHashEquals();
+			RProxy.WithHashEquals    changedWith    = new RProxy.WithHashEquals();
 			RProxy.WithoutHashEquals changedWithout = new RProxy.WithoutHashEquals();
 
 			changedWith.setI(99);
@@ -290,18 +290,18 @@ public class EqualsAndHashcodeTest {
 		assertEquals(
 				unique.length, map.size(),
 				format("Added %s keys to map size afterwards is just %s -> unique key got replaced\n" +
-								"Unique Keys : %s"
+						       "Unique Keys : %s"
 						, unique.length, map.size(), Arrays.toString(unique))
 		);
 		for (int i = 0; i < unique.length; i++) {
 			assertEquals(i, map.get(unique[i]),
-					format("Reading from map returned wrong result (from a different key)\n" +
-									"Key '%s'(hash : %s) returned value of key '%s'(hash : %s)\n" +
-									"usedKey.equals(valueKey) : %s",
-							unique[i], unique[i].hashCode(),
-							unique[map.get(unique[i])], unique[map.get(unique[i])].hashCode(),
-							unique[i].equals(unique[map.get(unique[i])])
-					)
+			             format("Reading from map returned wrong result (from a different key)\n" +
+					                    "Key '%s'(hash : %s) returned value of key '%s'(hash : %s)\n" +
+					                    "usedKey.equals(valueKey) : %s",
+			                    unique[i], unique[i].hashCode(),
+			                    unique[map.get(unique[i])], unique[map.get(unique[i])].hashCode(),
+			                    unique[i].equals(unique[map.get(unique[i])])
+			             )
 			);
 		}
 		map.put(reactive, Integer.MAX_VALUE);
@@ -314,14 +314,14 @@ public class EqualsAndHashcodeTest {
 
 	public static void serializeTest(Object o) {
 		assertDoesNotThrow(() -> {
-			byte[] buff;
+			byte[]                buff;
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			ObjectOutputStream    oos  = new ObjectOutputStream(baos);
 			oos.writeObject(o);
 			buff = baos.toByteArray();
 
-			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(buff));
-			Object read = ois.readObject();
+			ObjectInputStream ois  = new ObjectInputStream(new ByteArrayInputStream(buff));
+			Object            read = ois.readObject();
 			assertEquals(
 					o.hashCode(),
 					read.hashCode(),

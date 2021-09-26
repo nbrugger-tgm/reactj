@@ -27,7 +27,8 @@ public class Matchers {
 	}
 
 	public static ElementMatcher.Junction<MethodDescription> overwrites(Method abstractMethod) {
-		return named(abstractMethod.getName()).and(returns(abstractMethod.getReturnType())).and(takesArguments(abstractMethod.getParameterTypes()));
+		return named(abstractMethod.getName()).and(returns(abstractMethod.getReturnType()))
+		                                      .and(takesArguments(abstractMethod.getParameterTypes()));
 	}
 
 	public static ElementMatcher.Junction<MethodDescription> from(Class<?> type) {

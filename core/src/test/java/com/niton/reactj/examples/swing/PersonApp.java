@@ -8,16 +8,16 @@ import java.awt.*;
 
 public class PersonApp {
 	public static void main(String[] args) throws InterruptedException {
-		ProxyCreator creator = ProxyCreator.besideOrigin();
-		ReactiveProxy<Person> proxy = creator.create(new Person(12, "Niton"));
+		ProxyCreator          creator = ProxyCreator.besideOrigin();
+		ReactiveProxy<Person> proxy   = creator.create(new Person(12, "Niton"));
 
 		//A controller for custom events
 		PersonController ownController = new PersonController();
 
-		Person information = proxy.getObject();
-		PersonView component = new PersonView();
-		PersonView component1 = new PersonView();
-		PersonView component2 = new PersonView();
+		Person     information = proxy.getObject();
+		PersonView component   = new PersonView();
+		PersonView component1  = new PersonView();
+		PersonView component2  = new PersonView();
 
 		component.resetEvent.listen(ownController);
 		component1.resetEvent.listen(ownController);

@@ -76,6 +76,7 @@ public class ProxyCreator extends AbstractProxyCreator {
 	 * Creates proxies beside the given class. Needs open permissions on the package
 	 *
 	 * @param anchor the class to spawn the proxies nearby
+	 *
 	 * @return an Proxie creator that just needs a single open stanement
 	 */
 	public static ProxyCreator custom(Class<?> anchor) {
@@ -91,9 +92,9 @@ public class ProxyCreator extends AbstractProxyCreator {
 	}
 
 	private <T> T createProxy(T object) {
-		Class<?> originClass = object.getClass();
-		Class<?> proxyClass = getProxyClass(originClass);
-		ObjectInstantiator<?> initiator = proxyInitiators.computeIfAbsent(proxyClass, objenesis::getInstantiatorOf);
+		Class<?>              originClass = object.getClass();
+		Class<?>              proxyClass  = getProxyClass(originClass);
+		ObjectInstantiator<?> initiator   = proxyInitiators.computeIfAbsent(proxyClass, objenesis::getInstantiatorOf);
 
 		@SuppressWarnings("unchecked")
 		T proxy = (T) initiator.newInstance();
@@ -108,8 +109,8 @@ public class ProxyCreator extends AbstractProxyCreator {
 	 */
 	public <T> void copyFinalFields(T proxy, T origin) {
 		Arrays.stream(proxy.getClass().getFields())//just public ones
-				.filter(f -> Modifier.isFinal(f.getModifiers()))//just final ones
-				.forEach(f -> copyFinalField(f, proxy, origin));
+		      .filter(f -> Modifier.isFinal(f.getModifiers()))//just final ones
+		      .forEach(f -> copyFinalField(f, proxy, origin));
 	}
 
 	public <T> void copyFinalField(Field f, T proxy, T origin) {
@@ -135,15 +136,15 @@ public class ProxyCreator extends AbstractProxyCreator {
 						.or(from(ReflectiveWrapper.class));
 
 		var prox = getBuilder().buildProxy(originClass, any(), unreactive)
-				.implement(ReflectiveWrapper.class)
+		                       .implement(ReflectiveWrapper.class)
 
-				.method(from(Reflective.class))
-				.intercept(prioritize(ReflectiveWrapper.class))
+		                       .method(from(Reflective.class))
+		                       .intercept(prioritize(ReflectiveWrapper.class))
 
-				.method(is(getReflectiveTargetMethod))
-				.intercept(FieldAccessor.ofField(ORIGIN_FIELD))
+		                       .method(is(getReflectiveTargetMethod))
+		                       .intercept(FieldAccessor.ofField(ORIGIN_FIELD))
 
-				.make();
+		                       .make();
 		var lookup = getLookup(originClass);
 		return prox.load(module.getClassLoader(), UsingLookup.of(lookup)).getLoaded();
 	}

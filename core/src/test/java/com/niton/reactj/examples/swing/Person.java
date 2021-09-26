@@ -20,7 +20,7 @@ public class Person {
 	private String address;
 
 	public Person(int age, String name) {
-		this.age = age;
+		this.age  = age;
 		this.name = name;
 	}
 

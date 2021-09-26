@@ -22,12 +22,12 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 
 	@Override
 	protected JPanel createView() {
-		panel = new JPanel();
-		surnameInput = new JTextField();
-		ageInput = new JTextField();
-		iqField = new JTextField();
+		panel           = new JPanel();
+		surnameInput    = new JTextField();
+		ageInput        = new JTextField();
+		iqField         = new JTextField();
 		genderJComboBox = new JComboBox<>(Gender.values());
-		selectButton = new JButton("Reset");
+		selectButton    = new JButton("Reset");
 
 
 		panel.add(surnameInput);
@@ -49,7 +49,7 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 	@Override
 	protected void registerListeners() {
 		selectButton.addActionListener(e -> resetEvent.fire(getController().getModel()
-				.getObject()));
+		                                                                   .getObject()));
 	}
 
 	@Override
@@ -69,11 +69,13 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 		binder.bind("gender", this::adaptColorToGender);
 
 		//bidirectional binding (With value conversion)
-		binder.bindBi("age",
+		binder.bindBi(
+				"age",
 				ageInput::setText,
 				ageInput::getText,
 				Integer::parseInt,
-				String::valueOf);
+				String::valueOf
+		);
 		ageInput.addActionListener(binder::react);
 	}
 

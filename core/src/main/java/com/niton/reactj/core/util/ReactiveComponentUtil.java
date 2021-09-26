@@ -10,8 +10,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static com.niton.reactj.utils.reflections.ReflectiveUtil.invalidMethodParameterException;
-import static com.niton.reactj.utils.reflections.ReflectiveUtil.isFitting;
+import static com.niton.reactj.utils.reflections.ReflectiveUtil.*;
 import static java.lang.String.format;
 
 
@@ -20,7 +19,8 @@ public final class ReactiveComponentUtil {
 	}
 
 	/**
-	 * Registers all @{@link com.niton.reactj.core.annotation.ReactiveListener} annotated methods in component to the binder
+	 * Registers all @{@link com.niton.reactj.core.annotation.ReactiveListener} annotated methods in component to the
+	 * binder
 	 *
 	 * @param binder the binder to register the bindings to
 	 */

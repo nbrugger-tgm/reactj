@@ -17,7 +17,7 @@ public abstract class ReactiveView<V, M extends Reactable & Reflective> implemen
 	private final V                     view;
 
 	public ReactiveView() {
-		view = createView();
+		view       = createView();
 		controller = new ReactiveController<>(this);
 		registerListeners();
 	}

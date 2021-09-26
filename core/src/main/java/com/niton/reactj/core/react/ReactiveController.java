@@ -14,8 +14,7 @@ import com.niton.reactj.core.util.ReactiveComponentUtil;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.niton.reactj.api.exceptions.ReactiveException.badConverterException;
-import static com.niton.reactj.api.exceptions.ReactiveException.bindingException;
+import static com.niton.reactj.api.exceptions.ReactiveException.*;
 
 /**
  * A reactive controller is responsible to communicate changes between ReactableObjects and ReactiveComponents.<br>
@@ -79,7 +78,7 @@ public final class ReactiveController<M extends Reflective & Reactable> {
 	 */
 	private Map<String, Object> findUiChanges() {
 		Map<String, Object> changed = new HashMap<>();
-		Map<String, Object> state = observer.getObserved().getState();
+		Map<String, Object> state   = observer.getObserved().getState();
 		for (Map.Entry<String, Object> field : state.entrySet()) {
 			if (!editBindings.containsKey(field.getKey())) {
 				continue;
@@ -96,7 +95,7 @@ public final class ReactiveController<M extends Reflective & Reactable> {
 	 * @param value the value the event carries (value of the changed property)
 	 */
 	private void updateView(final String key, final Object value) {
-		List<Binding<?, ?>> bindings = displayBindings.getOrDefault(key, Collections.emptyList());
+		List<Binding<?, ?>>      bindings      = displayBindings.getOrDefault(key, Collections.emptyList());
 		List<SuperBinding<?, M>> superBindings = displaySuperBindings.getOrDefault(key, Collections.emptyList());
 
 		blockReactions = true;
@@ -157,7 +156,9 @@ public final class ReactiveController<M extends Reflective & Reactable> {
 	 * @param key     the property name the binder is bound to; used for error messages
 	 * @param value   the value that was recived and needs to be converted
 	 * @param binding the binding to use as converter
+	 *
 	 * @return the converted value
+	 *
 	 * @throws ReactiveException when conversion fails
 	 */
 	private static Object convertToDisplay(String key, Object value, Binding<?, ?> binding) {

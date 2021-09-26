@@ -65,7 +65,13 @@ public class ProxyBuilder {
 		return new ByteBuddy()
 				.subclass(originClass, ConstructorStrategy.Default.IMITATE_SUPER_CLASS)
 				.implement(ReactiveForwarder.class)
-				.name(format("%s.%s_%s$%s", accessor.getPackage(originClass), originClass.getSimpleName(), PROXY_SUFFIX, counter++))
+				.name(format(
+						"%s.%s_%s$%s",
+						accessor.getPackage(originClass),
+						originClass.getSimpleName(),
+						PROXY_SUFFIX,
+						counter++
+				))
 
 				.defineField(ORIGIN_FIELD, originClass, PRIVATE)
 				.defineField(WRAPPER_FIELD, ReactiveWrapper.class, PRIVATE)
@@ -88,8 +94,8 @@ public class ProxyBuilder {
 				)
 				.intercept(
 						MethodCall.invokeSelf()
-								.onField(ORIGIN_FIELD)
-								.withAllArguments()
+						          .onField(ORIGIN_FIELD)
+						          .withAllArguments()
 				)
 
 				.method(isClone())

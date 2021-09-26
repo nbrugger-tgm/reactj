@@ -7,7 +7,7 @@ public class StaticInfuser implements InfusionAccessProvider {
 	private final MethodHandles.Lookup requestingLookup;
 
 	public StaticInfuser(Class<?> anchor, MethodHandles.Lookup requestingLookup) {
-		this.anchor = anchor;
+		this.anchor           = anchor;
 		this.requestingLookup = requestingLookup;
 	}
 

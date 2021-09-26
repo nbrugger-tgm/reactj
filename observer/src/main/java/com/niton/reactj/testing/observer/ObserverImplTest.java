@@ -32,7 +32,7 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R, S>, R, S> {
 
 	@BeforeEach
 	void prepare() {
-		fired = null;
+		fired    = null;
 		observer = createObserverInstance();
 		observer.addListener(listener);
 	}
@@ -53,6 +53,7 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R, S>, R, S> {
 	 * Modifies the observable object in a way to trigger the observer
 	 *
 	 * @param observable the observable to modify
+	 *
 	 * @return the result expected to be produced by the observer
 	 */
 	protected abstract R modify(S observable);

@@ -77,8 +77,8 @@ class ObserverTest {
 	@Test
 	@DisplayName("Live Object Reactive Proxy")
 	void testLiveProxyObserving() {
-		TestData td = new TestData();
-		TestData td2 = new TestData();
+		TestData                td   = new TestData();
+		TestData                td2  = new TestData();
 		ReactiveProxy<TestData> rtd1 = creator.create(td);
 		ReactiveProxy<TestData> rtd2 = creator.create(td2);
 		observerTest(rtd1, rtd2);
@@ -88,14 +88,14 @@ class ObserverTest {
 		ObjectObserver<M> testDataObserver = new ObjectObserver<>();
 		testDataObserver.addListener(change -> {
 			lastChanged = change.propertyName;
-			lastValue = change.propertyValue;
+			lastValue   = change.propertyValue;
 			changeCounter++;
 		});
 
 		testDataObserver.observe(obj);
 
-		lastValue = null;
-		lastChanged = null;
+		lastValue     = null;
+		lastChanged   = null;
 		changeCounter = 0;
 
 		@SuppressWarnings("unchecked")
@@ -145,8 +145,8 @@ class ObserverTest {
 	@Test
 	@DisplayName("Live Object Subject Proxy")
 	void testLiveProxySubjectObserving() {
-		SubjectTestData td = new SubjectTestData();
-		SubjectTestData td2 = new SubjectTestData();
+		SubjectTestData td   = new SubjectTestData();
+		SubjectTestData td2  = new SubjectTestData();
 		SubjectTestData rtd1 = creator.create(td);
 		SubjectTestData rtd2 = creator.create(td2);
 		observerTest(rtd1, rtd2);
@@ -201,7 +201,7 @@ class ObserverTest {
 	@DisplayName("binding")
 	void bindingTest() {
 		ReactiveProxy<TestData> proxy = creator.create(new TestData());
-		TestData td = proxy.getObject();
+		TestData                td    = proxy.getObject();
 
 		ReactiveComponent<ReactiveProxy<TestData>> testComponent = binder -> {
 			binder.bind("id", val -> lastValue = val);

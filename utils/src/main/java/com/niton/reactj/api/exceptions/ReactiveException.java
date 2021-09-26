@@ -23,7 +23,7 @@ public class ReactiveException extends RuntimeException {
 			Object converted,
 			ClassCastException castException
 	) {
-		Class<?> original = value.getClass();
+		Class<?> original      = value.getClass();
 		Class<?> convertedType = converted.getClass();
 
 		ReactiveException exception;
@@ -70,8 +70,8 @@ public class ReactiveException extends RuntimeException {
 				String.format(
 						"No constructor(%s) found in class %s",
 						Arrays.stream(paramTypes)
-								.map(Class::getSimpleName)
-								.collect(Collectors.joining(", ")),
+						      .map(Class::getSimpleName)
+						      .collect(Collectors.joining(", ")),
 						type.getSimpleName()
 				));
 	}

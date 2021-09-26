@@ -23,7 +23,7 @@ public abstract class AbstractProxyCreator {
 
 	protected AbstractProxyCreator(InfusionAccessProvider accessor) {
 		this.accessor = accessor;
-		builder = new ProxyBuilder(accessor);
+		builder       = new ProxyBuilder(accessor);
 	}
 
 	/**

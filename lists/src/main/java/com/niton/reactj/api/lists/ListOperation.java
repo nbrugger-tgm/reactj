@@ -18,7 +18,8 @@ public enum ListOperation {
 		@Override
 		public <T> void apply(List<T> list, int index, T elem) {
 			if (!list.remove(index).equals(elem))
-				throw new IllegalArgumentException("Remove operation element at index didn't equal element from change (list.remove(index) != expectedElement)");
+				throw new IllegalArgumentException(
+						"Remove operation element at index didn't equal element from change (list.remove(index) != expectedElement)");
 		}
 	};
 
