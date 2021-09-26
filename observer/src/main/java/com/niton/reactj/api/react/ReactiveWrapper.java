@@ -1,16 +1,12 @@
-package com.niton.reactj.core.react;
+package com.niton.reactj.api.react;
 
-import com.niton.reactj.api.react.Reactable;
-import com.niton.reactj.core.annotation.Unreactive;
-import com.niton.reactj.core.util.ReactiveReflectorUtil;
+import com.niton.reactj.api.observer.Reactable;
 import com.niton.reactj.utils.event.GenericEventEmitter;
 
 import java.io.Serializable;
-import java.util.Map;
 
 public class ReactiveWrapper<T> implements Reactable, Serializable {
 	private final GenericEventEmitter reactEvent = new GenericEventEmitter();
-	@Unreactive
 	private final T                   wrappedObject;
 
 	/**
@@ -25,16 +21,6 @@ public class ReactiveWrapper<T> implements Reactable, Serializable {
 	@Override
 	public GenericEventEmitter reactEvent() {
 		return reactEvent;
-	}
-
-	@Override
-	public void set(String property, Object value) {
-		ReactiveReflectorUtil.updateField(wrappedObject, property, value);
-	}
-
-	@Override
-	public Map<String, Object> getState() {
-		return ReactiveReflectorUtil.getState(wrappedObject);
 	}
 
 	public T getObject() {

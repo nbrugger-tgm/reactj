@@ -7,7 +7,6 @@ dependencies {
     api project(":observer")
 
     implementation group: 'org.objenesis', name: 'objenesis', version: '3.2'
-    implementation 'net.bytebuddy:byte-buddy:1.11.15'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
 
 }

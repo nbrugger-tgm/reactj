@@ -1,9 +1,7 @@
 package com.niton.reactj.api.react;
 
-import com.niton.reactj.core.react.ReactiveWrapper;
+import com.niton.reactj.api.observer.Reactable;
 import com.niton.reactj.utils.event.GenericEventEmitter;
-
-import java.util.Map;
 
 /**
  * This Reactable implementation forwards all calls to a given target.
@@ -23,16 +21,6 @@ public interface ReactiveForwarder extends Reactable {
 	@Override
 	default GenericEventEmitter reactEvent() {
 		return getReactableTarget().reactEvent();
-	}
-
-	@Override
-	default void set(String property, Object value) {
-		getReactableTarget().set(property, value);
-	}
-
-	@Override
-	default Map<String, Object> getState() {
-		return getReactableTarget().getState();
 	}
 
 	Reactable getReactableTarget();

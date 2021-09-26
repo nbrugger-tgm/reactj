@@ -29,8 +29,8 @@ public class ObserverExample {
 	}
 
 	public static void main(String[] args) {
-		ProxyCreator creator = new ProxyCreator();
-		Data model = creator.create(new Data());
+		ProxyCreator creator = ProxyCreator.besideOrigin();
+		Data         model   = creator.create(new Data());
 
 		ObjectObserver<Data> observer = new ObjectObserver<>();
 

@@ -8,8 +8,7 @@ import java.util.Optional;
 import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.niton.reactj.api.lists.ListOperation.ADD;
-import static com.niton.reactj.api.lists.ListOperation.REMOVE;
+import static com.niton.reactj.api.lists.ListOperation.*;
 import static java.lang.Math.min;
 
 /**
@@ -34,7 +33,7 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 	 */
 	public static <T> int trimEqualEntries(List<T> oldState, List<T> newState) {
 		//remove common head
-		int min = min(oldState.size(), newState.size());
+		int min             = min(oldState.size(), newState.size());
 		int removeFromStart = 0;
 		for (int i = 0; i < min; i++) {
 			T n = newState.get(i);
@@ -50,8 +49,8 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 		}
 
 		//remove  common tail
-		int newEnd = newState.size() - 1;
-		int oldEnd = oldState.size() - 1;
+		int newEnd        = newState.size() - 1;
+		int oldEnd        = oldState.size() - 1;
 		int removeFromEnd = 0;
 		for (int i = 0; i < min; i++) {
 			T n = newState.get(newEnd - i);
@@ -74,6 +73,7 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 	 * @param n       the size of list 2
 	 * @param changes the set to add the changes to
 	 * @param offset  the offset from {@link #trimEqualEntries(List, List)}
+	 *
 	 * @return true if linear operations were performed. if false continue with default cubic search
 	 */
 	private static <T> boolean handleLinearChanges(
@@ -89,21 +89,22 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 		else if (m == 0) {
 			AtomicInteger index = new AtomicInteger();
 			newState.stream()
-					.map(obj -> new ListChange<>(ADD, offset + index.getAndIncrement(), obj))
-					.forEach(changes::add);
+			        .map(obj -> new ListChange<>(ADD, offset + index.getAndIncrement(), obj))
+			        .forEach(changes::add);
 			return true;
 		} else if (n == 0) {
 			AtomicInteger index = new AtomicInteger();
 			oldState.stream()
-					.map(obj -> new ListChange<>(REMOVE, offset + index.getAndIncrement(), obj))
-					.forEach(changes::add);
+			        .map(obj -> new ListChange<>(REMOVE, offset + index.getAndIncrement(), obj))
+			        .forEach(changes::add);
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * Calculates a cost matrix for the two lists using a modified version of the Levenshtein,LCS,Wagner–Fischer algorithm
+	 * Calculates a cost matrix for the two lists using a modified version of the Levenshtein,LCS,Wagner–Fischer
+	 * algorithm
 	 * <p>
 	 * The mayor difference is that SUBSTITUITON is not allowed in the matrix returned by this method,
 	 * only insert/remove operations are performed
@@ -113,7 +114,9 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 	 * @param newState the modified version of the list
 	 * @param m        the size of the 1. list
 	 * @param n        the size of the 2. list
+	 *
 	 * @return a cost metric.
+	 *
 	 * @see <a href="https://en.wikipedia.org/wiki/Wagner–Fischer_algorithm">Wagner Fischer WIKIPEDIA</a>
 	 * @see <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance WIKIPEDIA</a>
 	 */
@@ -149,7 +152,7 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 		if (newElem.equals(oldElem)) {
 			cost = originCost;
 		} else {
-			int addCost = downCost + 1;
+			int addCost    = downCost + 1;
 			int removeCost = rightCost + 1;
 			cost = min(addCost, removeCost);
 		}
@@ -175,9 +178,9 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 		int iPos = costs.length - 1;
 		int jPos = costs[0].length - 1;
 		while (jPos > 0 && iPos > 0) {
-			int take = costs[iPos - 1][jPos - 1];
-			int remove = costs[iPos][jPos - 1];
-			int add = costs[iPos - 1][jPos];
+			int take    = costs[iPos - 1][jPos - 1];
+			int remove  = costs[iPos][jPos - 1];
+			int add     = costs[iPos - 1][jPos];
 			int current = costs[iPos][jPos];
 			if (take < add && take < remove && current == take) {
 				iPos--;
@@ -228,8 +231,8 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 		ArrayList<T> newList = new ArrayList<>(newState);
 
 		int offset = trimEqualEntries(oldList, newList) + baseOffset;
-		int m = oldList.size();
-		int n = newList.size();
+		int m      = oldList.size();
+		int n      = newList.size();
 
 		ListDiff<T> changes = new ListDiff<>();
 
@@ -269,6 +272,7 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 	 * @param n        size of new list
 	 * @param changes  the set to add the changes to
 	 * @param offset   the offset from {@link #trimEqualEntries(List, List)}
+	 *
 	 * @return empty when the set was not touched, or optional including the modified set (you can also use your old ref)
 	 */
 	private Optional<SortedSet<ListChange<T>>> divideTask(
@@ -280,7 +284,7 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 			int offset
 	) {
 		int scans = 0;
-		int pos = min(m, n) / 2;
+		int pos   = min(m, n) / 2;
 		while (!oldState.get(pos).equals(newState.get(pos))) {
 			pos++;
 			scans++;

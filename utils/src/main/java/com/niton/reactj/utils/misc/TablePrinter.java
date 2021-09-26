@@ -26,7 +26,7 @@ public final class TablePrinter {
 		if (asNull == null) {
 			throw new IllegalArgumentException("No NULL-value placeholder provided");
 		}
-		this.out = out;
+		this.out    = out;
 		this.asNull = asNull;
 	}
 
@@ -57,7 +57,7 @@ public final class TablePrinter {
 			if (row != null) {
 				for (int c = 0; c < widths.length; c++) {
 					final String cv = getCellValue(safeGet(row, c, asNull));
-					final int l = cv.length();
+					final int    l  = cv.length();
 					if (widths[c] < l) {
 						widths[c] = l;
 					}
@@ -96,8 +96,8 @@ public final class TablePrinter {
 	}
 
 	private String getRow(Object[] row, int[] widths, int lineLength) {
-		final StringBuilder builder = new StringBuilder(lineLength).append(VERTICAL_BORDER);
-		final int maxWidths = widths.length;
+		final StringBuilder builder   = new StringBuilder(lineLength).append(VERTICAL_BORDER);
+		final int           maxWidths = widths.length;
 		for (int i = 0; i < maxWidths; i++) {
 			builder.append(padRight(getCellValue(safeGet(row, i, null)), widths[i])).append(VERTICAL_BORDER);
 		}

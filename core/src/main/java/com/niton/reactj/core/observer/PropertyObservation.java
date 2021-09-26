@@ -7,7 +7,7 @@ public class PropertyObservation {
 	public final Object propertyValue;
 
 	public PropertyObservation(String propertyName, Object propertyValue) {
-		this.propertyName = propertyName;
+		this.propertyName  = propertyName;
 		this.propertyValue = propertyValue;
 	}
 

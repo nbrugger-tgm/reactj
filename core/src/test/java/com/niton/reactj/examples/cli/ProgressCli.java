@@ -1,8 +1,8 @@
 package com.niton.reactj.examples.cli;
 
-import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.mvc.ReactiveComponent;
+import com.niton.reactj.core.proxy.ReactiveProxy;
 import com.niton.reactj.core.react.ReactiveBinder;
-import com.niton.reactj.core.react.ReactiveProxy;
 
 class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 
@@ -14,10 +14,10 @@ class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 	}
 
 	private void renderProgress(double percent) {
-		int width = 50;
-		double done = (percent * width);
-		double port = done % 1.0;
-		int fullDone = (int) (done - port);
+		int    width    = 50;
+		double done     = (percent * width);
+		double port     = done % 1.0;
+		int    fullDone = (int) (done - port);
 		System.out.print("\r");
 		System.out.print('[');
 		for (int i = 0; i < width; i++) {

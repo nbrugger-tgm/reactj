@@ -1,5 +1,7 @@
 package com.niton.reactj.core.annotation;
 
+import com.niton.reactj.api.mvc.ReactiveComponent;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,7 +14,7 @@ import java.lang.annotation.Target;
  *         <b>Fields:</b> Changing the name of a field
  *     </li>
  *     <li>
- *         <b>Methods:</b> Adds an automatic binding<br><i>ONLY WORKS IN {@link com.niton.reactj.api.react.ReactiveComponent}</i>
+ *         <b>Methods:</b> Adds an automatic binding<br><i>ONLY WORKS IN {@link ReactiveComponent}</i>
  *     </li>
  * </ul>
  */

@@ -1,7 +1,8 @@
 package com.niton.reactj.core.mvc;
 
-import com.niton.reactj.api.react.Reactable;
-import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.mvc.ReactiveComponent;
+import com.niton.reactj.api.observer.Reactable;
+import com.niton.reactj.core.observer.Reflective;
 import com.niton.reactj.core.react.ReactiveBinder;
 import com.niton.reactj.core.react.ReactiveController;
 
@@ -11,12 +12,12 @@ import com.niton.reactj.core.react.ReactiveController;
  * @param <V> The base class of the view (e.g. JPanel)
  * @param <M> The model class for this view
  */
-public abstract class ReactiveView<V, M extends Reactable> implements ReactiveComponent<M> {
+public abstract class ReactiveView<V, M extends Reactable & Reflective> implements ReactiveComponent<M> {
 	private final ReactiveController<M> controller;
 	private final V                     view;
 
 	public ReactiveView() {
-		view = createView();
+		view       = createView();
 		controller = new ReactiveController<>(this);
 		registerListeners();
 	}

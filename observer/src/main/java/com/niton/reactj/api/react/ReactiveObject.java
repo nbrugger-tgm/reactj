@@ -1,9 +1,7 @@
-package com.niton.reactj.core.react;
+package com.niton.reactj.api.react;
 
 
-import com.niton.reactj.api.react.Reactable;
-import com.niton.reactj.api.react.ReactiveForwarder;
-import com.niton.reactj.core.annotation.Unreactive;
+import com.niton.reactj.api.observer.Reactable;
 
 /**
  * The base class to make an Object reactive (usable in ReactiveComponents).
@@ -11,7 +9,6 @@ import com.niton.reactj.core.annotation.Unreactive;
  * The most common way to use this component is by extending it and call {@link ReactiveObject#react()} whenever needed
  */
 public class ReactiveObject implements ReactiveForwarder {
-	@Unreactive
 	private final ReactiveWrapper<ReactiveObject> thisWrapper = new ReactiveWrapper<>(this);
 
 	@Override

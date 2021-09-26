@@ -1,4 +1,6 @@
-package com.niton.reactj.api.exceptions;
+package com.niton.reactj.core.exceptions;
+
+import com.niton.reactj.api.exceptions.ReactiveException;
 
 public class SubjectCallException extends ReactiveException {
 	public SubjectCallException() {

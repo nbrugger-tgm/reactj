@@ -7,8 +7,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.*;
 
-import static com.niton.reactj.api.lists.ListOperation.ADD;
-import static com.niton.reactj.api.lists.ListOperation.REMOVE;
+import static com.niton.reactj.api.lists.ListOperation.*;
 import static java.lang.String.format;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -96,68 +95,68 @@ class ListDiffToolTest {
 
 	private DynamicContainer splicingTest() {
 		return dynamicContainer("splitting", of(
-						dynamicTest("center changes", () -> {
-							int size = 600;
-							List<Integer> largeList = new ArrayList<>(size);
-							for (int i = 0; i < size; i++) {
-								largeList.add(i);
-							}
-							List<Integer> modified = new ArrayList<>(largeList);
-							modified.remove(50);
-							modified.add(20, 70);
-							assertArrayEquals(
-									of(
-											new ListChange<>(ADD, 20, 70),
-											new ListChange<>(REMOVE, 50, 50)
-									).toArray(),
-									git.diff(largeList, modified).toArray()
-							);
-						}),
-						dynamicTest("contributed changes", () -> {
-							int size = 300;
-							List<Integer> largeList = new ArrayList<>(size);
-							for (int i = 0; i < size; i++) {
-								largeList.add(i);
-							}
-							List<Integer> modified = new ArrayList<>(largeList);
-							modified.remove(50);
-							modified.add(100, 70);
-							modified.add(200, 70);
-							modified.add(300, 70);
-							//cannot assert exact changes because splicing might return an imperfect route
-							ListDiff<Integer> diffRes = git.diff(largeList, modified);
-							diffRes.forEach(System.out::println);
-							diffRes.applyChanges(largeList);
-							assertArrayEquals(modified.toArray(), largeList.toArray());
-						}),
-						dynamicTest("contributed changes without splicing", () -> {
-							git.setMinSpliceSize(1024);
-							int size = 300;
-							List<Integer> largeList = new ArrayList<>(size);
-							for (int i = 0; i < size; i++) {
-								largeList.add(i);
-							}
-							List<Integer> modified = new ArrayList<>(largeList);
-							modified.remove(50);
-							modified.add(100, 70);
-							modified.add(200, 70);
-							modified.add(300, 70);
-							assertArrayEquals(
-									of(
-											new ListChange<>(REMOVE, 50, 50),
-											new ListChange<>(ADD, 100, 70),
-											new ListChange<>(ADD, 200, 70),
-											new ListChange<>(ADD, 300, 70)
-									).toArray(),
-									git.diff(largeList, modified).toArray()
-							);
-						}),
-						dynamicTest("first last swap", () -> {
-							git.setMinSpliceSize(5);
-							testBigSwap();
-						}),
-						dynamicTest("first last swap without splicing", this::testBigSwap)
-				)
+				                        dynamicTest("center changes", () -> {
+					                        int           size      = 600;
+					                        List<Integer> largeList = new ArrayList<>(size);
+					                        for (int i = 0; i < size; i++) {
+						                        largeList.add(i);
+					                        }
+					                        List<Integer> modified = new ArrayList<>(largeList);
+					                        modified.remove(50);
+					                        modified.add(20, 70);
+					                        assertArrayEquals(
+							                        of(
+									                        new ListChange<>(ADD, 20, 70),
+									                        new ListChange<>(REMOVE, 50, 50)
+							                        ).toArray(),
+							                        git.diff(largeList, modified).toArray()
+					                        );
+				                        }),
+				                        dynamicTest("contributed changes", () -> {
+					                        int           size      = 300;
+					                        List<Integer> largeList = new ArrayList<>(size);
+					                        for (int i = 0; i < size; i++) {
+						                        largeList.add(i);
+					                        }
+					                        List<Integer> modified = new ArrayList<>(largeList);
+					                        modified.remove(50);
+					                        modified.add(100, 70);
+					                        modified.add(200, 70);
+					                        modified.add(300, 70);
+					                        //cannot assert exact changes because splicing might return an imperfect route
+					                        ListDiff<Integer> diffRes = git.diff(largeList, modified);
+					                        diffRes.forEach(System.out::println);
+					                        diffRes.applyChanges(largeList);
+					                        assertArrayEquals(modified.toArray(), largeList.toArray());
+				                        }),
+				                        dynamicTest("contributed changes without splicing", () -> {
+					                        git.setMinSpliceSize(1024);
+					                        int           size      = 300;
+					                        List<Integer> largeList = new ArrayList<>(size);
+					                        for (int i = 0; i < size; i++) {
+						                        largeList.add(i);
+					                        }
+					                        List<Integer> modified = new ArrayList<>(largeList);
+					                        modified.remove(50);
+					                        modified.add(100, 70);
+					                        modified.add(200, 70);
+					                        modified.add(300, 70);
+					                        assertArrayEquals(
+							                        of(
+									                        new ListChange<>(REMOVE, 50, 50),
+									                        new ListChange<>(ADD, 100, 70),
+									                        new ListChange<>(ADD, 200, 70),
+									                        new ListChange<>(ADD, 300, 70)
+							                        ).toArray(),
+							                        git.diff(largeList, modified).toArray()
+					                        );
+				                        }),
+				                        dynamicTest("first last swap", () -> {
+					                        git.setMinSpliceSize(5);
+					                        testBigSwap();
+				                        }),
+				                        dynamicTest("first last swap without splicing", this::testBigSwap)
+		                        )
 		);
 	}
 
@@ -171,8 +170,76 @@ class ListDiffToolTest {
 	}
 
 	private void testBigSwap() {
-		List<Integer> original = new ArrayList<>(of(1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6));
-		List<Integer> modified = of(6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1);
+		List<Integer> original = new ArrayList<>(of(
+				1,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				6
+		));
+		List<Integer> modified = of(
+				6,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				5,
+				1
+		);
 		//cannot assert exact changes because splicing might return an imperfect route
 		var diffRes = git.diff(original, modified);
 		diffRes.applyChanges(original);
@@ -207,6 +274,10 @@ class ListDiffToolTest {
 		}
 		var changes = git.diff(original, changed);
 		changes.applyChanges(original);
-		assertArrayEquals(original.toArray(), changed.toArray(), format("Applying changes %s to list %s should result in %s", changed, changed, original));
+		assertArrayEquals(
+				original.toArray(),
+				changed.toArray(),
+				format("Applying changes %s to list %s should result in %s", changed, changed, original)
+		);
 	}
 }

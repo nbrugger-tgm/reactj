@@ -37,6 +37,7 @@ public enum ReactiveStrategy {
 	 *
 	 * @param name    the name of the method to check
 	 * @param reactTo only used for REACT_ON_CUSTOM elswhile can be empty or null
+	 *
 	 * @return true if this strategy reacts to the given method name
 	 */
 	public boolean reactTo(String name, String... reactTo) {
