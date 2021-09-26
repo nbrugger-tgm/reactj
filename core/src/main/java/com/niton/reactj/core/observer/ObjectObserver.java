@@ -2,8 +2,7 @@ package com.niton.reactj.core.observer;
 
 
 import com.niton.reactj.api.observer.AbstractObserver;
-import com.niton.reactj.api.react.Reactable;
-import com.niton.reactj.utils.event.GenericListener;
+import com.niton.reactj.api.observer.Reactable;
 
 import java.util.Collections;
 import java.util.Map;
@@ -15,10 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * e.g. reports changes to the properties
  * <p>Only works with {@link Reactable} classes. There are multiple ways to achieve this.</p>
  */
-public class ObjectObserver<M extends Reactable> extends AbstractObserver<PropertyObservation, M> {
+public class ObjectObserver<M extends Reactable & Reflective> extends AbstractObserver<PropertyObservation, M> {
 
-	private final Map<String, Object> valueCache     = new ConcurrentHashMap<>();
-	private final GenericListener     updateListener = this::update;
+	private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
 
 	protected Map<String, Object> getValueCache() {
 		return Collections.unmodifiableMap(valueCache);
@@ -31,21 +29,6 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Proper
 	 */
 	public void updateCache(Map<String, Object> changed) {
 		valueCache.putAll(changed);
-	}
-
-	@Override
-	public void observe(M object) {
-		if (object == null)
-			throw new IllegalArgumentException("Cannot observe null");
-		object.reactEvent().listen(updateListener);
-		super.observe(object);
-	}
-
-	@Override
-	public void stopObservation() {
-		if (observedObject == null)
-			throw new UnsupportedOperationException("Can't stop observation if no object is observed");
-		observedObject.reactEvent().stopListening(updateListener);
 	}
 
 	/**
@@ -81,7 +64,7 @@ public class ObjectObserver<M extends Reactable> extends AbstractObserver<Proper
 	 */
 	private Map<String, Object> getChanges() {
 		final Map<String, Object> changed = new ConcurrentHashMap<>();
-		final Map<String, Object> state = observedObject.getState();
+		final Map<String, Object> state   = observedObject.getState();
 		for (Map.Entry<String, Object> property : state.entrySet()) {
 			detectChange(changed, property.getKey(), property.getValue());
 		}

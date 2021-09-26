@@ -1,5 +1,6 @@
-package com.niton.reactj.api.react;
+package com.niton.reactj.api.mvc;
 
+import com.niton.reactj.api.observer.Reactable;
 import com.niton.reactj.core.react.ReactiveBinder;
 
 /**

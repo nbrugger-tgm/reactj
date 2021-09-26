@@ -1,27 +1,8 @@
-package com.niton.reactj.api.react;
-
-import com.niton.reactj.utils.event.GenericEventEmitter;
+package com.niton.reactj.core.observer;
 
 import java.util.Map;
 
-/**
- * This interface enables objects to be reactive.<br>
- * implementing this interface makes it able to bind it to a UI
- */
-public interface Reactable {
-
-
-	/**
-	 * Report a change in the state of the object (shoul be called after every setter and mutating method).
-	 * <br>
-	 * This should notify all bound Observers
-	 */
-	default void react() {
-		reactEvent().fire();
-	}
-
-	GenericEventEmitter reactEvent();
-
+public interface Reflective {
 	/**
 	 * Performs multiple {@link #set(String, Object)} operations. One for every Map Entry
 	 *
@@ -38,6 +19,7 @@ public interface Reactable {
 	 *
 	 * @param property the name of the property to set (@Reactive respected)
 	 * @param value    the value to change to
+	 *
 	 * @throws Exception if anything goes wrong
 	 */
 	void set(String property, Object value);

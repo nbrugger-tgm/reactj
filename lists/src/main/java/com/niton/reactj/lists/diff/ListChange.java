@@ -6,8 +6,7 @@ import com.niton.reactj.utils.diff.DiffEntry;
 import java.util.List;
 import java.util.Objects;
 
-import static com.niton.reactj.api.lists.ListOperation.ADD;
-import static com.niton.reactj.api.lists.ListOperation.REMOVE;
+import static com.niton.reactj.api.lists.ListOperation.*;
 
 /**
  * Describes a change to a list
@@ -26,8 +25,8 @@ public class ListChange<T> implements DiffEntry<List<T>>, Comparable<ListChange<
 	 */
 	public ListChange(ListOperation operation, int index, T element) {
 		this.operation = operation;
-		this.index = index;
-		this.element = element;
+		this.index     = index;
+		this.element   = element;
 	}
 
 	public T getElement() {

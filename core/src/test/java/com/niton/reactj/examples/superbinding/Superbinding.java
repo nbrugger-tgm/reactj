@@ -1,6 +1,6 @@
 package com.niton.reactj.examples.superbinding;
 
-import com.niton.reactj.api.react.ReactiveComponent;
+import com.niton.reactj.api.mvc.ReactiveComponent;
 import com.niton.reactj.core.proxy.ProxyCreator;
 import com.niton.reactj.core.proxy.ProxySubject;
 import com.niton.reactj.core.react.ReactiveController;
@@ -9,8 +9,8 @@ import static java.lang.String.format;
 
 public class Superbinding {
 	public static void main(String[] args) {
-		ProxyCreator creator = new ProxyCreator();
-		Person p = creator.create(new Person("Nils", "Brugger"));
+		ProxyCreator creator = ProxyCreator.besideOrigin();
+		Person       p       = creator.create(new Person("Nils", "Brugger"));
 
 		ReactiveComponent<Person> personCliView = binder -> {
 			binder.bind(Person::fullName, s -> System.out.println("fullName(*) -> " + s));
@@ -56,7 +56,7 @@ class Person implements ProxySubject {
 	private int    unrelated;
 
 	public Person(String name, String surename) {
-		this.name = name;
+		this.name    = name;
 		this.surname = surename;
 	}
 

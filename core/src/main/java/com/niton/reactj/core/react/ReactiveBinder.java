@@ -75,7 +75,7 @@ public class ReactiveBinder<L> {
 				DisplayFunction<D> displayFunctions,
 				Converter<F, D> convertToDisplay
 		) {
-			displayFunction = displayFunctions;
+			displayFunction    = displayFunctions;
 			toDisplayConverter = convertToDisplay;
 		}
 
@@ -96,7 +96,7 @@ public class ReactiveBinder<L> {
 				SuperValueReceiver<T, M> getter,
 				DisplayFunction<T> display
 		) {
-			this.getter = getter;
+			this.getter  = getter;
 			this.display = display;
 		}
 
@@ -116,7 +116,7 @@ public class ReactiveBinder<L> {
 				Converter<D, M> toModelConverter
 		) {
 			super(display, toDisplayConverter);
-			receiver = reciver;
+			receiver              = reciver;
 			this.toModelConverter = toModelConverter;
 		}
 
@@ -146,11 +146,11 @@ public class ReactiveBinder<L> {
 			List<SuperBinding<?, L>> globalDisplaySuperBindings,
 			Map<String, List<BiBinding<?, ?>>> editBindings
 	) {
-		this.update = update;
-		this.displayBindings = displayBindings;
-		this.displaySuperBindings = displaySuperBindings;
+		this.update                     = update;
+		this.displayBindings            = displayBindings;
+		this.displaySuperBindings       = displaySuperBindings;
 		this.globalDisplaySuperBindings = globalDisplaySuperBindings;
-		this.editBindings = editBindings;
+		this.editBindings               = editBindings;
 	}
 
 	/**
@@ -180,7 +180,8 @@ public class ReactiveBinder<L> {
 			Converter<D, M> toModelConverter,
 			Converter<M, D> toDisplayConverter
 	) {
-		BiBinding<M, D> binding = new BiBinding<>(function,
+		BiBinding<M, D> binding = new BiBinding<>(
+				function,
 				reciver,
 				toDisplayConverter,
 				toModelConverter
@@ -265,7 +266,8 @@ public class ReactiveBinder<L> {
 			String... triggers
 	) {
 		for (String trigger : triggers) {
-			List<SuperBinding<?, L>> bindings = displaySuperBindings.getOrDefault(trigger,
+			List<SuperBinding<?, L>> bindings = displaySuperBindings.getOrDefault(
+					trigger,
 					new ArrayList<>()
 			);
 			bindings.add(new SuperBinding<>(getter, displayFunction));

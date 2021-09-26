@@ -1,14 +1,15 @@
 package com.niton.reactj.api.test;
 
+import com.niton.reactj.api.react.ReactiveObject;
 import com.niton.reactj.api.test.ObjectObserverTest.Subject;
 import com.niton.reactj.core.observer.ObjectObserver;
 import com.niton.reactj.core.observer.PropertyObservation;
-import com.niton.reactj.core.react.ReactiveObject;
+import com.niton.reactj.core.observer.SelfReflective;
 import com.niton.reactj.testing.observer.ObserverImplTest;
 
 class ObjectObserverTest extends ObserverImplTest<ObjectObserver<Subject>, PropertyObservation, Subject> {
 
-	static class Subject extends ReactiveObject {
+	static class Subject extends ReactiveObject implements SelfReflective {
 		private int variable;
 
 		public int getVariable() {

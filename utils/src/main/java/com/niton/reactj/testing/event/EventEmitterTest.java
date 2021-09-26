@@ -35,6 +35,7 @@ public abstract class EventEmitterTest<E, L> {
 	 * Creates a listener that calles the `testCallback` when fired.
 	 *
 	 * @param testCallback the runnable to call when the event is triggered
+	 *
 	 * @return the listener that forwards to the callback
 	 */
 	protected abstract L createListener(Runnable testCallback);
@@ -73,7 +74,11 @@ public abstract class EventEmitterTest<E, L> {
 		});
 		eventManager.addListener(listener);
 		eventManager.removeListeners();
-		assertEquals(0, eventManager.getListeners().size(), "Removing a listener should remove it from the internal list");
+		assertEquals(
+				0,
+				eventManager.getListeners().size(),
+				"Removing a listener should remove it from the internal list"
+		);
 	}
 
 
