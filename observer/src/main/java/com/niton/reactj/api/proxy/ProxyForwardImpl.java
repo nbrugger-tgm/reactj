@@ -11,8 +11,7 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static com.niton.reactj.api.proxy.ProxyBuilder.ORIGIN_FIELD;
-import static com.niton.reactj.api.proxy.ProxyBuilder.WRAPPER_FIELD;
+import static com.niton.reactj.api.proxy.ProxyBuilder.*;
 
 public class ProxyForwardImpl {
 	public static class ToOrigin {
@@ -21,13 +20,10 @@ public class ProxyForwardImpl {
 
 		@RuntimeType
 		public static Object forward(
-				@Origin
-						Method target,
-				@FieldValue(WRAPPER_FIELD)
-						ReactiveWrapper<?> reactable,
+				@Origin Method target,
+				@FieldValue(WRAPPER_FIELD) ReactiveWrapper<?> reactable,
 				@FieldValue(ORIGIN_FIELD) Object origin,
-				@AllArguments
-						Object[] args
+				@AllArguments Object[] args
 		) throws InvocationTargetException {
 			try {
 				try {
@@ -49,10 +45,8 @@ public class ProxyForwardImpl {
 
 		@RuntimeType
 		public static Object equals(
-				@FieldValue(ORIGIN_FIELD)
-						Object origin,
-				@AllArguments
-						Object[] arg
+				@FieldValue(ORIGIN_FIELD) Object origin,
+				@AllArguments Object[] arg
 		) {
 			return arg[0].equals(origin);
 		}

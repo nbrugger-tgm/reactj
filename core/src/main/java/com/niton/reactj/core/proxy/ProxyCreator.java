@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.niton.reactj.api.proxy.ProxyBuilder.ORIGIN_FIELD;
-import static com.niton.reactj.api.proxy.ProxyBuilder.from;
+import static com.niton.reactj.observer.util.Matchers.from;
 import static net.bytebuddy.implementation.DefaultMethodCall.prioritize;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 

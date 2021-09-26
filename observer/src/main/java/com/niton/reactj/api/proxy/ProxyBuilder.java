@@ -13,10 +13,10 @@ import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.Method;
 
+import static com.niton.reactj.observer.util.Matchers.from;
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.PRIVATE;
 import static net.bytebuddy.implementation.DefaultMethodCall.prioritize;
@@ -73,7 +73,7 @@ public class ProxyBuilder {
 				.method(from(Reactable.class))
 				.intercept(prioritize(ReactiveForwarder.class))
 
-				.method(ElementMatchers.is(getReactiveTarget))
+				.method(is(getReactiveTarget))
 				.intercept(FieldAccessor.ofField(WRAPPER_FIELD))
 
 				.method(reactTo)
@@ -82,7 +82,9 @@ public class ProxyBuilder {
 				)
 
 				.method(
-						isPublic().and(not(reactTo)).and(not(ignored))
+						isPublic()
+								.and(not(reactTo))
+								.and(not(ignored))
 				)
 				.intercept(
 						MethodCall.invokeSelf()
@@ -99,7 +101,4 @@ public class ProxyBuilder {
 				);
 	}
 
-	public static ElementMatcher.Junction<MethodDescription> from(Class<?> type) {
-		return ElementMatchers.isDeclaredBy(type).or(ElementMatchers.isOverriddenFrom(type));
-	}
 }

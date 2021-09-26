@@ -10,4 +10,5 @@ module reactj.observer {
 	exports com.niton.reactj.api.proxy;
 	exports com.niton.reactj.api.react;
 	exports com.niton.reactj.api.proxy.infusion;
+	exports com.niton.reactj.observer.util;
 }

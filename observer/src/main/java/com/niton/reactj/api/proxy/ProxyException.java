@@ -27,4 +27,12 @@ public class ProxyException extends RuntimeException {
 						"Be aware that if you use unsafe proxies you need to sync using ProxyCreator.sync()"
 		);
 	}
+
+	public static ProxyException constructorAccessException(Class<?> proxyClass) {
+		return new ProxyException("Couldn't access parameterless constructor of " + proxyClass.getSuperclass().getName());
+	}
+
+	public static ProxyException noParameterlessConstructor(Class<?> proxyClass) {
+		return new ProxyException("Unable to find parameterless constructor of " + proxyClass.getSuperclass().getName());
+	}
 }

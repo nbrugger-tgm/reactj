@@ -33,22 +33,31 @@ public abstract class AbstractProxyCreator {
 	 * @param proxy the proxy to sync with its underlying object
 	 */
 	public void sync(Object proxy) {
-		if (!proxy.getClass().getName().endsWith(PROXY_SUFFIX))
-			throw new IllegalArgumentException("sync() requires an proxy");
+		assertIsProxy(proxy);
 
 		try {
 			Object origin = getOrigin(proxy);
-			for (Field f : origin.getClass().getFields())
-				if (ReflectiveUtil.isMutableInstanceVar(f)) {
-					f.set(origin, f.get(proxy));
-				}
+			for (Field f : origin.getClass().getFields()) {
+				syncField(proxy, origin, f);
+			}
 		} catch (IllegalAccessException e) {
 			throw new ProxyException("Syncing origin to proxy failed", e);
 		}
 	}
 
+	private void assertIsProxy(Object proxy) {
+		if (!proxy.getClass().getName().endsWith(PROXY_SUFFIX))
+			throw new IllegalArgumentException("sync() requires an proxy");
+	}
+
 	protected Object getOrigin(Object proxy) throws IllegalAccessException {
 		return getField(proxy.getClass(), originFields, ORIGIN_FIELD).get(proxy);
+	}
+
+	private void syncField(Object proxy, Object origin, Field f) throws IllegalAccessException {
+		if (ReflectiveUtil.isMutableInstanceVar(f)) {
+			f.set(origin, f.get(proxy));
+		}
 	}
 
 	protected static Field getField(Class<?> proxyClass, Map<Class<?>, Field> fieldMap, String field) {
@@ -70,8 +79,8 @@ public abstract class AbstractProxyCreator {
 	protected Class<?> getProxyClass(Class<?> originClass) {
 		if (!allowsUnsafeProxies())
 			verifyOriginClass(originClass);
-		if (originClass.getName().endsWith(PROXY_SUFFIX))
-			throw ProxyException.doubleProxyException(originClass);
+
+		assertNotProxy(originClass);
 
 		return proxyClasses.computeIfAbsent(originClass, this::createProxyClass);
 	}
@@ -84,6 +93,11 @@ public abstract class AbstractProxyCreator {
 		for (Field f : originClass.getFields())
 			if (ReflectiveUtil.isMutableInstanceVar(f))
 				ProxyException.publicFieldException(originClass);
+	}
+
+	private void assertNotProxy(Class<?> originClass) {
+		if (originClass.getName().endsWith(PROXY_SUFFIX))
+			throw ProxyException.doubleProxyException(originClass);
 	}
 
 	protected abstract <T> Class<? extends T> createProxyClass(Class<? extends T> aClass);
