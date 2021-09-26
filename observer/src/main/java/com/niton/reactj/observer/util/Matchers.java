@@ -2,7 +2,6 @@ package com.niton.reactj.observer.util;
 
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.Method;
 
@@ -27,11 +26,12 @@ public class Matchers {
 	}
 
 	public static ElementMatcher.Junction<MethodDescription> overwrites(Method abstractMethod) {
-		return named(abstractMethod.getName()).and(returns(abstractMethod.getReturnType()))
-		                                      .and(takesArguments(abstractMethod.getParameterTypes()));
+		return named(abstractMethod.getName())
+				.and(returns(abstractMethod.getReturnType()))
+				.and(takesArguments(abstractMethod.getParameterTypes()));
 	}
 
 	public static ElementMatcher.Junction<MethodDescription> from(Class<?> type) {
-		return ElementMatchers.isDeclaredBy(type).or(ElementMatchers.isOverriddenFrom(type));
+		return isDeclaredBy(type).or(isOverriddenFrom(type));
 	}
 }
