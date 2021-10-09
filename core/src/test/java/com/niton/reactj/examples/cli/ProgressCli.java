@@ -9,8 +9,8 @@ class ProgressCli implements ReactiveComponent<ReactiveProxy<Progress>> {
 
 	@Override
 	public void createBindings(ReactiveBinder<ReactiveProxy<Progress>> binder) {
-		binder.bind("percent", this::renderProgress);
-		binder.<Double>showIf("percent", this::displayDone, p -> p >= 0.999);
+		binder.bind("progress", this::renderProgress);
+		binder.<Double>showIf("progress", this::displayDone, p -> p >= 0.999);
 	}
 
 	private void renderProgress(double percent) {

@@ -54,7 +54,7 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 
 	@Override
 	public void createBindings(ReactiveBinder<ReactiveProxy<Person>> binder) {
-		binder.bindBi("surename", surnameInput::setText, surnameInput::getText);
+		binder.bindBi("name", surnameInput::setText, surnameInput::getText);
 		surnameInput.getDocument().addUndoableEditListener(binder::react);
 		//surnameInput.addActionListener(bindings::react);
 
