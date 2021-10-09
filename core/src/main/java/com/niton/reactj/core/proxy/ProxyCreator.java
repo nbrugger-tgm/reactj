@@ -62,9 +62,9 @@ public class ProxyCreator extends AbstractProxyCreator {
 
 	/**
 	 * Stores proxies besides the orgin they impose. Needs open to reactj access (for every origin package).
-	 * <p>
+	 * <p><b>
 	 * Only one instance should be used per module!
-	 * </p>
+	 * </b></p>
 	 *
 	 * @return an ProxyCreator that will have no issues with permissons if you open your module (to reactj)
 	 */
@@ -130,10 +130,9 @@ public class ProxyCreator extends AbstractProxyCreator {
 		Module module = originClass.getModule();
 		getClass().getModule().addReads(module);
 
-		var unreactive =
-				isAnnotatedWith(Unreactive.class)
-						.or(from(Reflective.class))
-						.or(from(ReflectiveWrapper.class));
+		var unreactive = isAnnotatedWith(Unreactive.class)
+				.or(from(Reflective.class))
+				.or(from(ReflectiveWrapper.class));
 
 		var prox = getBuilder().buildProxy(originClass, any(), unreactive)
 		                       .implement(ReflectiveWrapper.class)

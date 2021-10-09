@@ -19,7 +19,7 @@ Its just like <b>Vue js</b> for java
 Documentation:
 
 - [Wiki](https://github.com/nbrugger-tgm/reactj/wiki)
-- [JavaDoc](https://niton.jfrog.io/artifactory/java-libs/com/niton/reactj/4.0.0b6/reactj-4.0.0b6-javadoc.jar!/index.html)
+- [JavaDoc](https://niton.jfrog.io/artifactory/java-libs/com/niton/reactj/4.0.0b7/reactj-4.0.0b7-javadoc.jar!/index.html)
 - [Changelog](CHANGELOG.md)
 
 ## Framework support implementation
@@ -35,7 +35,7 @@ Documentation:
 
 ## Usage
 
-[![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fniton.jfrog.io%2Fartifactory%2Fjava-libs%2Fcom%2Fniton%2Freactj%2Fmaven-metadata.xml)](https://niton.jfrog.io/ui/packages/gav:%2F%2Fcom.niton:reactj?name=react&type=packages)
+[![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fniton.jfrog.io%2Fartifactory%2Fjava-libs%2Fcom%2Fniton%2Freactj%2Fcore%2Fmaven-metadata.xml)](https://niton.jfrog.io/ui/packages/gav:%2F%2Fcom.niton:reactj?name=react&type=packages)
 
 ### Gradle
 
@@ -52,14 +52,14 @@ Adding the dependency
 *plain*
 
 ```groovy
-implementation 'com.niton.reactj:core:4.0.0b6'
-implementation 'com.niton.reactj:lists:4.0.0b6'
+implementation 'com.niton.reactj:core:4.0.0b7'
+implementation 'com.niton.reactj:lists:4.0.0b7'
 ```
 
 *framework*
 
 ```groovy
-implementation 'com.niton.reactj:swing:4.0.0b6'
+implementation 'com.niton.reactj:swing:4.0.0b7'
 ```
 
 ### Maven
@@ -83,7 +83,7 @@ Adding the dependency
     <groupId>com.niton.reactj</groupId>
     <!--For artifactId use your UI framework (swing,javafx,qt or vaadin)-->
     <artifactId>swing</artifactId>
-    <version>4.0.0b6</version>
+    <version>4.0.0b7</version>
 </dependency>
 ```
 
