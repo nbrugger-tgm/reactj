@@ -1,46 +1,37 @@
 package com.niton.reactj.core.react;
 
-import java.util.Arrays;
+import com.niton.reactj.core.annotation.Reactive;
+import com.niton.reactj.core.annotation.Unreactive;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatchers;
+
+import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
  * Defines methods that should be reacted to
  */
 public enum ReactiveStrategy {
 	/**
-	 * Only react to methods that start with "set"
+	 * Only react to methods that start with "set". Methods with {@link Unreactive} will not be reacted to
 	 */
-	REACT_ON_SETTER((a, b) -> a.startsWith("set")),
+	SETTERS(ElementMatchers.nameStartsWith("set").and(not(isAnnotatedWith(Unreactive.class)))),
 	/**
-	 * Reacts to all method calls
+	 * Reacts to all method calls that are not {@link Unreactive}
 	 */
-	REACT_ON_ALL((a, b) -> true),
+	ALL(ElementMatchers.not(isAnnotatedWith(Unreactive.class))),
 	/**
-	 * Reacts to a list of custom definable method names
+	 * Reacts to no method calls at all
 	 */
-	REACT_ON_CUSTOM((a, b) -> Arrays.asList(b).contains(a));
-	private final ReactionDecider decider;
+	NOTHING(ElementMatchers.none()),
+	/**
+	 * Reacts to methods that are annotated with {@link Reactive}
+	 */
+	ANNOTATED(ElementMatchers.isAnnotatedWith(Reactive.class).and(not(isAnnotatedWith(Unreactive.class))));
+	public final ElementMatcher.Junction<MethodDescription> matcher;
 
-	/**
-	 * Decides wether to react to a method with a certain name or not
-	 */
-	@FunctionalInterface
-	private interface ReactionDecider {
-		boolean decideReaction(String methodName, String... acceptors);
-	}
 
-	ReactiveStrategy(ReactionDecider decider) {
-		this.decider = decider;
-	}
-
-	/**
-	 * Returns true if the given method name is covered by the strategy.<br>
-	 *
-	 * @param name    the name of the method to check
-	 * @param reactTo only used for REACT_ON_CUSTOM elswhile can be empty or null
-	 *
-	 * @return true if this strategy reacts to the given method name
-	 */
-	public boolean reactTo(String name, String... reactTo) {
-		return decider.decideReaction(name, reactTo);
+	ReactiveStrategy(ElementMatcher.Junction<MethodDescription> matcher) {
+		this.matcher = matcher;
 	}
 }

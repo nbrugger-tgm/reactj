@@ -45,6 +45,7 @@ public class ProxyCreator extends AbstractProxyCreator {
 
 	private final Objenesis                            objenesis       = new ObjenesisStd();
 	private final Map<Class<?>, ObjectInstantiator<?>> proxyInitiators = new HashMap<>();
+	private       ReactiveStrategy                     strategy        = ReactiveStrategy.ALL;
 
 	protected ProxyCreator(InfusionAccessProvider accessor) {
 		super(accessor);
@@ -85,6 +86,15 @@ public class ProxyCreator extends AbstractProxyCreator {
 
 	public static ProxyCreator custom(Class<?> anchor, Lookup access) {
 		return new ProxyCreator(new StaticInfuserWithLookup(anchor, access));
+	}
+
+	/**
+	 * Changing the strategy will <b>not</b> affect already created proxies!
+	 *
+	 * @param strategy the strategy to use for newly created proxies
+	 */
+	public void setStrategy(ReactiveStrategy strategy) {
+		this.strategy = strategy;
 	}
 
 	public <T extends ProxySubject> T create(T object) {

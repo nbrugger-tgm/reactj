@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * This field will not be reactive
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Unreactive {
 }
