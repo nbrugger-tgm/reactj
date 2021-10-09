@@ -1,9 +1,9 @@
-package com.niton.reactj.api.test;
+package com.niton.reactj.test.proxy;
 
-import com.niton.reactj.api.react.ReactiveObject;
 import com.niton.reactj.api.react.ReactiveWrapper;
 import com.niton.reactj.core.proxy.ProxyCreator;
 import com.niton.reactj.core.proxy.ProxySubject;
+import com.niton.reactj.test.models.RObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.TestFactory;
@@ -335,30 +335,3 @@ public class EqualsAndHashcodeTest {
 	}
 }
 
-class RObject {
-	static class WithoutHashEquals extends ReactiveObject implements Serializable {
-		public int i = 0;
-
-		public WithoutHashEquals() {
-		}
-	}
-
-	static class WithHashEquals extends ReactiveObject implements Serializable {
-		public int i = 0;
-
-		public WithHashEquals() {
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(i);
-		}
-
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (!(o instanceof WithHashEquals)) return false;
-			WithHashEquals yeet = (WithHashEquals) o;
-			return i == yeet.i;
-		}
-	}
-}

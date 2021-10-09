@@ -42,6 +42,13 @@ class AbstractObserverTest {
 		observer.addListener(event -> observationFired = true);
 	}
 
+
+	@Test
+	@DisplayName("Argument verification")
+	void testArgumentVerification() {
+		assertThrows(IllegalArgumentException.class, () -> observer.observe(null));
+	}
+
 	@Test
 	void observeRebind() {
 		observer.setObserveOnRebind(true);

@@ -32,6 +32,7 @@ public class ProxyBuilder {
 	public static final  String ORIGIN_FIELD  = "PROXY_ORIGIN";
 	public static final  String WRAPPER_FIELD = "PROXY_WRAPPER";
 	private static final Method getReactiveTarget;
+	private static int                    counter = 0;
 
 	static {
 		try {
@@ -41,8 +42,7 @@ public class ProxyBuilder {
 		}
 	}
 
-	private final InfusionAccessProvider accessor;
-	private       int                    counter = 0;
+	private final  InfusionAccessProvider accessor;
 
 	public ProxyBuilder(InfusionAccessProvider accessProvider) {
 		this.accessor = accessProvider;
@@ -53,7 +53,7 @@ public class ProxyBuilder {
 	 * Constructs a base proxy class that provides an {@link Reactable} implementation.
 	 * You can further modify the proxy class
 	 * <p>
-	 * The proxy can handle {@link Object#equals(Object)} and {@link Object#clone()}.
+	 * The proxy can handle {@link Object#equals(Object)},  {@link Object#clone()} and {@link Object#hashCode()}.
 	 * The proxy DOES NOT SUPPORT CLONING.
 	 * </p>
 	 * <p>
@@ -135,7 +135,8 @@ public class ProxyBuilder {
 				.method(isEquals())
 				.intercept(
 						MethodDelegation.to(ProxyForwardImpl.Equals.class)
-				);
+				)
+				;
 	}
 
 }

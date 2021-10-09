@@ -1,17 +1,20 @@
-package com.niton.reactj.api.test.mvc;
+package com.niton.reactj.test.mvc;
 
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.mvc.ReactiveComponent;
-import com.niton.reactj.api.test.models.Base;
-import com.niton.reactj.api.test.models.DeepBase;
-import com.niton.reactj.api.test.models.FlatBase;
 import com.niton.reactj.core.annotation.ReactiveListener;
 import com.niton.reactj.core.proxy.ProxyCreator;
 import com.niton.reactj.core.proxy.ReactiveProxy;
 import com.niton.reactj.core.react.ReactiveBinder;
 import com.niton.reactj.core.react.ReactiveController;
+import com.niton.reactj.test.models.Base;
+import com.niton.reactj.test.models.DeepBase;
+import com.niton.reactj.test.models.FlatBase;
+import com.niton.reactj.test.models.TestData;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.awt.*;
 
 import static com.niton.reactj.core.proxy.ProxyCreator.INSTANCE;
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,9 +22,15 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("ReactiveController")
 class ReactiveControllerTest {
 	public static final int
-			SET1 = 12,
-			SET2 = 22,
-			SET3 = 83;
+			SET_A = 12,
+			SET2  = 22,
+			SET_C = 83;
+
+	static {
+		//only for testing purposes- plz don't do this <3
+		INSTANCE.setAllowUnsafeProxies(true);
+	}
+
 	public final ReactiveProxy<DeepBase> deepProxy = INSTANCE.create(new DeepBase());
 	public final DeepBase                deep      = deepProxy.getObject();
 	public final ReactiveProxy<FlatBase> flatProxy = INSTANCE.create(new FlatBase());
@@ -31,7 +40,9 @@ class ReactiveControllerTest {
 			bCalled                                = false,
 			cCalled                                = false;
 	private String stringDeposit;
-	private int    testDeposit;
+	private int    intDeposit;
+	private Object lastValue;
+	private Object converted;
 
 	static class TestObject {
 		private int someInt;
@@ -119,9 +130,9 @@ class ReactiveControllerTest {
 					String::valueOf
 			);
 			binder.bindBi("a", v -> {
-				testDeposit = v;
-				aCalled     = true;
-			}, () -> testDeposit);
+				intDeposit = v;
+				aCalled    = true;
+			}, () -> intDeposit);
 		};
 
 		ReactiveController<ReactiveProxy<DeepBase>> controller = new ReactiveController<>(deepComponent);
@@ -137,9 +148,9 @@ class ReactiveControllerTest {
 
 		controller.update();
 		assertEquals("0", stringDeposit, "Change not correctly detected");
-		assertEquals(0, testDeposit, "Change not correctly detected");
+		assertEquals(0, intDeposit, "Change not correctly detected");
 		deep.setA(99);
-		assertEquals(99, testDeposit);
+		assertEquals(99, intDeposit);
 		deep.setC(1234);
 		assertEquals("1234", stringDeposit);
 
@@ -152,7 +163,7 @@ class ReactiveControllerTest {
 	@DisplayName("@ReactiveResolution FLAT")
 	void testFlat() {
 		test(flatProxy, false, false);
-		flat.setC(SET3);
+		flat.setC(SET_C);
 		assertTrue(cCalled);
 	}
 
@@ -176,9 +187,9 @@ class ReactiveControllerTest {
 			@ReactiveListener("a")
 			void aListener(Integer i) {
 				if (!a) {
-					fail("a is not allowed to be called");
+					fail("'a' is not allowed to be called");
 				} else if (i != 0) {
-					assertEquals(SET1, i);
+					assertEquals(SET_A, i);
 				}
 			}
 
@@ -192,7 +203,7 @@ class ReactiveControllerTest {
 			@ReactiveListener("c")
 			void someMethod(int val) {
 				if (val != 0) {
-					assertEquals(SET3, val);
+					assertEquals(SET_C, val);
 				}
 			}
 		};
@@ -202,7 +213,7 @@ class ReactiveControllerTest {
 		aCalled = false;
 		bCalled = false;
 		cCalled = false;
-		proxy.getObject().setA(SET1);
+		proxy.getObject().setA(SET_A);
 		assertEquals(a, aCalled);
 		proxy.getObject().setB(SET2);
 		assertEquals(b, bCalled);
@@ -212,7 +223,31 @@ class ReactiveControllerTest {
 	@DisplayName("@ReactiveResolution DEEP")
 	void testDeep() {
 		test(deepProxy, true, false);
-		deep.setC(SET3);
+		deep.setC(SET_C);
 		assertTrue(cCalled);
+	}
+
+	@Test
+	@DisplayName("simple binding")
+	void bindingTest() {
+		ReactiveProxy<TestData> proxy = INSTANCE.create(new TestData());
+		TestData                td    = proxy.getObject();
+
+		ReactiveComponent<ReactiveProxy<TestData>> testComponent = binder -> {
+			binder.bind("id", val -> lastValue = val);
+			binder.bind("c", val -> lastValue = val);
+			binder.bind("c", val -> converted = val, (Color c) -> String.valueOf(c.getRed()));
+		};
+		ReactiveController<ReactiveProxy<TestData>> controller = new ReactiveController<>(
+				testComponent);
+		controller.setModel(proxy);
+
+		td.setColor(Color.GREEN);
+		assertEquals(Color.GREEN, lastValue);
+		assertEquals("0", converted);
+
+		td.setId(123);
+		assertEquals(123, lastValue);
+		assertEquals("0", converted);
 	}
 }

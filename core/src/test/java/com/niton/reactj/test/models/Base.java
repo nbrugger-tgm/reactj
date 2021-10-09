@@ -1,4 +1,4 @@
-package com.niton.reactj.api.test.models;
+package com.niton.reactj.test.models;
 
 import com.niton.reactj.core.annotation.Unreactive;
 
