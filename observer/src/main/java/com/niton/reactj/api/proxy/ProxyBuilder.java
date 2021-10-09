@@ -7,6 +7,7 @@ import com.niton.reactj.api.react.ReactiveWrapper;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.dynamic.DynamicType.Builder.MethodDefinition.ReceiverTypeDefinition;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.ExceptionMethod;
 import net.bytebuddy.implementation.FieldAccessor;
@@ -22,6 +23,10 @@ import static java.lang.reflect.Modifier.PRIVATE;
 import static net.bytebuddy.implementation.DefaultMethodCall.prioritize;
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
+/**
+ * Used to construct raw proxy templates that are {@link Reactable}
+ * <
+ */
 public class ProxyBuilder {
 	public static final  String PROXY_SUFFIX  = "PROXY";
 	public static final  String ORIGIN_FIELD  = "PROXY_ORIGIN";
@@ -44,8 +49,34 @@ public class ProxyBuilder {
 	}
 
 
-	public <T> DynamicType.Builder.MethodDefinition.ReceiverTypeDefinition<? extends T> buildProxy(
-			Class<? extends T> originClass,
+	/**
+	 * Constructs a base proxy class that provides an {@link Reactable} implementation.
+	 * You can further modify the proxy class
+	 * <p>
+	 * The proxy can handle {@link Object#equals(Object)} and {@link Object#clone()}.
+	 * The proxy DOES NOT SUPPORT CLONING.
+	 * </p>
+	 * <p>
+	 * The proxy sends reactable calls to {@link Reactable#react()}. Also the handling of java intern methods is
+	 * already done. Calls {@link Object} methods will never be reacted to, even if they ´change the objects state
+	 * because the should never do so.
+	 * </p>
+	 * <p>
+	 * This proxy is not complete and meant to be extended and built. To build use {@link ReceiverTypeDefinition#make()}
+	 * and {@link DynamicType.Unloaded#load(ClassLoader)}
+	 * </p>
+	 *
+	 * @param originClass the class to create the proxy for
+	 * @param reactive    a descriptor which methods to react to. Elements matched by this filter will NOT be matched if
+	 *                    they are matched by the exclusion filter (unreactive parameter)
+	 * @param unreactive  a descriptor which methods <b>not</b> to react to. Elements matched by this filter will
+	 *                    never be reacted to.
+	 * @param <T>         the type the proxy will emulate
+	 *
+	 * @return the template for the proxy class. Can be extended using {@link ByteBuddy}
+	 */
+	public <T> ReceiverTypeDefinition<T> buildProxy(
+			Class<T> originClass,
 			ElementMatcher.Junction<MethodDescription> reactive,
 			ElementMatcher.Junction<MethodDescription> unreactive
 	) {
