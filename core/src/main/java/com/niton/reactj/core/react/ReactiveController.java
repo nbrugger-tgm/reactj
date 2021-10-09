@@ -101,7 +101,7 @@ public final class ReactiveController<M extends Reflective & Reactable> {
 		blockReactions = true;
 		superBindings.forEach(e -> e.display(observer.getObserved()));
 		globalDisplaySuperBindings.forEach(e -> e.display(observer.getObserved()));
-		bindings.forEach(e -> updateBinding(key, value, e));
+		bindings.forEach(binding -> updateBinding(key, value, binding));
 		blockReactions = false;
 	}
 
@@ -137,9 +137,10 @@ public final class ReactiveController<M extends Reflective & Reactable> {
 	private static void updateBinding(String key, Object value, Binding<?, ?> binding) {
 		Object converted = convertToDisplay(key, value, binding);
 		if (binding instanceof BiBinding) {
-			BiBinding<?, ?> biBinding = (BiBinding<?, ?>) binding;
+			BiBinding<?, ?> biBinding    = (BiBinding<?, ?>) binding;
+			var             displayValue = biBinding.getDisplayValue();
 			//ignore change when the value is already present
-			if (biBinding.getDisplayValue().equals(converted)) {
+			if (Objects.equals(displayValue, converted)) {
 				return;
 			}
 		}

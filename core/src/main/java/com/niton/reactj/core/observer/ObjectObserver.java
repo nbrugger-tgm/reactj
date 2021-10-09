@@ -35,7 +35,8 @@ public class ObjectObserver<M extends Reactable & Reflective> extends AbstractOb
 	 * Updates the UI to the new state of the model
 	 */
 	public void update() {
-		update(getChanges());
+		if (getObserved() != null)
+			update(getChanges());
 	}
 
 	@Override
