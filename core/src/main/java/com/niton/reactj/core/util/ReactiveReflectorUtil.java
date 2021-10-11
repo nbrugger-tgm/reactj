@@ -1,7 +1,6 @@
 package com.niton.reactj.core.util;
 
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.core.annotation.Reactive;
 import com.niton.reactj.core.annotation.ReactiveResolution;
 import com.niton.reactj.core.annotation.ReactiveResolution.ReactiveResolutionType;
 import com.niton.reactj.core.annotation.Unreactive;
@@ -76,7 +75,7 @@ public final class ReactiveReflectorUtil {
 				continue;
 			}
 			f.setAccessible(true);
-			state.put(getReactiveName(f), f.get(model));
+			state.put(f.getName(), f.get(model));
 		}
 	}
 
@@ -90,19 +89,6 @@ public final class ReactiveReflectorUtil {
 	public static boolean goDeep(Class<?> type) {
 		return !type.isAnnotationPresent(ReactiveResolution.class) ||
 				type.getAnnotation(ReactiveResolution.class).value() == DEEP;
-	}
-
-	/**
-	 * Resolves the name by @Reactive
-	 *
-	 * @param field the field to get the name from
-	 *
-	 * @return the name to be used for this field
-	 */
-	public static String getReactiveName(Field field) {
-		return field.isAnnotationPresent(Reactive.class) ?
-				field.getAnnotation(Reactive.class).value() :
-				field.getName();
 	}
 
 	/**
@@ -131,7 +117,7 @@ public final class ReactiveReflectorUtil {
 	private static Field findField(String property, Field[] fields) {
 		Field propField = null;
 		for (Field f : fields) {
-			if (ReactiveReflectorUtil.getReactiveName(f).equals(property)) {
+			if (f.getName().equals(property)) {
 				propField = f;
 				break;
 			}

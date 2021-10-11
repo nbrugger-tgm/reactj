@@ -2,6 +2,7 @@ package com.niton.reactj.api.proxy;
 
 import com.niton.reactj.api.exceptions.ReactiveAccessException;
 import com.niton.reactj.api.exceptions.ReactiveException;
+import com.niton.reactj.api.observer.Reactable;
 import com.niton.reactj.api.react.ReactiveWrapper;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.FieldValue;
@@ -13,7 +14,13 @@ import java.lang.reflect.Method;
 
 import static com.niton.reactj.api.proxy.ProxyBuilder.*;
 
+/**
+ * These are the method implementations used for {@link com.niton.reactj.api.observer.Reactable} proxies
+ */
 public class ProxyForwardImpl {
+	/**
+	 * Forwards calls to the origin of the proxy and calls {@link Reactable#react()} afterwards
+	 */
 	public static class ToOrigin {
 		private ToOrigin() {
 		}
@@ -39,6 +46,9 @@ public class ProxyForwardImpl {
 		}
 	}
 
+	/**
+	 * Implementation of {@link Object#equals(Object)} that uses the origin of the Proxy for comparison
+	 */
 	public static class Equals {
 		private Equals() {
 		}

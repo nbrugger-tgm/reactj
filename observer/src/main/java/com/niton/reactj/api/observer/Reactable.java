@@ -10,7 +10,7 @@ public interface Reactable {
 
 
 	/**
-	 * Report a change in the state of the object (shoul be called after every setter and mutating method).
+	 * Report a change in the state of the object (should be called after every setter and mutating method).
 	 * <br>
 	 * This should notify all bound Observers
 	 */
@@ -18,5 +18,9 @@ public interface Reactable {
 		reactEvent().fire();
 	}
 
+	/**
+	 * Returns the eventEmitter that is called when the object is changed. By listening to this emitter
+	 * you will be notified about every state change of the object
+	 */
 	GenericEventEmitter reactEvent();
 }
