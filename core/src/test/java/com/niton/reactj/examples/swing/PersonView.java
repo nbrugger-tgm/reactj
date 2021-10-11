@@ -1,7 +1,7 @@
 package com.niton.reactj.examples.swing;
 
 import com.niton.reactj.api.event.EventEmitter;
-import com.niton.reactj.core.annotation.Reactive;
+import com.niton.reactj.core.annotation.ReactiveListener;
 import com.niton.reactj.core.mvc.ReactiveView;
 import com.niton.reactj.core.proxy.ReactiveProxy;
 import com.niton.reactj.core.react.ReactiveBinder;
@@ -54,7 +54,7 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 
 	@Override
 	public void createBindings(ReactiveBinder<ReactiveProxy<Person>> binder) {
-		binder.bindBi("surename", surnameInput::setText, surnameInput::getText);
+		binder.bindBi("name", surnameInput::setText, surnameInput::getText);
 		surnameInput.getDocument().addUndoableEditListener(binder::react);
 		//surnameInput.addActionListener(bindings::react);
 
@@ -88,7 +88,7 @@ public class PersonView extends ReactiveView<JPanel, ReactiveProxy<Person>> {
 		panel.setBackground(c);
 	}
 
-	@Reactive("age")
+	@ReactiveListener("age")
 	public void adaptSizeToAge(int age) {
 		System.out.println("adapt font size for age of " + age + " years");
 	}

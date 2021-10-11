@@ -7,9 +7,9 @@ import com.niton.reactj.api.proxy.infusion.BesideOriginInfuser;
 import com.niton.reactj.api.proxy.infusion.InfusionAccessProvider;
 import com.niton.reactj.api.proxy.infusion.StaticInfuser;
 import com.niton.reactj.api.proxy.infusion.StaticInfuserWithLookup;
-import com.niton.reactj.core.annotation.Unreactive;
 import com.niton.reactj.core.observer.Reflective;
 import com.niton.reactj.core.observer.ReflectiveWrapper;
+import com.niton.reactj.core.react.ReactiveStrategy;
 import com.niton.reactj.utils.reflections.ReflectiveUtil;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.UsingLookup;
 import net.bytebuddy.implementation.FieldAccessor;
@@ -29,11 +29,11 @@ import java.util.Map;
 import static com.niton.reactj.api.proxy.ProxyBuilder.ORIGIN_FIELD;
 import static com.niton.reactj.observer.util.Matchers.from;
 import static net.bytebuddy.implementation.DefaultMethodCall.prioritize;
-import static net.bytebuddy.matcher.ElementMatchers.*;
+import static net.bytebuddy.matcher.ElementMatchers.is;
 
 public class ProxyCreator extends AbstractProxyCreator {
-	public static final ProxyCreator INSTANCE = besideOrigin();
-	static final        Method       getReflectiveTargetMethod;
+	public static final  ProxyCreator INSTANCE = besideOrigin();
+	private static final Method       getReflectiveTargetMethod;
 
 	static {
 		try {
@@ -45,6 +45,7 @@ public class ProxyCreator extends AbstractProxyCreator {
 
 	private final Objenesis                            objenesis       = new ObjenesisStd();
 	private final Map<Class<?>, ObjectInstantiator<?>> proxyInitiators = new HashMap<>();
+	private       ReactiveStrategy                     strategy        = ReactiveStrategy.ALL;
 
 	protected ProxyCreator(InfusionAccessProvider accessor) {
 		super(accessor);
@@ -62,9 +63,9 @@ public class ProxyCreator extends AbstractProxyCreator {
 
 	/**
 	 * Stores proxies besides the orgin they impose. Needs open to reactj access (for every origin package).
-	 * <p>
+	 * <p><b>
 	 * Only one instance should be used per module!
-	 * </p>
+	 * </b></p>
 	 *
 	 * @return an ProxyCreator that will have no issues with permissons if you open your module (to reactj)
 	 */
@@ -85,6 +86,15 @@ public class ProxyCreator extends AbstractProxyCreator {
 
 	public static ProxyCreator custom(Class<?> anchor, Lookup access) {
 		return new ProxyCreator(new StaticInfuserWithLookup(anchor, access));
+	}
+
+	/**
+	 * Changing the strategy will <b>not</b> affect already created proxies!
+	 *
+	 * @param strategy the strategy to use for newly created proxies
+	 */
+	public void setStrategy(ReactiveStrategy strategy) {
+		this.strategy = strategy;
 	}
 
 	public <T extends ProxySubject> T create(T object) {
@@ -130,22 +140,20 @@ public class ProxyCreator extends AbstractProxyCreator {
 		Module module = originClass.getModule();
 		getClass().getModule().addReads(module);
 
-		var unreactive =
-				isAnnotatedWith(Unreactive.class)
-						.or(from(Reflective.class))
-						.or(from(ReflectiveWrapper.class));
+		var unreactive = from(Reflective.class)
+				.or(from(ReflectiveWrapper.class));
 
-		var prox = getBuilder().buildProxy(originClass, any(), unreactive)
-		                       .implement(ReflectiveWrapper.class)
+		var proxy = getBuilder().buildProxy(originClass, strategy.matcher, unreactive)
+		                        .implement(ReflectiveWrapper.class)
 
-		                       .method(from(Reflective.class))
-		                       .intercept(prioritize(ReflectiveWrapper.class))
+		                        .method(from(Reflective.class))
+		                        .intercept(prioritize(ReflectiveWrapper.class))
 
-		                       .method(is(getReflectiveTargetMethod))
-		                       .intercept(FieldAccessor.ofField(ORIGIN_FIELD))
+		                        .method(is(getReflectiveTargetMethod))
+		                        .intercept(FieldAccessor.ofField(ORIGIN_FIELD))
 
-		                       .make();
+		                        .make();
 		var lookup = getLookup(originClass);
-		return prox.load(module.getClassLoader(), UsingLookup.of(lookup)).getLoaded();
+		return proxy.load(module.getClassLoader(), UsingLookup.of(lookup)).getLoaded();
 	}
 }

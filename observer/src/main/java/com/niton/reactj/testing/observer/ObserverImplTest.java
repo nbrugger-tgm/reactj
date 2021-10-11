@@ -3,6 +3,7 @@ package com.niton.reactj.testing.observer;
 import com.niton.reactj.api.event.Listener;
 import com.niton.reactj.api.observer.AbstractObserver;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -64,6 +65,12 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R, S>, R, S> {
 		observer.observe(createObservableInstance());
 		R res = modify(observer.getObserved());
 		assertEquals(res, fired, "The result passed to the listeners wasn't the expected one");
+	}
+
+	@Test
+	@DisplayName("Argument verification")
+	void testArgumentVerification() {
+		assertThrows(IllegalArgumentException.class, () -> observer.observe(null));
 	}
 
 	@Test

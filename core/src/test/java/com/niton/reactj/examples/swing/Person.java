@@ -1,6 +1,5 @@
 package com.niton.reactj.examples.swing;
 
-import com.niton.reactj.core.annotation.Reactive;
 import com.niton.reactj.core.annotation.ReactiveResolution;
 import com.niton.reactj.core.annotation.Unreactive;
 
@@ -10,8 +9,6 @@ import static com.niton.reactj.core.annotation.ReactiveResolution.ReactiveResolu
 @ReactiveResolution(FLAT)
 public class Person {
 	private int    age;
-	//change reactive name
-	@Reactive("surename")
 	private String name;
 	private int    iq;
 	private Gender gender;
