@@ -28,14 +28,13 @@ public abstract class EventEmitterTest<E, L> {
 			result.add(null);
 		}));
 		eventManager.fire(getDummyEvent());
-		assertEquals(1, result.size(), "Listener wasnt called");
+		assertEquals(1, result.size(), "Listener wasn't called");
 	}
 
 	/**
 	 * Creates a listener that calles the `testCallback` when fired.
 	 *
 	 * @param testCallback the runnable to call when the event is triggered
-	 *
 	 * @return the listener that forwards to the callback
 	 */
 	protected abstract L createListener(Runnable testCallback);
