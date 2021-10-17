@@ -3,10 +3,10 @@ package com.niton.reactj.api.binding.builder;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.utils.event.GenericEventEmitter;
 
-public class BaseRunnableBuilder {
+public class BaseRunnableBuilder<T extends Runnable> {
 
 	protected final BindingBuilder rootBuilder;
-	protected final Runnable       runnable;
+	protected final T              runnable;
 
 	public class AdditionalEventBuilder {
 		public AdditionalEventBuilder andOn(GenericEventEmitter emitter) {
@@ -15,7 +15,7 @@ public class BaseRunnableBuilder {
 		}
 	}
 
-	public BaseRunnableBuilder(Runnable r, BindingBuilder rootBuilder) {
+	public BaseRunnableBuilder(T r, BindingBuilder rootBuilder) {
 		this.runnable    = r;
 		this.rootBuilder = rootBuilder;
 	}

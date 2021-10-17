@@ -295,7 +295,7 @@ public class ReactiveBinder<L> {
 	 * Simmilar to the {@code v-if} directive in VUE JS. Creates a binding to show a component only in certain
 	 * circumstances
 	 *
-	 * @param property       the name of the property to base this decition on
+	 * @param property       the name of the property to base this decision on
 	 * @param enableFunction the function used to enable/disable the component
 	 */
 	public void showIf(String property, DisplayFunction<Boolean> enableFunction) {

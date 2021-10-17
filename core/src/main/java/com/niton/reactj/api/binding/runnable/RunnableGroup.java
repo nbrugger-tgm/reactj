@@ -1,5 +1,6 @@
 package com.niton.reactj.api.binding.runnable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,11 +16,11 @@ public class RunnableGroup implements Runnable {
 	}
 
 	public RunnableGroup(Runnable... runnables) {
-		this.runnables = Arrays.asList(runnables);
+		this.runnables = new ArrayList<>(Arrays.asList(runnables));
 	}
 
 	/**
-	 * Adds a runnable to be excecuted on {@link #run()}
+	 * Adds a runnable to be executed on {@link #run()}
 	 */
 	public void add(Runnable r) {
 		runnables.add(r);

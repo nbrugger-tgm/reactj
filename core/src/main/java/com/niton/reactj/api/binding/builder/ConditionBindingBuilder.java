@@ -1,66 +1,40 @@
 package com.niton.reactj.api.binding.builder;
 
-import com.niton.reactj.api.binding.ConditionalReactiveBinding;
+import com.niton.reactj.api.binding.ConditionalBindingWithRunnables;
 import com.niton.reactj.api.binding.predicates.Condition;
 
 import java.util.function.Predicate;
 
-public class ConditionBindingBuilder<T> extends ConditionRunnableBuilder {
-	private static class AndPredicate<T> implements Predicate<T> {
-		private final Predicate<T> predicate1;
-		private final Predicate<T> predicate2;
+public class ConditionBindingBuilder<T> extends BaseRunnableBuilder<ConditionalBindingWithRunnables<T>> {
 
-		public AndPredicate(Predicate<T> predicate1, Predicate<T> predicate2) {
-			this.predicate1 = predicate1;
-			this.predicate2 = predicate2;
-		}
-
-		@Override
-		public boolean test(T t) {
-			return predicate1.test(t) && predicate2.test(t);
-		}
+	public ConditionBindingBuilder(
+			ConditionalBindingWithRunnables<T> binding,
+			BindingBuilder rootBuilder
+	) {
+		super(binding, rootBuilder);
 	}
 
-	private static class OrPredicate<T> implements Predicate<T> {
-		private final Predicate<T> predicate1;
-		private final Predicate<T> predicate2;
-
-		public OrPredicate(Predicate<T> predicate1, Predicate<T> predicate2) {
-			this.predicate1 = predicate1;
-			this.predicate2 = predicate2;
-		}
-
-		@Override
-		public boolean test(T t) {
-			return predicate1.test(t) || predicate2.test(t);
-		}
-	}
-
-
-	public ConditionBindingBuilder(ConditionalReactiveBinding<T> r, BindingBuilder rootBuilder) {
-		super(r, rootBuilder);
-	}
-
-	//needs to be suppressed as this is always of "this" type
-	@Override
-	@SuppressWarnings("unchecked")
+	/**
+	 * {@link ConditionRunnableBuilder#or(Condition)}
+	 */
 	public ConditionBindingBuilder<T> or(Condition condition) {
-		return (ConditionBindingBuilder<T>) super.or(condition);
+		runnable.setPredicate(runnable.getPredicate().or(i -> condition.check()));
+		return this;
 	}
 
-	//needs to be suppressed as this is always of "this" type
-	@Override
-	@SuppressWarnings("unchecked")
+	/**
+	 * {@link ConditionRunnableBuilder#and(Condition)}
+	 */
 	public ConditionBindingBuilder<T> and(Condition condition) {
-		return (ConditionBindingBuilder<T>) super.and(condition);
+		runnable.setPredicate(runnable.getPredicate().and(i -> condition.check()));
+		return this;
 	}
 
 	/**
 	 * execute if the previous condition or this predicate applies
 	 */
 	public ConditionBindingBuilder<T> or(Predicate<T> condition) {
-		ConditionalReactiveBinding<T> binding = (ConditionalReactiveBinding<T>) runnable;
-		binding.setPredicate(new OrPredicate<>(binding.getPredicate(), condition));
+		runnable.setPredicate(runnable.getPredicate().or(condition));
 		return this;
 	}
 
@@ -68,8 +42,7 @@ public class ConditionBindingBuilder<T> extends ConditionRunnableBuilder {
 	 * execute if the previous condition and this predicate applies
 	 */
 	public ConditionBindingBuilder<T> and(Predicate<T> condition) {
-		ConditionalReactiveBinding<T> binding = (ConditionalReactiveBinding<T>) runnable;
-		binding.setPredicate(new AndPredicate<>(binding.getPredicate(), condition));
+		runnable.setPredicate(runnable.getPredicate().and(condition));
 		return this;
 	}
 }

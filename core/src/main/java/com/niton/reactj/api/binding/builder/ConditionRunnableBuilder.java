@@ -3,23 +3,17 @@ package com.niton.reactj.api.binding.builder;
 import com.niton.reactj.api.binding.predicates.CombiningCondition;
 import com.niton.reactj.api.binding.predicates.Condition;
 import com.niton.reactj.api.binding.predicates.HasCondition;
-import com.niton.reactj.api.binding.runnable.RunnableGroup;
 
-public class ConditionRunnableBuilder extends BaseRunnableBuilder {
+public class ConditionRunnableBuilder<T extends HasCondition & Runnable> extends BaseRunnableBuilder<T> {
 
-	public <T extends HasCondition & Runnable> ConditionRunnableBuilder(T runnable, BindingBuilder rootBuilder) {
-		super(runnable, rootBuilder);
-	}
-
-	public <T extends RunnableGroup & HasCondition> ConditionRunnableBuilder(T runnable, BindingBuilder rootBuilder) {
+	public ConditionRunnableBuilder(T runnable, BindingBuilder rootBuilder) {
 		super(runnable, rootBuilder);
 	}
 
 	/**
 	 * execute if the previous condition or this condition applies
 	 */
-	public ConditionRunnableBuilder or(Condition condition) {
-		HasCondition runnable = (HasCondition) this.runnable;
+	public ConditionRunnableBuilder<T> or(Condition condition) {
 		CombiningCondition.Or or = new CombiningCondition.Or(
 				runnable.getCondition(),
 				condition
@@ -32,8 +26,7 @@ public class ConditionRunnableBuilder extends BaseRunnableBuilder {
 	/**
 	 * execute if the previous condition and this condition applies
 	 */
-	public ConditionRunnableBuilder and(Condition condition) {
-		HasCondition runnable = (HasCondition) this.runnable;
+	public ConditionRunnableBuilder<T> and(Condition condition) {
 		CombiningCondition.And and = new CombiningCondition.And(
 				runnable.getCondition(),
 				condition
