@@ -1,6 +1,8 @@
 engines:
   checkstyle:
     enabled: true
+    exclude_patterns:
+      - "**/module-info.java"
     checks:
       com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck:
         enabled: false
