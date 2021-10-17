@@ -10,6 +10,9 @@ public class ConditionRunnableBuilder extends BaseRunnableBuilder {
 		super(runnable, rootBuilder);
 	}
 
+	public <T extends RunnableGroup & HasCondition> ConditionRunnableBuilder(T runnable, BindingBuilder rootBuilder) {
+		super(runnable, rootBuilder);
+	}
 	public ConditionRunnableBuilder or(Condition condition) {
 		HasCondition runnable = (HasCondition) this.runnable;
 		CombiningCondition.Or or = new CombiningCondition.Or(

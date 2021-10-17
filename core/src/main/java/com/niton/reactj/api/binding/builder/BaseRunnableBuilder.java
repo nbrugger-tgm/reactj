@@ -20,10 +20,9 @@ public class BaseRunnableBuilder {
 		this.rootBuilder = rootBuilder;
 	}
 
-	public RunnableCallBuilder and(Runnable runnable) {
-		return andAlso().call(runnable);
-	}
-
+	/**
+	 * Append a new execution statement to this binding
+	 */
 	public ExposedBindingBuilder andAlso() {
 		rootBuilder.add(runnable);
 		return rootBuilder;

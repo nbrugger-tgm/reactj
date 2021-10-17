@@ -6,7 +6,7 @@ import com.niton.reactj.api.binding.predicates.Condition;
 import java.util.function.Predicate;
 
 public class ConditionBindingBuilder<T> extends ConditionRunnableBuilder {
-	public static class AndPredicate<T> implements Predicate<T> {
+	private static class AndPredicate<T> implements Predicate<T> {
 		private final Predicate<T> predicate1;
 		private final Predicate<T> predicate2;
 
@@ -21,7 +21,7 @@ public class ConditionBindingBuilder<T> extends ConditionRunnableBuilder {
 		}
 	}
 
-	public static class OrPredicate<T> implements Predicate<T> {
+	private static class OrPredicate<T> implements Predicate<T> {
 		private final Predicate<T> predicate1;
 		private final Predicate<T> predicate2;
 

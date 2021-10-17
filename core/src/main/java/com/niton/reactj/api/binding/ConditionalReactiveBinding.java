@@ -20,7 +20,7 @@ public class ConditionalReactiveBinding<T> implements Runnable, HasCondition, Ha
 	public void run() {
 		T val = binding.source.get();
 		if (condition.check() && predicate.test(val))
-			binding.sink.accept(val);
+			binding.consumer.accept(val);
 	}
 
 	@Override
