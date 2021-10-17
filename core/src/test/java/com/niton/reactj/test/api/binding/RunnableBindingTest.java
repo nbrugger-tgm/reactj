@@ -3,8 +3,6 @@ package com.niton.reactj.test.api.binding;
 import com.niton.reactj.api.binding.builder.BindingBuilder;
 import com.niton.reactj.api.binding.builder.ExposedBindingBuilder;
 import com.niton.reactj.api.binding.predicates.Condition;
-import com.niton.reactj.api.event.EventEmitter;
-import com.niton.reactj.core.observer.PropertyObservation;
 import com.niton.reactj.utils.event.GenericEventEmitter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,19 +10,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DisplayName("Bindings")
-class BindingTest {
+@DisplayName("RunnableBindings")
+class RunnableBindingTest {
 
-	private final static String                                    VAL1          = "SOME123";
-	private final        int                                       VAL2          = 321;
-	private final        GenericEventEmitter                       coolEvent     = new GenericEventEmitter();
-	private final        GenericEventEmitter                       coolEvent2    = new GenericEventEmitter();
-	private final        EventEmitter<PropertyObservation<Object>> observerEvent = new EventEmitter<>();
-	private              String                                    source;
-	private              String                                    received;
-	private              int                                       counter;
+	private final GenericEventEmitter   coolEvent  = new GenericEventEmitter();
+	private final GenericEventEmitter   coolEvent2 = new GenericEventEmitter();
+	private       int                   counter;
 	//use the "exposed" to hide unneeded methods
-	private              ExposedBindingBuilder                     builder;
+	private       ExposedBindingBuilder builder;
 
 	@BeforeEach
 	void init() {
@@ -98,7 +91,7 @@ class BindingTest {
 			assertEquals(i, counter, "When using on(ev1).andOn(ev2) ev1 should trigger the binding");
 		}
 
-		for (int i = 5; i <= 8; i++) {
+		for (int i = 6; i <= 10; i++) {
 			coolEvent2.fire();
 			assertEquals(i, counter, "When using on(ev1).andOn(ev2) ev2 should trigger the binding");
 		}
@@ -154,17 +147,5 @@ class BindingTest {
 					"When using call(r).andAlso().call(r2).and(r3).on(ev) r, r2 and r3 should run on ev.fire()"
 			);
 		}
-	}
-
-	private void setReceived(String str) {
-		this.received = str;
-	}
-
-	public int getVAL2() {
-		return VAL2;
-	}
-
-	private String getSomeValue() {
-		return source;
 	}
 }
