@@ -67,7 +67,7 @@ public final class ReactiveController<M extends Reflective & Reactable> {
 		}
 	}
 
-	private void updateView(PropertyObservation change) {
+	private void updateView(PropertyObservation<M> change) {
 		updateView(change.propertyName, change.propertyValue);
 	}
 

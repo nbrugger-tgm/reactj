@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * e.g. reports changes to the properties
  * <p>Only works with {@link Reactable} classes. There are multiple ways to achieve this.</p>
  */
-public class ObjectObserver<M extends Reactable & Reflective> extends AbstractObserver<PropertyObservation, M> {
+public class ObjectObserver<M extends Reactable & Reflective> extends AbstractObserver<PropertyObservation<M>, M> {
 
 	private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
 
@@ -53,7 +53,11 @@ public class ObjectObserver<M extends Reactable & Reflective> extends AbstractOb
 	 */
 	public void update(Map<String, Object> changed) {
 		for (Map.Entry<String, Object> property : changed.entrySet()) {
-			PropertyObservation change = new PropertyObservation(property.getKey(), property.getValue());
+			PropertyObservation<M> change = new PropertyObservation<M>(
+					property.getKey(),
+					property.getValue(),
+					getObserved()
+			);
 			fireObservation(change);
 		}
 	}
