@@ -16,9 +16,7 @@ public class ConsumerGroup<T> implements Consumer<T> {
 
 	@Override
 	public void accept(T t) {
-		for (Consumer<T> target : targets) {
-			target.accept(t);
-		}
+		targets.forEach(consumer -> consumer.accept(t));
 	}
 
 	public void add(Consumer<T> consumer) {

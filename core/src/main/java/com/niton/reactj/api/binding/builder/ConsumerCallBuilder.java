@@ -1,5 +1,6 @@
 package com.niton.reactj.api.binding.builder;
 
+import com.niton.reactj.api.binding.ConsumerGroup;
 import com.niton.reactj.api.binding.ConvertingConsumer;
 import com.niton.reactj.api.binding.ReactiveBinding;
 import com.niton.reactj.api.event.EventEmitter;
@@ -9,8 +10,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ConsumerCallBuilder<T> {
-	private final BindingBuilder rootBuilder;
-	private final Consumer<T>    consumer;
+	private final BindingBuilder   rootBuilder;
+	private final ConsumerGroup<T> consumer = new ConsumerGroup<>();
 
 	private static class ConstantSupplier<T> implements Supplier<T> {
 		private final T value;
@@ -25,7 +26,12 @@ public class ConsumerCallBuilder<T> {
 
 	public ConsumerCallBuilder(BindingBuilder rootBuilder, Consumer<T> consumer) {
 		this.rootBuilder = rootBuilder;
-		this.consumer    = consumer;
+		this.consumer.add(consumer);
+	}
+
+	public ConsumerCallBuilder<T> and(Consumer<T> consumer) {
+		this.consumer.add(consumer);
+		return this;
 	}
 
 	public void on(EventEmitter<T> event) {

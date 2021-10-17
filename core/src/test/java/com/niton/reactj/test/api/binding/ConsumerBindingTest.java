@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("ConsumerBindings")
 class ConsumerBindingTest {
-	private final static String                                    VAL1          = "SOME123";
-	private final        int                                       VAL2          = 321;
-	private final        GenericEventEmitter                       coolEvent     = new GenericEventEmitter();
-	private final        EventEmitter<PropertyObservation<Object>> observerEvent = new EventEmitter<>();
-	private final        EventEmitter<String>                      stringEvent   = new EventEmitter<>();
-	private              String                                    source;
-	private              String                                    received;
+	private static String                                    VAL1          = "SOME123";
+	private final  int                                       VAL2          = 321;
+	private final  GenericEventEmitter                       coolEvent     = new GenericEventEmitter();
+	private final  EventEmitter<PropertyObservation<Object>> observerEvent = new EventEmitter<>();
+	private final  EventEmitter<String>                      stringEvent   = new EventEmitter<>();
+	private        String                                    source;
+	private        String                                    received;
 
 	//use the "exposed" to hide unneeded methods
 	private ExposedBindingBuilder builder;
@@ -255,7 +255,7 @@ class ConsumerBindingTest {
 	void mixBindingsAndRunnables() {
 		AtomicInteger counter = new AtomicInteger();
 		builder
-				.call(() -> counter.incrementAndGet())
+				.call(counter::incrementAndGet)
 				.andAlso()
 				.call(this::setReceived)
 				.with(this::getSomeValue)
@@ -283,5 +283,21 @@ class ConsumerBindingTest {
 		String msg = "When this is done: 'call(a).andAlso().call(b).when(condition)' the condition only applies to b";
 		assertEquals(1, counter.get(), msg);
 		assertNull(received, msg);
+	}
+
+	@Test
+	@DisplayName("call(consumer1).and(consumer2).with(source)")
+	void multipleConsumersSameSource() {
+		builder
+				.call(this::setReceived)
+				.and(v -> VAL1 = v)
+				.with(this::getSomeValue)
+				.on(coolEvent);
+		source = "KH9757";
+		coolEvent.fire();
+		assertEquals(received, source);
+		assertEquals(VAL1,
+		             source,
+		             "When '.call(a).and(b).with(source)' is used, a and b should be called with the same source");
 	}
 }
