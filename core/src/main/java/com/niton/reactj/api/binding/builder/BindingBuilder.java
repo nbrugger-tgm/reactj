@@ -19,6 +19,9 @@ public class BindingBuilder implements ExposedBindingBuilder {
 		return new ConsumerCallBuilder<>(this, runnable);
 	}
 
+	/**
+	 * Also execute {@code group} together with the previous runnable
+	 */
 	public void add(Runnable group) {
 		runnables.add(group);
 	}

@@ -22,6 +22,9 @@ public class BindingCallBuilder<T> extends RunnableCallBuilder {
 		return new ConditionBindingBuilder<>(binding, rootBuilder);
 	}
 
+	/**
+	 * Same as {@link #when(Condition)}, but using a {@link Predicate} as condition
+	 */
 	public ConditionBindingBuilder<T> when(Predicate<T> condition) {
 		//suppress because the constructor ensures the type
 		@SuppressWarnings("unchecked")

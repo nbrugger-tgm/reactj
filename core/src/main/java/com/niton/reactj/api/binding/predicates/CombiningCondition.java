@@ -1,10 +1,18 @@
 package com.niton.reactj.api.binding.predicates;
 
+/**
+ * A Condition that consists of two sub-conditions.
+ * <p>
+ * They can be combined to a single result using {@link #combine(boolean, boolean)}
+ */
 public abstract class CombiningCondition implements Condition {
 
 	private final Condition condition1;
 	private final Condition condition2;
 
+	/**
+	 * returns true if condition1 AND condition2 is true
+	 */
 	public static class And extends CombiningCondition {
 
 		public And(Condition condition1, Condition condition2) {
@@ -17,6 +25,9 @@ public abstract class CombiningCondition implements Condition {
 		}
 	}
 
+	/**
+	 * returns true if either condition1 OR condition2 is true
+	 */
 	public static class Or extends CombiningCondition {
 
 		public Or(Condition condition1, Condition condition2) {
@@ -29,7 +40,7 @@ public abstract class CombiningCondition implements Condition {
 		}
 	}
 
-	public CombiningCondition(Condition condition1, Condition condition2) {
+	protected CombiningCondition(Condition condition1, Condition condition2) {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
 	}
@@ -47,5 +58,8 @@ public abstract class CombiningCondition implements Condition {
 		return combine(condition1.check(), condition2.check());
 	}
 
+	/**
+	 * Combine check and check2 in some logical way
+	 */
 	public abstract boolean combine(boolean check, boolean check1);
 }

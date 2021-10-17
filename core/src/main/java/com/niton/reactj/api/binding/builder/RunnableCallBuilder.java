@@ -15,10 +15,21 @@ public class RunnableCallBuilder extends BaseRunnableBuilder {
 		super(r, rootBuilder);
 	}
 
+	/**
+	 * Only execute the previous statement when the condition applies (-> returns true)
+	 *
+	 * @param condition the condition to check before execution
+	 */
 	public ConditionRunnableBuilder when(Condition condition) {
 		return new ConditionRunnableBuilder(new ConditionalRunnable(condition, runnable), rootBuilder);
 	}
 
+
+	/**
+	 * Call this runnable together with previous ones forming a group.
+	 * <p>
+	 * conditions and predicates only apply to a group. A group is seperated from other groups using {@link #andAlso()}
+	 */
 	public RunnableCallBuilder and(Runnable runnable) {
 		RunnableGroup group = (RunnableGroup) this.runnable;
 		group.add(runnable);

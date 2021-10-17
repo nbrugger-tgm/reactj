@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * A group of runnables to be executed all at once (no multi-threading)
+ */
 public class RunnableGroup implements Runnable {
 	private final List<Runnable> runnables;
 
@@ -14,10 +17,17 @@ public class RunnableGroup implements Runnable {
 	public RunnableGroup(Runnable... runnables) {
 		this.runnables = Arrays.asList(runnables);
 	}
+
+	/**
+	 * Adds a runnable to be excecuted on {@link #run()}
+	 */
 	public void add(Runnable r) {
 		runnables.add(r);
 	}
 
+	/**
+	 * Runs all previously added runnables
+	 */
 	@Override
 	public void run() {
 		runnables.forEach(Runnable::run);

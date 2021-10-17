@@ -296,8 +296,10 @@ class ConsumerBindingTest {
 		source = "KH9757";
 		coolEvent.fire();
 		assertEquals(received, source);
-		assertEquals(VAL1,
-		             source,
-		             "When '.call(a).and(b).with(source)' is used, a and b should be called with the same source");
+		assertEquals(
+				VAL1,
+				source,
+				"When '.call(a).and(b).with(source)' is used, a and b should be called with the same source"
+		);
 	}
 }

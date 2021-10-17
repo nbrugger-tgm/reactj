@@ -55,12 +55,18 @@ public class ConditionBindingBuilder<T> extends ConditionRunnableBuilder {
 		return (ConditionBindingBuilder<T>) super.and(condition);
 	}
 
+	/**
+	 * execute if the previous condition or this predicate applies
+	 */
 	public ConditionBindingBuilder<T> or(Predicate<T> condition) {
 		ConditionalReactiveBinding<T> binding = (ConditionalReactiveBinding<T>) runnable;
 		binding.setPredicate(new OrPredicate<>(binding.getPredicate(), condition));
 		return this;
 	}
 
+	/**
+	 * execute if the previous condition and this predicate applies
+	 */
 	public ConditionBindingBuilder<T> and(Predicate<T> condition) {
 		ConditionalReactiveBinding<T> binding = (ConditionalReactiveBinding<T>) runnable;
 		binding.setPredicate(new AndPredicate<>(binding.getPredicate(), condition));

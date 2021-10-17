@@ -28,12 +28,21 @@ public class BaseRunnableBuilder {
 		return rootBuilder;
 	}
 
+	/**
+	 * Same as {@link #on(GenericEventEmitter)} but using a {@link EventEmitter} rather than a {@link
+	 * GenericEventEmitter}
+	 */
 	public AdditionalEventBuilder on(EventEmitter<?> emitter) {
 		rootBuilder.add(runnable);
 		emitter.addListener(ignored -> rootBuilder.getTarget().run());
 		return new AdditionalEventBuilder();
 	}
 
+	/**
+	 * Execute <b>all</b> defined runnables and bindings on the occurrence of {@code emitter}
+	 *
+	 * @param emitter the emitter to subscribe to
+	 */
 	public AdditionalEventBuilder on(GenericEventEmitter emitter) {
 		rootBuilder.add(runnable);
 		emitter.addListener(rootBuilder.getTarget()::run);
