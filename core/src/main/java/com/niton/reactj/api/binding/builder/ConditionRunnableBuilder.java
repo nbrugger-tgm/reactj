@@ -3,7 +3,6 @@ package com.niton.reactj.api.binding.builder;
 import com.niton.reactj.api.binding.predicates.CombiningCondition;
 import com.niton.reactj.api.binding.predicates.Condition;
 import com.niton.reactj.api.binding.predicates.HasCondition;
-import com.niton.reactj.api.binding.runnable.ConditionalRunnable;
 
 public class ConditionRunnableBuilder extends BaseRunnableBuilder {
 
@@ -12,7 +11,7 @@ public class ConditionRunnableBuilder extends BaseRunnableBuilder {
 	}
 
 	public ConditionRunnableBuilder or(Condition condition) {
-		ConditionalRunnable runnable = (ConditionalRunnable) this.runnable;
+		HasCondition runnable = (HasCondition) this.runnable;
 		CombiningCondition.Or or = new CombiningCondition.Or(
 				runnable.getCondition(),
 				condition
@@ -23,7 +22,7 @@ public class ConditionRunnableBuilder extends BaseRunnableBuilder {
 
 
 	public ConditionRunnableBuilder and(Condition condition) {
-		ConditionalRunnable runnable = (ConditionalRunnable) this.runnable;
+		HasCondition runnable = (HasCondition) this.runnable;
 		CombiningCondition.And and = new CombiningCondition.And(
 				runnable.getCondition(),
 				condition

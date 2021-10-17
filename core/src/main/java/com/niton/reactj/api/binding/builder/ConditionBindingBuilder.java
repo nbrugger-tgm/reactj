@@ -42,12 +42,14 @@ public class ConditionBindingBuilder<T> extends ConditionRunnableBuilder {
 	}
 
 	//needs to be suppressed as this is always of "this" type
+	@Override
 	@SuppressWarnings("unchecked")
 	public ConditionBindingBuilder<T> or(Condition condition) {
 		return (ConditionBindingBuilder<T>) super.or(condition);
 	}
 
 	//needs to be suppressed as this is always of "this" type
+	@Override
 	@SuppressWarnings("unchecked")
 	public ConditionBindingBuilder<T> and(Condition condition) {
 		return (ConditionBindingBuilder<T>) super.and(condition);
@@ -55,7 +57,7 @@ public class ConditionBindingBuilder<T> extends ConditionRunnableBuilder {
 
 	public ConditionBindingBuilder<T> or(Predicate<T> condition) {
 		ConditionalReactiveBinding<T> binding = (ConditionalReactiveBinding<T>) runnable;
-		binding.setPredicate(new AndPredicate<>(binding.getPredicate(), condition));
+		binding.setPredicate(new OrPredicate<>(binding.getPredicate(), condition));
 		return this;
 	}
 

@@ -1,5 +1,6 @@
 package com.niton.reactj.api.binding.builder;
 
+import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.utils.event.GenericEventEmitter;
 
 public class BaseRunnableBuilder {
@@ -20,15 +21,24 @@ public class BaseRunnableBuilder {
 	}
 
 	public RunnableCallBuilder and(Runnable runnable) {
-		return rootBuilder.call(runnable);
+		return andAlso().call(runnable);
 	}
 
 	public ExposedBindingBuilder andAlso() {
+		rootBuilder.add(runnable);
 		return rootBuilder;
 	}
 
+	public AdditionalEventBuilder on(EventEmitter<?> emitter) {
+		rootBuilder.add(runnable);
+		emitter.addListener(ignored -> rootBuilder.getTarget().run());
+		return new AdditionalEventBuilder();
+	}
+
 	public AdditionalEventBuilder on(GenericEventEmitter emitter) {
+		rootBuilder.add(runnable);
 		emitter.addListener(rootBuilder.getTarget()::run);
 		return new AdditionalEventBuilder();
 	}
+
 }

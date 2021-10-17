@@ -8,6 +8,8 @@ public class PropertyObservation<M> {
 	public final M      observed;
 
 	public PropertyObservation(String propertyName, Object propertyValue, M observed) {
+		if (propertyName == null || propertyValue == null || observed == null)
+			throw new IllegalArgumentException("PropertyObservation can't have 'null' parameters");
 		this.propertyName  = propertyName;
 		this.propertyValue = propertyValue;
 		this.observed      = observed;
