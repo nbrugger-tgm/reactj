@@ -1,10 +1,11 @@
 package com.niton.reactj.api.binding.builder;
 
+import com.niton.reactj.api.binding.builder.exposed.ExposedReactiveBinder;
 import com.niton.reactj.api.binding.runnable.RunnableGroup;
 
 import java.util.function.Consumer;
 
-public class BindingBuilder implements ExposedBindingBuilder {
+public class CallBuilder implements ExposedReactiveBinder {
 	private final RunnableGroup runnables = new RunnableGroup();
 
 	public RunnableCallBuilder call(Runnable runnable) {
@@ -13,10 +14,10 @@ public class BindingBuilder implements ExposedBindingBuilder {
 		return new RunnableCallBuilder(runnable, this);
 	}
 
-	public <T> ConsumerCallBuilder<T> call(Consumer<T> runnable) {
+	public <T> ConsumerBuilder<T> call(Consumer<T> runnable) {
 		if (runnable == null)
 			throw new IllegalArgumentException("Cannot bind a 'null' runnable");
-		return new ConsumerCallBuilder<>(this, runnable);
+		return new ConsumerBuilder<>(this, runnable);
 	}
 
 	/**
@@ -26,7 +27,7 @@ public class BindingBuilder implements ExposedBindingBuilder {
 		runnables.add(group);
 	}
 
-	public Runnable getTarget() {
+	public RunnableGroup getTarget() {
 		return runnables;
 	}
 }

@@ -1,7 +1,7 @@
 package com.niton.reactj.test.api.binding;
 
-import com.niton.reactj.api.binding.builder.BindingBuilder;
-import com.niton.reactj.api.binding.builder.ExposedBindingBuilder;
+import com.niton.reactj.api.binding.builder.CallBuilder;
+import com.niton.reactj.api.binding.builder.exposed.ExposedReactiveBinder;
 import com.niton.reactj.api.binding.predicates.Condition;
 import com.niton.reactj.utils.event.GenericEventEmitter;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,14 +17,14 @@ class RunnableBindingTest {
 	private final GenericEventEmitter   coolEvent2 = new GenericEventEmitter();
 	private       int                   counter;
 	//use the "exposed" to hide unneeded methods
-	private       ExposedBindingBuilder builder;
+	private       ExposedReactiveBinder builder;
 
 	@BeforeEach
 	void init() {
 		coolEvent.removeListeners();
 		coolEvent2.removeListeners();
 		counter = 0;
-		builder = new BindingBuilder();
+		builder = new CallBuilder();
 	}
 
 	@Test

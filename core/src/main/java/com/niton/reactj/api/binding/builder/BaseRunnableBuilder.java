@@ -1,12 +1,19 @@
 package com.niton.reactj.api.binding.builder;
 
+import com.niton.reactj.api.binding.builder.exposed.ExposedBaseRunnableBuilder;
+import com.niton.reactj.api.binding.builder.exposed.ExposedReactiveBinder;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.utils.event.GenericEventEmitter;
 
-public class BaseRunnableBuilder<T extends Runnable> {
+import java.util.function.Consumer;
 
-	protected final BindingBuilder rootBuilder;
-	protected final T              runnable;
+public class BaseRunnableBuilder<T extends Runnable> implements ExposedBaseRunnableBuilder<T> {
+
+	protected final CallBuilder rootBuilder;
+	protected final T           runnable;
+
+	public interface OneArgumentEventAdder<T> extends Consumer<Consumer<T>> {
+	}
 
 	public class AdditionalEventBuilder {
 		public AdditionalEventBuilder andOn(GenericEventEmitter emitter) {
@@ -15,38 +22,35 @@ public class BaseRunnableBuilder<T extends Runnable> {
 		}
 	}
 
-	public BaseRunnableBuilder(T r, BindingBuilder rootBuilder) {
+	public BaseRunnableBuilder(T r, CallBuilder rootBuilder) {
 		this.runnable    = r;
 		this.rootBuilder = rootBuilder;
 	}
 
-	/**
-	 * Append a new execution statement to this binding
-	 */
-	public ExposedBindingBuilder andAlso() {
+	@Override
+	public ExposedReactiveBinder andAlso() {
 		rootBuilder.add(runnable);
 		return rootBuilder;
 	}
 
-	/**
-	 * Same as {@link #on(GenericEventEmitter)} but using a {@link EventEmitter} rather than a {@link
-	 * GenericEventEmitter}
-	 */
+	@Override
 	public AdditionalEventBuilder on(EventEmitter<?> emitter) {
 		rootBuilder.add(runnable);
 		emitter.addListener(ignored -> rootBuilder.getTarget().run());
 		return new AdditionalEventBuilder();
 	}
 
-	/**
-	 * Execute <b>all</b> defined runnables and bindings on the occurrence of {@code emitter}
-	 *
-	 * @param emitter the emitter to subscribe to
-	 */
+	@Override
 	public AdditionalEventBuilder on(GenericEventEmitter emitter) {
 		rootBuilder.add(runnable);
 		emitter.addListener(rootBuilder.getTarget()::run);
 		return new AdditionalEventBuilder();
 	}
 
+	@Override
+	public AdditionalEventBuilder on(Consumer<Runnable> listenerAdder) {
+		rootBuilder.add(runnable);
+		listenerAdder.accept(rootBuilder.getTarget());
+		return new AdditionalEventBuilder();
+	}
 }

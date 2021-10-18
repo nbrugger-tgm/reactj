@@ -10,4 +10,8 @@ public class Progress {
 	public void setProgress(double progress) {
 		this.progress = progress;
 	}
+
+	public boolean isDone() {
+		return progress >= 0.99;
+	}
 }

@@ -1,4 +1,4 @@
-package com.niton.reactj.api.proxy.infusion;
+package com.niton.reactj.observer.infusion;
 
 import java.lang.invoke.MethodHandles;
 

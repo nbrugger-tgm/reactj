@@ -11,21 +11,21 @@ import com.niton.reactj.utils.event.GenericListener;
  * @param <O> the type to be observed (should implement {@link Reactable})
  */
 public abstract class AbstractObserver<T, O> {
-	private final GenericListener updateListener  = this::update;
-	private final EventEmitter<T> observeEvent    = new EventEmitter<>();
+	public final  EventEmitter<T> onObservation    = new EventEmitter<>();
+	private final GenericListener onChangeListener = this::update;
 	protected     O               observedObject;
 	/**
 	 * If this property is true, calling {@link #observe(Object)} will report all changes to listeners.
 	 * Otherwise {@link #observe(Object)} will call {@link #reset()}
 	 */
-	private       boolean         observeOnRebind = true;
+	private       boolean         observeOnRebind  = true;
 
 	public void addListener(Listener<T> listener) {
-		observeEvent.addListener(listener);
+		onObservation.addListener(listener);
 	}
 
 	public void removeListener(Listener<T> listener) {
-		observeEvent.stopListening(listener);
+		onObservation.stopListening(listener);
 	}
 
 	/**
@@ -34,7 +34,7 @@ public abstract class AbstractObserver<T, O> {
 	 * @param observation the data of the observation
 	 */
 	protected final void fireObservation(T observation) {
-		observeEvent.fire(observation);
+		onObservation.fire(observation);
 	}
 
 	/**
@@ -42,7 +42,9 @@ public abstract class AbstractObserver<T, O> {
 	 * <p>
 	 * As one observer can just observe one object, the last object will not be observed anymore
 	 *
-	 * @param observable the object to observe
+	 * @param observable the object to observe. Should implement {@link Reactable}, if not {@link #update()} has to be
+	 *                   called manually.
+	 *                   <br>Hint:</bt><i>all proxies extend {@link Reactable}</i>
 	 */
 	public void observe(O observable) {
 		if (observable == null)
@@ -52,7 +54,7 @@ public abstract class AbstractObserver<T, O> {
 			stopObservation();
 		observedObject = observable;
 		if (observable instanceof Reactable)
-			((Reactable) observable).reactEvent().addListener(updateListener);
+			((Reactable) observable).reactEvent().addListener(onChangeListener);
 		if (observeOnRebind) {
 			update();
 		} else {
@@ -65,7 +67,7 @@ public abstract class AbstractObserver<T, O> {
 	 */
 	public void stopObservation() {
 		if (observedObject instanceof Reactable)
-			((Reactable) observedObject).reactEvent().stopListening(updateListener);
+			((Reactable) observedObject).reactEvent().stopListening(onChangeListener);
 	}
 
 	/**

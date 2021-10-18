@@ -10,11 +10,17 @@ import java.util.function.Supplier;
  */
 public class ReactiveBinding<T> implements Runnable {
 	protected final Consumer<T> consumer;
-	protected final Supplier<T> source;
+	protected       Supplier<T> source;
 
 	public ReactiveBinding(Consumer<T> consumer, Supplier<T> source) {
+		if (consumer == null)
+			throw new IllegalArgumentException("Can't bind null consumer");
 		this.consumer = consumer;
 		this.source   = source;
+	}
+
+	public void setSource(Supplier<T> source) {
+		this.source = source;
 	}
 
 	/**

@@ -1,16 +1,38 @@
 package com.niton.reactj.api.binding.builder;
 
+import com.niton.reactj.api.binding.ConditionalBindingWithRunnables;
+import com.niton.reactj.api.binding.ConvertingConsumer;
 import com.niton.reactj.api.binding.ReactiveBinding;
+import com.niton.reactj.api.binding.builder.exposed.ExposedBindingBuilder;
+import com.niton.reactj.api.binding.builder.exposed.ExposedSourceBindingCallBuilder;
 import com.niton.reactj.api.event.EventEmitter;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ConvertingConsumerBuilder<T> {
-	private final BindingBuilder rootBuilder;
-	private final Consumer<T>    consumer;
+	private final CallBuilder              rootBuilder;
+	private final ConvertingConsumer<T, ?> consumer;
 
-	public ConvertingConsumerBuilder(BindingBuilder rootBuilder, Consumer<T> consumer) {
+	private static class EventBinding<T> extends ReactiveBinding<T> {
+		private T event;
+
+		public EventBinding(Consumer<T> consumer) {
+			super(consumer, null);
+			setSource(this::getEvent);
+		}
+
+		public T getEvent() {
+			return event;
+		}
+
+		public void setEvent(T event) {
+			this.event = event;
+		}
+	}
+
+	public ConvertingConsumerBuilder(CallBuilder rootBuilder, ConvertingConsumer<T, ?> consumer) {
 		this.rootBuilder = rootBuilder;
 		this.consumer    = consumer;
 	}
@@ -22,9 +44,9 @@ public class ConvertingConsumerBuilder<T> {
 	 *
 	 * @see ReactiveBinding
 	 */
-	public BindingCallBuilder<T> from(Supplier<T> source) {
+	public ExposedSourceBindingCallBuilder<T> from(Supplier<T> source) {
 		ReactiveBinding<T> binding = new ReactiveBinding<>(consumer, source);
-		return new BindingCallBuilder<>(binding, rootBuilder);
+		return new SourceBindingCallBuilder<>(binding, rootBuilder);
 	}
 
 	/**
@@ -32,10 +54,24 @@ public class ConvertingConsumerBuilder<T> {
 	 *
 	 * @param event the event to subscribe to
 	 */
-	public void from(EventEmitter<T> event) {
+	public ExposedBindingBuilder<T, ConditionalEventBindingBuilder<T>> from(EventEmitter<T> event) {
+		var eventBinding = new EventBinding<>(consumer);
+		ConditionalBindingWithRunnables<T> binding = new ConditionalBindingWithRunnables<>(
+				eventBinding,
+				rootBuilder.getTarget()
+		);
 		event.listen(e -> {
-			consumer.accept(e);
-			rootBuilder.getTarget().run();
+			synchronized (eventBinding) {
+				eventBinding.setEvent(e);
+				binding.run();
+			}
 		});
+		return new EventBindingBuilder<>(binding);
+	}
+
+
+	public <F> ConvertingConsumerBuilder<F> from(Function<F, T> converter) {
+		var newConsumer = new ConvertingConsumer<>(consumer, converter);
+		return new ConvertingConsumerBuilder<>(rootBuilder, newConsumer);
 	}
 }

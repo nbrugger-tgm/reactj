@@ -2,12 +2,13 @@ package com.niton.reactj.examples.swing;
 
 import com.niton.reactj.core.annotation.ReactiveResolution;
 import com.niton.reactj.core.annotation.Unreactive;
+import com.niton.reactj.core.proxy.ProxySubject;
 
 import static com.niton.reactj.core.annotation.ReactiveResolution.ReactiveResolutionType.FLAT;
 
 //optional
 @ReactiveResolution(FLAT)
-public class Person {
+public class Person implements ProxySubject {
 	private int    age;
 	private String name;
 	private int    iq;

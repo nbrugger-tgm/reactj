@@ -1,26 +1,54 @@
 package com.niton.reactj.api.mvc;
 
-import com.niton.reactj.api.observer.Reactable;
-import com.niton.reactj.core.react.ReactiveBinder;
+import com.niton.reactj.api.binding.builder.ReactiveBinder;
+import com.niton.reactj.api.event.EventEmitter;
+import com.niton.reactj.api.observer.AbstractObserver;
+import com.niton.reactj.core.mvc.ModelCallBuilder;
+import com.niton.reactj.utils.event.GenericEventEmitter;
 
 /**
- * Used to create a component that reacts to a Reactable Model. Most likely used for Views and similar stuff.<br>
- * Annotate methods with @ReactiveListener for automatic bindings
- * (this only works in combination with {@link com.niton.reactj.core.react.ReactiveController})
+ * The base for reactive views
  *
- * @param <M> the type of the model to react to in this component
+ * @param <M> the type of the model (e.g. Person)
+ * @param <O> the type of the observation (e.g. PropertyObservation)
+ * @param <V> the type of the view (e.g. JPanel)
  */
-public interface ReactiveComponent<M extends Reactable> {
-	/**
-	 * Add bindings that define how to react to changes in the model.<br>
-	 * Use {@code binder.<bindingMethod>} to bind a method to a change<br><br>
-	 * <b>Example:</b><br>
-	 * {@code
-	 * binder.bind("name",nameLabel::setText);
-	 * }<br>
-	 * This would bind the name property to the name label -> name label always displays the name
-	 *
-	 * @param binder the binder to bind to (used to create the bindings)
-	 */
-	void createBindings(ReactiveBinder<M> binder);
+public abstract class ReactiveComponent<M, O, V> {
+	public final    GenericEventEmitter    onUiUpdate = new GenericEventEmitter();
+	protected final AbstractObserver<O, M> observer;
+	private         V                      view;
+
+	protected ReactiveComponent(AbstractObserver<O, M> observer) {this.observer = observer;}
+
+	public V getView() {
+		if (view == null) {
+			view = createView();
+			initBindings();
+		}
+		return view;
+	}
+
+	protected abstract V createView();
+
+	private void initBindings() {
+		registerBindings(new ReactiveBinder<>(this::createBuilder), observer.onObservation);
+		observer.addListener(e -> onUiUpdate.fire());
+	}
+
+	protected abstract void registerBindings(
+			ReactiveBinder<ModelCallBuilder<M>> builder,
+			EventEmitter<O> observerEvent
+	);
+
+	private ModelCallBuilder<M> createBuilder() {
+		return new ModelCallBuilder<>(this::getModel);
+	}
+
+	public M getModel() {
+		return observer.getObserved();
+	}
+
+	public void setModel(M model) {
+		observer.observe(model);
+	}
 }

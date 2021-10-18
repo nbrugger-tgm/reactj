@@ -3,13 +3,13 @@ package com.niton.reactj.core.proxy;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.proxy.AbstractProxyCreator;
 import com.niton.reactj.api.proxy.ProxyException;
-import com.niton.reactj.api.proxy.infusion.BesideOriginInfuser;
-import com.niton.reactj.api.proxy.infusion.InfusionAccessProvider;
-import com.niton.reactj.api.proxy.infusion.StaticInfuser;
-import com.niton.reactj.api.proxy.infusion.StaticInfuserWithLookup;
 import com.niton.reactj.core.observer.Reflective;
 import com.niton.reactj.core.observer.ReflectiveWrapper;
 import com.niton.reactj.core.react.ReactiveStrategy;
+import com.niton.reactj.observer.infusion.BesideOriginInfuser;
+import com.niton.reactj.observer.infusion.InfusionAccessProvider;
+import com.niton.reactj.observer.infusion.StaticInfuser;
+import com.niton.reactj.observer.infusion.StaticInfuserWithLookup;
 import com.niton.reactj.utils.reflections.ReflectiveUtil;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.UsingLookup;
 import net.bytebuddy.implementation.FieldAccessor;
@@ -26,8 +26,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.niton.reactj.api.proxy.ProxyBuilder.ORIGIN_FIELD;
 import static com.niton.reactj.observer.util.Matchers.from;
+import static com.niton.reactj.proxy.ProxyBuilder.ORIGIN_FIELD;
 import static net.bytebuddy.implementation.DefaultMethodCall.prioritize;
 import static net.bytebuddy.matcher.ElementMatchers.is;
 

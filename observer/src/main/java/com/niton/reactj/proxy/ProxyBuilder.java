@@ -1,9 +1,10 @@
-package com.niton.reactj.api.proxy;
+package com.niton.reactj.proxy;
 
 import com.niton.reactj.api.observer.Reactable;
-import com.niton.reactj.api.proxy.infusion.InfusionAccessProvider;
+import com.niton.reactj.api.proxy.ProxyException;
 import com.niton.reactj.api.react.ReactiveForwarder;
 import com.niton.reactj.api.react.ReactiveWrapper;
+import com.niton.reactj.observer.infusion.InfusionAccessProvider;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.DynamicType;
@@ -32,7 +33,7 @@ public class ProxyBuilder {
 	public static final  String ORIGIN_FIELD  = "PROXY_ORIGIN";
 	public static final  String WRAPPER_FIELD = "PROXY_WRAPPER";
 	private static final Method getReactiveTarget;
-	private static int                    counter = 0;
+	private static       int    counter       = 0;
 
 	static {
 		try {
@@ -42,7 +43,7 @@ public class ProxyBuilder {
 		}
 	}
 
-	private final  InfusionAccessProvider accessor;
+	private final InfusionAccessProvider accessor;
 
 	public ProxyBuilder(InfusionAccessProvider accessProvider) {
 		this.accessor = accessProvider;

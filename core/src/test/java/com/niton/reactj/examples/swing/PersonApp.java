@@ -1,27 +1,25 @@
 package com.niton.reactj.examples.swing;
 
 import com.niton.reactj.core.proxy.ProxyCreator;
-import com.niton.reactj.core.proxy.ReactiveProxy;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class PersonApp {
 	public static void main(String[] args) throws InterruptedException {
-		ProxyCreator          creator = ProxyCreator.besideOrigin();
-		ReactiveProxy<Person> proxy   = creator.create(new Person(12, "Niton"));
+		ProxyCreator creator = ProxyCreator.besideOrigin();
+		Person       person  = creator.create(new Person(12, "Niton"));
 
 		//A controller for custom events
 		PersonController ownController = new PersonController();
 
-		Person     information = proxy.getObject();
-		PersonView component   = new PersonView();
-		PersonView component1  = new PersonView();
-		PersonView component2  = new PersonView();
+		PersonComponent component  = new PersonComponent();
+		PersonComponent component1 = new PersonComponent();
+		PersonComponent component2 = new PersonComponent();
 
-		component.resetEvent.listen(ownController);
-		component1.resetEvent.listen(ownController);
-		component2.resetEvent.listen(ownController);
+		component.onReset.listen(ownController);
+		component1.onReset.listen(ownController);
+		component2.onReset.listen(ownController);
 
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -34,14 +32,14 @@ public class PersonApp {
 		frame.pack();
 		frame.setVisible(true);
 
-		component.setData(proxy);
-		component1.setData(proxy);
-		component2.setData(proxy);
+		component.setModel(person);
+		component1.setModel(person);
+		component2.setModel(person);
 
-		information.setAge(19);
-		information.setGender(Gender.MALE);
-		information.setIq(120);
-		information.setName("Niton");
+		person.setAge(19);
+		person.setGender(Gender.MALE);
+		person.setIq(120);
+		person.setName("Niton");
 
 		while (information.getAge() < 100) {
 			Thread.sleep(1000);

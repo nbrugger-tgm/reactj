@@ -1,4 +1,4 @@
-package com.niton.reactj.api.proxy;
+package com.niton.reactj.proxy;
 
 import com.niton.reactj.api.exceptions.ReactiveAccessException;
 import com.niton.reactj.api.exceptions.ReactiveException;
@@ -12,7 +12,7 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static com.niton.reactj.api.proxy.ProxyBuilder.*;
+import static com.niton.reactj.proxy.ProxyBuilder.*;
 
 /**
  * These are the method implementations used for {@link com.niton.reactj.api.observer.Reactable} proxies

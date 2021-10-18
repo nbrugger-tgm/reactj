@@ -7,11 +7,11 @@ import com.niton.reactj.api.binding.runnable.RunnableGroup;
 public class RunnableCallBuilder extends BaseRunnableBuilder {
 
 
-	public RunnableCallBuilder(Runnable r, BindingBuilder rootBuilder) {
+	public RunnableCallBuilder(Runnable r, CallBuilder rootBuilder) {
 		super(new RunnableGroup(r), rootBuilder);
 	}
 
-	public RunnableCallBuilder(RunnableGroup r, BindingBuilder rootBuilder) {
+	public RunnableCallBuilder(RunnableGroup r, CallBuilder rootBuilder) {
 		super(r, rootBuilder);
 	}
 
@@ -20,8 +20,8 @@ public class RunnableCallBuilder extends BaseRunnableBuilder {
 	 *
 	 * @param condition the condition to check before execution
 	 */
-	public ConditionRunnableBuilder when(Condition condition) {
-		return new ConditionRunnableBuilder(new ConditionalRunnable(condition, runnable), rootBuilder);
+	public ConditionalRunnableBuilder when(Condition condition) {
+		return new ConditionalRunnableBuilder(new ConditionalRunnable(condition, runnable), rootBuilder);
 	}
 
 

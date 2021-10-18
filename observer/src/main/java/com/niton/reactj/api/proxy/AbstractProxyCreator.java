@@ -2,8 +2,9 @@ package com.niton.reactj.api.proxy;
 
 import com.niton.reactj.api.exceptions.ReactiveAccessException;
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.api.proxy.infusion.InfusionAccessProvider;
 import com.niton.reactj.api.react.ReactiveWrapper;
+import com.niton.reactj.observer.infusion.InfusionAccessProvider;
+import com.niton.reactj.proxy.ProxyBuilder;
 import com.niton.reactj.utils.reflections.ReflectiveUtil;
 
 import java.lang.invoke.MethodHandles.Lookup;
@@ -11,7 +12,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.niton.reactj.api.proxy.ProxyBuilder.*;
+import static com.niton.reactj.proxy.ProxyBuilder.*;
 
 public abstract class AbstractProxyCreator {
 	private final ProxyBuilder            builder;

@@ -3,7 +3,7 @@ package com.niton.reactj.lists.proxy;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.proxy.AbstractProxyCreator;
 import com.niton.reactj.api.proxy.ProxyException;
-import com.niton.reactj.api.proxy.infusion.StaticInfuserWithLookup;
+import com.niton.reactj.observer.infusion.StaticInfuserWithLookup;
 import com.niton.reactj.utils.exceptions.ReflectiveCallException;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.UsingLookup;
 

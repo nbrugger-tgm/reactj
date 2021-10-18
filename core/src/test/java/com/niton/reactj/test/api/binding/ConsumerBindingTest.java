@@ -1,7 +1,7 @@
 package com.niton.reactj.test.api.binding;
 
-import com.niton.reactj.api.binding.builder.BindingBuilder;
-import com.niton.reactj.api.binding.builder.ExposedBindingBuilder;
+import com.niton.reactj.api.binding.builder.CallBuilder;
+import com.niton.reactj.api.binding.builder.exposed.ExposedReactiveBinder;
 import com.niton.reactj.api.binding.predicates.Condition;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.core.observer.PropertyObservation;
@@ -26,7 +26,7 @@ class ConsumerBindingTest {
 	private        String                                    received;
 
 	//use the "exposed" to hide unneeded methods
-	private ExposedBindingBuilder builder;
+	private ExposedReactiveBinder builder;
 
 
 	@BeforeEach
@@ -35,7 +35,7 @@ class ConsumerBindingTest {
 		received = null;
 		source   = null;
 		observerEvent.removeListeners();
-		builder = new BindingBuilder();
+		builder = new CallBuilder();
 	}
 
 	@Test
@@ -66,7 +66,7 @@ class ConsumerBindingTest {
 	void constantConsumer() {
 		String someConstant = "YE9984";
 		builder.call(this::setReceived)
-		       .with(someConstant)
+		       .withValue(someConstant)
 		       .on(coolEvent);
 		coolEvent.fire();
 		assertEquals(

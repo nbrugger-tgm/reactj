@@ -1,12 +1,9 @@
 package com.niton.reactj.test.mvc;
 
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.api.mvc.ReactiveComponent;
 import com.niton.reactj.core.annotation.ReactiveListener;
 import com.niton.reactj.core.proxy.ProxyCreator;
 import com.niton.reactj.core.proxy.ReactiveProxy;
-import com.niton.reactj.core.react.ReactiveBinder;
-import com.niton.reactj.core.react.ReactiveController;
 import com.niton.reactj.test.models.Base;
 import com.niton.reactj.test.models.DeepBase;
 import com.niton.reactj.test.models.FlatBase;

@@ -3,28 +3,19 @@ package com.niton.reactj.api.binding.builder;
 import com.niton.reactj.api.binding.ConsumerGroup;
 import com.niton.reactj.api.binding.ConvertingConsumer;
 import com.niton.reactj.api.binding.ReactiveBinding;
+import com.niton.reactj.api.binding.builder.exposed.ExposedSourceBindingCallBuilder;
+import com.niton.reactj.api.binding.predicates.ConstantSupplier;
 import com.niton.reactj.api.event.EventEmitter;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class ConsumerCallBuilder<T> {
-	private final BindingBuilder   rootBuilder;
+public class ConsumerBuilder<T> {
+	private final CallBuilder      rootBuilder;
 	private final ConsumerGroup<T> consumer = new ConsumerGroup<>();
 
-	private static class ConstantSupplier<T> implements Supplier<T> {
-		private final T value;
-
-		private ConstantSupplier(T value) {this.value = value;}
-
-		@Override
-		public T get() {
-			return value;
-		}
-	}
-
-	public ConsumerCallBuilder(BindingBuilder rootBuilder, Consumer<T> consumer) {
+	public ConsumerBuilder(CallBuilder rootBuilder, Consumer<T> consumer) {
 		this.rootBuilder = rootBuilder;
 		this.consumer.add(consumer);
 	}
@@ -34,7 +25,7 @@ public class ConsumerCallBuilder<T> {
 	 *
 	 * @see ConsumerGroup
 	 */
-	public ConsumerCallBuilder<T> and(Consumer<T> consumer) {
+	public ConsumerBuilder<T> and(Consumer<T> consumer) {
 		this.consumer.add(consumer);
 		return this;
 	}
@@ -51,8 +42,8 @@ public class ConsumerCallBuilder<T> {
 	 *
 	 * @param source the supplier to get the value for the consumer from
 	 */
-	public BindingCallBuilder<T> with(Supplier<T> source) {
-		return new BindingCallBuilder<>(new ReactiveBinding<>(consumer, source), rootBuilder);
+	public ExposedSourceBindingCallBuilder<T> with(Supplier<T> source) {
+		return new SourceBindingCallBuilder<>(new ReactiveBinding<>(consumer, source), rootBuilder);
 	}
 
 	/**
@@ -60,9 +51,9 @@ public class ConsumerCallBuilder<T> {
 	 *
 	 * @param constant the constant value to call the consumer with
 	 */
-	public BindingCallBuilder<T> with(T constant) {
+	public ExposedSourceBindingCallBuilder<T> withValue(T constant) {
 		var binding = new ReactiveBinding<>(consumer, new ConstantSupplier<>(constant));
-		return new BindingCallBuilder<>(binding, rootBuilder);
+		return new SourceBindingCallBuilder<>(binding, rootBuilder);
 	}
 
 	/**

@@ -3,9 +3,9 @@ package com.niton.reactj.utils.event;
 
 import com.niton.reactj.api.event.CustomEventEmitter;
 
-public class GenericEventEmitter extends CustomEventEmitter<Void, GenericListener> {
+public class GenericEventEmitter extends CustomEventEmitter<Object, GenericListener> {
 	@Override
-	protected void call(GenericListener listener, Void event) {
+	protected void call(GenericListener listener, Object event) {
 		listener.onAction();
 	}
 
