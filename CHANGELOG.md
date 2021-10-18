@@ -1,16 +1,30 @@
+## v4.0.0b8 (2021-10-11)
+
+### Fix
+
+- minor bugs
+
+### Feat
+
+- replace reactTo() with method level @Reactive (#34)
+
+### Refactor
+
+- make @Reactive method only (#42)
+
 ## v4.0.0b7 (2021-09-26)
 
 ### Feat
 
 - list proxy support & proxy access rework (#45)
 
-## v4.0.0b6 (2021-09-25)
+## 4.0.0b6 (2021-09-25)
 
 ### Refactor
 
 - unify package structure between modules (#44)
 
-## v4.0.0b5 (2021-09-22)
+## v4.0.0b5 (2021-09-23)
 
 ### Refactor
 
