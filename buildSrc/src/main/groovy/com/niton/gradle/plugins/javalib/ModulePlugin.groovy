@@ -7,7 +7,6 @@ import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.jvm.tasks.Jar
-import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 
 class ModulePlugin implements Plugin<Project> {
     static Set<String> subPlugins = [
@@ -66,34 +65,41 @@ class ModulePlugin implements Plugin<Project> {
             }
         }
 
-        setupTesting(p)
+        setupTestingDependencies(p)
 
         p.tasks.create("testJar", Jar.class) {
             from p.sourceSets.test.output
         }
+        p.jacocoTestCoverageVerification {
+            dependsOn p.jacocoTestReport
+            violationRules {
+                rule {
+                    limit {
+                        minimum = 0.5
+                    }
+                }
+            }
+        }
 
-
-        p.jacocoTestReport {
+        p.tasks.jacocoTestReport {
             dependsOn p.test // tests are required to run before generating the report
             reports {
                 xml.enabled true
+                xml.destination p.layout.buildDirectory.file("reports/jacoco/coverage.xml").get().asFile
                 csv.enabled false
-                html.destination p.file("${p.buildDir}/jacocoHtml")
+                html.destination p.layout.buildDirectory.dir("reports/jacoco/html").get().asFile
             }
+        }
+        p.tasks.check {
+            finalizedBy p.tasks.jacocoTestCoverageVerification
         }
         p.jacoco {
             toolVersion = "0.8.5"
         }
-        p.test {
+        p.tasks.test {
             // Use junit platform for unit tests
             useJUnitPlatform()
             finalizedBy p.tasks.jacocoTestReport // report is always generated after tests run
-            jacoco {
-                enabled = true
-                dumpOnExit = true
-                classDumpDir = null
-                output = JacocoTaskExtension.Output.FILE
-            }
         }
 
         p.repositories {
@@ -102,7 +108,7 @@ class ModulePlugin implements Plugin<Project> {
     }
 
 
-    void setupTesting(p) {
+    void setupTestingDependencies(p) {
         p.dependencies {
             compileOnly 'org.junit.jupiter:junit-jupiter-api:5.7.2'
 
