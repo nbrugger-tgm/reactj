@@ -19,7 +19,7 @@ Its just like <b>Vue js</b> for java
 Documentation:
 
 - [Wiki](https://github.com/nbrugger-tgm/reactj/wiki)
-- [JavaDoc](https://niton.jfrog.io/artifactory/java-libs/com/niton/reactj/4.0.0b7/reactj-4.0.0b7-javadoc.jar!/index.html)
+- [JavaDoc](https://niton.jfrog.io/artifactory/java-libs/com/niton/reactj/4.0.0b8/reactj-4.0.0b8-javadoc.jar!/index.html)
 - [Changelog](CHANGELOG.md)
 
 ## Framework support implementation
@@ -52,14 +52,14 @@ Adding the dependency
 *plain*
 
 ```groovy
-implementation 'com.niton.reactj:core:4.0.0b7'
-implementation 'com.niton.reactj:lists:4.0.0b7'
+implementation 'com.niton.reactj:core:4.0.0b8'
+implementation 'com.niton.reactj:lists:4.0.0b8'
 ```
 
 *framework*
 
 ```groovy
-implementation 'com.niton.reactj:swing:4.0.0b7'
+implementation 'com.niton.reactj:swing:4.0.0b8'
 ```
 
 ### Maven
@@ -83,7 +83,7 @@ Adding the dependency
     <groupId>com.niton.reactj</groupId>
     <!--For artifactId use your UI framework (swing,javafx,qt or vaadin)-->
     <artifactId>swing</artifactId>
-    <version>4.0.0b7</version>
+    <version>4.0.0b8</version>
 </dependency>
 ```
 
