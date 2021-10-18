@@ -38,7 +38,6 @@ jobs:
   verify:
     name: "Verify"
     runs-on: ubuntu-latest
-    environment: CI_CD
     needs:
       - build
     steps:
