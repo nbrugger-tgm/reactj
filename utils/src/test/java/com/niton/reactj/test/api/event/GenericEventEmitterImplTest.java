@@ -1,9 +1,9 @@
 package com.niton.reactj.test.api.event;
 
 import com.niton.reactj.api.event.CustomEventEmitter;
-import com.niton.reactj.api.event.GenericEventEmitter;
-import com.niton.reactj.api.event.GenericListener;
 import com.niton.reactj.testing.event.EventEmitterImplTest;
+import com.niton.reactj.utils.event.GenericEventEmitter;
+import com.niton.reactj.utils.event.GenericListener;
 import org.junit.jupiter.api.DisplayName;
 
 @DisplayName("GenericEventEmitter")

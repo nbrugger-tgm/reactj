@@ -28,12 +28,22 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <
  */
 public class ProxyBuilder {
-	public static final  String PROXY_SUFFIX     = "PROXY";
-	public static final  String ORIGIN_FIELD     = "PROXY_ORIGIN";
-	public static final  String WRAPPER_FIELD    = "PROXY_WRAPPER";
-	public static final  String PROXY_NAME_REGEX = ".+_" + PROXY_SUFFIX + "\\$[0-9]+";
+	/**
+	 * This suffix is appended to proxy names
+	 */
+	public static final  String PROXY_SUFFIX  = "PROXY";
+	/**
+	 * This is the name of the field within a proxy the origin object
+	 * is stored in. Can be used for reflective access
+	 */
+	public static final  String ORIGIN_FIELD  = "PROXY_ORIGIN";
+	/**
+	 * This is the name of the field within a proxy the {@link ReactiveWrapper}
+	 * is stored in.
+	 */
+	public static final  String WRAPPER_FIELD = "PROXY_WRAPPER";
 	private static final Method getReactiveTarget;
-	private static       int    counter          = 0;
+	private static       int    counter       = 0;
 
 	static {
 		try {
@@ -73,7 +83,6 @@ public class ProxyBuilder {
 	 * @param unreactive  a descriptor which methods <b>not</b> to react to. Elements matched by this filter will
 	 *                    never be reacted to.
 	 * @param <T>         the type the proxy will emulate
-	 *
 	 * @return the template for the proxy class. Can be extended using {@link ByteBuddy}
 	 */
 	public <T> ReceiverTypeDefinition<T> buildProxy(

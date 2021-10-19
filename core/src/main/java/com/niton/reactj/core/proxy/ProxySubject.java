@@ -1,10 +1,10 @@
 package com.niton.reactj.core.proxy;
 
 
-import com.niton.reactj.api.event.GenericEventEmitter;
 import com.niton.reactj.api.observer.Reactable;
 import com.niton.reactj.core.exceptions.SubjectCallException;
 import com.niton.reactj.core.observer.Reflective;
+import com.niton.reactj.utils.event.GenericEventEmitter;
 
 import java.util.Map;
 

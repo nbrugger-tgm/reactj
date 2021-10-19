@@ -1,8 +1,8 @@
 package com.niton.reactj.api.observer;
 
-import com.niton.reactj.api.event.EventEmitter;
-import com.niton.reactj.api.event.GenericListener;
 import com.niton.reactj.api.event.Listener;
+import com.niton.reactj.utils.event.EventEmitter;
+import com.niton.reactj.utils.event.GenericListener;
 
 /**
  * The interface to use in order to create an observer.

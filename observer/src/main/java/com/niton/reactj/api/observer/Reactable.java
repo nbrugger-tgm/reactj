@@ -1,6 +1,6 @@
 package com.niton.reactj.api.observer;
 
-import com.niton.reactj.api.event.GenericEventEmitter;
+import com.niton.reactj.utils.event.GenericEventEmitter;
 
 /**
  * This interface enables objects to be reactive.<br>
