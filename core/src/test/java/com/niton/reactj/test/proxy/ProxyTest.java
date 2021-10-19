@@ -11,7 +11,6 @@ import com.niton.reactj.test.models.TestData;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -20,17 +19,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Object-Proxy")
 class ProxyTest {
-	private static final ProxyCreator            creator       = ProxyCreator.besideOrigin();
+	private static final ProxyCreator creator = ProxyCreator.besideOrigin();
 
 	static {
 		creator.setAllowUnsafeProxies(true);
 	}
 
-	public final         ReactiveProxy<TestData> personProxy   = creator.create(new TestData());
-	public               String                  lastChanged;
-	public               Object                  lastValue;
-	public               String                  converted;
-	public               int                     changeCounter = 0;
+	public String lastChanged;
+	public Object lastValue;
+	public int    changeCounter = 0;
 
 	@ReactiveResolution(DEEP)
 	public static class SubjectTestData extends TestData implements ProxySubject {
@@ -97,14 +94,14 @@ class ProxyTest {
 		assertEquals("id", lastChanged);
 		assertEquals(12, lastValue);
 
-		td.setC(Color.GREEN);
+		td.setC(TestData.TestEnum.GREEN);
 		assertNotNull(lastValue);
 		assertEquals("c", lastChanged);
-		assertEquals(Color.GREEN, lastValue);
+		assertEquals(TestData.TestEnum.GREEN, lastValue);
 		td.setId(99);
 		assertEquals("id", lastChanged);
-		td.setColor(Color.WHITE);
-		assertEquals(Color.WHITE, lastValue);
+		td.setColor(TestData.TestEnum.BLUE);
+		assertEquals(TestData.TestEnum.BLUE, lastValue);
 		int oldCounter = changeCounter;
 		testDataObserver.observe(obj);
 		assertEquals(
@@ -138,9 +135,9 @@ class ProxyTest {
 		assertEquals(12, d1.getId(), "Call to the reactive part of a Subject should be forwarded");
 		d1.set("id", 15);
 		assertEquals(15, d1.getId(), "Call to the reactive part of a Subject should be forwarded");
-		d1.set(Collections.singletonMap("c", Color.CYAN));
+		d1.set(Collections.singletonMap("c", TestData.TestEnum.BLUE));
 		assertEquals(
-				Color.CYAN,
+				TestData.TestEnum.BLUE,
 				d1.getC(),
 				"Call to the reactive part of a Subject should be forwarded"
 		);

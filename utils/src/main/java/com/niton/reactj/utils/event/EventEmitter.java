@@ -1,4 +1,7 @@
-package com.niton.reactj.api.event;
+package com.niton.reactj.utils.event;
+
+import com.niton.reactj.api.event.CustomEventEmitter;
+import com.niton.reactj.api.event.Listener;
 
 /**
  * An easy and fast to use implementation of {@link CustomEventEmitter}.

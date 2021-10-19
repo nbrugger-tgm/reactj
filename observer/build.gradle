@@ -1,23 +1,4 @@
-plugins {
-    id "java-library-module"
-}
-
-module {
-    group = "com.niton.reactj"
-    version = "4.0.0b7"
-}
-
-java {
-    sourceCompatibility 11
-    targetCompatibility 11
-}
-module.publishing {
-    repo = "https://niton.jfrog.io/artifactory/java-libs"
-    username = "nbrugger@student.tgm.ac.at"
-}
-
 dependencies {
     api project(":utils")
-
     api 'net.bytebuddy:byte-buddy:1.11.15'
 }

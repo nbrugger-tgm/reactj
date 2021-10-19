@@ -1,4 +1,4 @@
-package com.niton.reactj.utils.diff;
+package com.niton.reactj.api.diff;
 
 import java.util.SortedSet;
 
