@@ -2,6 +2,7 @@ package com.niton.reactj.test.api.proxy;
 
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.proxy.AbstractProxyCreator;
+import com.niton.reactj.api.proxy.ProxyException;
 import com.niton.reactj.api.proxy.infusion.BesideOriginInfuser;
 import com.niton.reactj.api.proxy.infusion.InfusionAccessProvider;
 import com.niton.reactj.api.react.ReactiveWrapper;
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
+import java.util.HashMap;
 
 import static com.niton.reactj.test.api.proxy.SimpleProxyTest.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +26,7 @@ class AbstractProxyCreatorTest {
 		}
 
 		public static Field getField(Class<?> proxyClass, String field) {
-			return AbstractProxyCreator.getField(proxyClass, Map.of(), field);
+			return AbstractProxyCreator.getField(proxyClass, new HashMap<>(), field);
 		}
 
 		@Override
@@ -100,7 +101,7 @@ class AbstractProxyCreatorTest {
 		var proxy     = buildSimpleProxy(MethodHandles.lookup());
 		var proxClass = proxy.getClass();
 		assertThrows(
-				ReactiveException.class,
+				ProxyException.class,
 				() -> creator.createProxyClass(proxClass),
 				"Creating a proxy for a proxy should throw an exception"
 		);
