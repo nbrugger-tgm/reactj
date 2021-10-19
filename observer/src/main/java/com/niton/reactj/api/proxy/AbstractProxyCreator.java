@@ -26,6 +26,24 @@ public abstract class AbstractProxyCreator {
 		builder       = new ProxyBuilder(accessor);
 	}
 
+	protected static Field getField(Class<?> proxyClass, Map<Class<?>, Field> fieldMap, String field) {
+		return fieldMap.computeIfAbsent(proxyClass, pc -> {
+			try {
+				Field f = pc.getDeclaredField(field);
+				f.setAccessible(true);
+				return f;
+			} catch (NoSuchFieldException e) {
+				throw new ReactiveException("Can't find wrapper field in proxy", e);
+			}
+		});
+	}
+
+	public static <T> void verifyOriginClass(Class<? extends T> originClass) {
+		for (Field f : originClass.getFields())
+			if (ReflectiveUtil.isMutableInstanceVar(f))
+				ProxyException.publicFieldException(originClass);
+	}
+
 	/**
 	 * Copies values from the proxy to the actual object.
 	 * This is only needed if you accessed variables without getters or setters
@@ -46,7 +64,7 @@ public abstract class AbstractProxyCreator {
 	}
 
 	private void assertIsProxy(Object proxy) {
-		if (!proxy.getClass().getName().matches(PROXY_NAME_REGEX))
+		if (!proxy.getClass().getName().matches(ProxyBuilder.PROXY_NAME_REGEX))
 			throw new IllegalArgumentException("sync() requires an proxy");
 	}
 
@@ -58,18 +76,6 @@ public abstract class AbstractProxyCreator {
 		if (ReflectiveUtil.isMutableInstanceVar(f)) {
 			f.set(origin, f.get(proxy));
 		}
-	}
-
-	protected static Field getField(Class<?> proxyClass, Map<Class<?>, Field> fieldMap, String field) {
-		return fieldMap.computeIfAbsent(proxyClass, pc -> {
-			try {
-				Field f = pc.getDeclaredField(field);
-				f.setAccessible(true);
-				return f;
-			} catch (NoSuchFieldException e) {
-				throw new ReactiveException("Can't find wrapper field in proxy", e);
-			}
-		});
 	}
 
 	public void setAllowUnsafeProxies(boolean allowUnsafeProxies) {
@@ -87,12 +93,6 @@ public abstract class AbstractProxyCreator {
 
 	public boolean allowsUnsafeProxies() {
 		return allowUnsafeProxies;
-	}
-
-	public static <T> void verifyOriginClass(Class<? extends T> originClass) {
-		for (Field f : originClass.getFields())
-			if (ReflectiveUtil.isMutableInstanceVar(f))
-				ProxyException.publicFieldException(originClass);
 	}
 
 	private void assertNotProxy(Class<?> originClass) {

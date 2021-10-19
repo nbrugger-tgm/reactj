@@ -31,19 +31,23 @@ public class ProxyBuilder {
 	/**
 	 * This suffix is appended to proxy names
 	 */
-	public static final  String PROXY_SUFFIX  = "PROXY";
+	public static final  String PROXY_SUFFIX     = "PROXY";
 	/**
 	 * This is the name of the field within a proxy the origin object
 	 * is stored in. Can be used for reflective access
 	 */
-	public static final  String ORIGIN_FIELD  = "PROXY_ORIGIN";
+	public static final  String ORIGIN_FIELD     = "PROXY_ORIGIN";
 	/**
 	 * This is the name of the field within a proxy the {@link ReactiveWrapper}
 	 * is stored in.
 	 */
-	public static final  String WRAPPER_FIELD = "PROXY_WRAPPER";
+	public static final  String WRAPPER_FIELD    = "PROXY_WRAPPER";
+	/**
+	 * A regex that matches any name of a proxy class
+	 */
+	public static final  String PROXY_NAME_REGEX = ".+_" + PROXY_SUFFIX + "\\$[0-9]+";
 	private static final Method getReactiveTarget;
-	private static       int    counter       = 0;
+	private static       int    counter          = 0;
 
 	static {
 		try {
@@ -59,6 +63,9 @@ public class ProxyBuilder {
 		this.accessor = accessProvider;
 	}
 
+	private static int nextProxyId() {
+		return counter++;
+	}
 
 	/**
 	 * Constructs a base proxy class that provides an {@link Reactable} implementation.
@@ -147,10 +154,6 @@ public class ProxyBuilder {
 						MethodDelegation.to(ProxyForwardImpl.Equals.class)
 				)
 				;
-	}
-
-	private static int nextProxyId() {
-		return counter++;
 	}
 
 }
