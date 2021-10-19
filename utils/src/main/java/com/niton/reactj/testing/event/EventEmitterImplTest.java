@@ -58,16 +58,15 @@ public abstract class EventEmitterImplTest<E, L> {
 
 	@Test
 	void addListener() {
-		eventManager.addListener(createListener(() -> {
-		}));
-		eventManager.addListener(createListener(() -> {
-		}));
-		eventManager.addListener(createListener(() -> {
-		}));
+		var count = 3;
+		for (int i = 0; i < count; i++) {
+			eventManager.addListener(createListener(() -> {
+			}));
+		}
 		assertEquals(
-				3, eventManager.listenerCount(),
-				"Adding 3 listeners to an empty event manager" +
-						" should result in 3 listeners in the manager list"
+				count, eventManager.listenerCount(),
+				"Adding " + count + " listeners to an empty event manager" +
+						" should result in " + count + " listeners in the manager list"
 		);
 	}
 
