@@ -40,8 +40,10 @@ runs:
     - name: Download Code Climate test-reporter
       shell: bash
       run: |
-        if echo ${{ steps.cc-cache.outputs.cache-hit }} | grep -c "false"
+        if echo ${{ steps.cc-cache.outputs.cache-hit }} | grep -c "true"
         then
+          echo "Skip code climate download"
+        else
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
         fi

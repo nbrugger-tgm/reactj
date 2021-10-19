@@ -25,51 +25,70 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
  * Used to construct raw proxy templates that are {@link Reactable}
- * <
  */
 public class ProxyBuilder {
-	public static final  String PROXY_SUFFIX  = "PROXY";
-	public static final  String ORIGIN_FIELD  = "PROXY_ORIGIN";
-	public static final  String WRAPPER_FIELD = "PROXY_WRAPPER";
+	/**
+	 * This suffix is appended to proxy names
+	 */
+	public static final  String PROXY_SUFFIX     = "PROXY";
+	/**
+	 * This is the name of the field within a proxy the origin object
+	 * is stored in. Can be used for reflective access
+	 */
+	public static final  String ORIGIN_FIELD     = "PROXY_ORIGIN";
+	/**
+	 * This is the name of the field within a proxy the {@link ReactiveWrapper}
+	 * is stored in.
+	 */
+	public static final  String WRAPPER_FIELD    = "PROXY_WRAPPER";
+	/**
+	 * A regex that matches any name of a proxy class
+	 */
+	public static final  String PROXY_NAME_REGEX = ".+_" + PROXY_SUFFIX + "\\$[0-9]+";
 	private static final Method getReactiveTarget;
-	private static int                    counter = 0;
+	private static       int    counter          = 0;
 
 	static {
 		try {
-			getReactiveTarget = ReactiveForwarder.class.getDeclaredMethod("getReactableTarget");
+			var reactiveForwarder = ReactiveForwarder.class;
+			getReactiveTarget = reactiveForwarder.getDeclaredMethod("getReactableTarget");
 		} catch (NoSuchMethodException e) {
 			throw new ProxyException("FATAL: react method not loadable!", e);
 		}
 	}
 
-	private final  InfusionAccessProvider accessor;
+	private final InfusionAccessProvider accessor;
 
 	public ProxyBuilder(InfusionAccessProvider accessProvider) {
 		this.accessor = accessProvider;
 	}
 
-
 	/**
 	 * Constructs a base proxy class that provides an {@link Reactable} implementation.
 	 * You can further modify the proxy class
 	 * <p>
-	 * The proxy can handle {@link Object#equals(Object)},  {@link Object#clone()} and {@link Object#hashCode()}.
+	 * The proxy can handle : <br/>
+	 * {@link Object#equals(Object)},  {@link Object#clone()} and {@link Object#hashCode()}.<br/>
 	 * The proxy DOES NOT SUPPORT CLONING.
 	 * </p>
 	 * <p>
-	 * The proxy sends reactable calls to {@link Reactable#react()}. Also the handling of java intern methods is
-	 * already done. Calls {@link Object} methods will never be reacted to, even if they ´change the objects state
-	 * because the should never do so.
+	 * The proxy sends reactable calls to {@link Reactable#react()}.
+	 * Also the handling of java intern methods is already done.
+	 * Calls {@link Object} methods will never be reacted to,
+	 * even if they change the objects state because the should never do so.
 	 * </p>
 	 * <p>
-	 * This proxy is not complete and meant to be extended and built. To build use {@link ReceiverTypeDefinition#make()}
+	 * This proxy is not complete and meant to be extended and built. To build use {@link
+	 * ReceiverTypeDefinition#make()}
 	 * and {@link DynamicType.Unloaded#load(ClassLoader)}
 	 * </p>
 	 *
 	 * @param originClass the class to create the proxy for
-	 * @param reactive    a descriptor which methods to react to. Elements matched by this filter will NOT be matched if
+	 * @param reactive    a descriptor which methods to react to. Elements matched by this filter
+	 *                    will NOT be matched if
 	 *                    they are matched by the exclusion filter (unreactive parameter)
-	 * @param unreactive  a descriptor which methods <b>not</b> to react to. Elements matched by this filter will
+	 * @param unreactive  a descriptor which methods <b>not</b> to react to. Elements matched by
+	 *                    this filter will
 	 *                    never be reacted to.
 	 * @param <T>         the type the proxy will emulate
 	 *
@@ -101,7 +120,7 @@ public class ProxyBuilder {
 						accessor.getPackage(originClass),
 						originClass.getSimpleName(),
 						PROXY_SUFFIX,
-						counter++
+						nextProxyId()
 				))
 
 				.defineField(ORIGIN_FIELD, originClass, PRIVATE)
@@ -137,6 +156,10 @@ public class ProxyBuilder {
 						MethodDelegation.to(ProxyForwardImpl.Equals.class)
 				)
 				;
+	}
+
+	private static int nextProxyId() {
+		return counter++;
 	}
 
 }
