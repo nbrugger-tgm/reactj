@@ -25,7 +25,6 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
  * Used to construct raw proxy templates that are {@link Reactable}
- * <
  */
 public class ProxyBuilder {
 	/**
@@ -63,33 +62,36 @@ public class ProxyBuilder {
 		this.accessor = accessProvider;
 	}
 
-	private static int nextProxyId() {
-		return counter++;
-	}
-
 	/**
 	 * Constructs a base proxy class that provides an {@link Reactable} implementation.
 	 * You can further modify the proxy class
 	 * <p>
-	 * The proxy can handle {@link Object#equals(Object)},  {@link Object#clone()} and {@link Object#hashCode()}.
+	 * The proxy can handle {@link Object#equals(Object)},  {@link Object#clone()} and {@link
+	 * Object#hashCode()}.
 	 * The proxy DOES NOT SUPPORT CLONING.
 	 * </p>
 	 * <p>
-	 * The proxy sends reactable calls to {@link Reactable#react()}. Also the handling of java intern methods is
-	 * already done. Calls {@link Object} methods will never be reacted to, even if they ´change the objects state
+	 * The proxy sends reactable calls to {@link Reactable#react()}. Also the handling of java
+	 * intern methods is
+	 * already done. Calls {@link Object} methods will never be reacted to, even if they ´change the
+	 * objects state
 	 * because the should never do so.
 	 * </p>
 	 * <p>
-	 * This proxy is not complete and meant to be extended and built. To build use {@link ReceiverTypeDefinition#make()}
+	 * This proxy is not complete and meant to be extended and built. To build use {@link
+	 * ReceiverTypeDefinition#make()}
 	 * and {@link DynamicType.Unloaded#load(ClassLoader)}
 	 * </p>
 	 *
 	 * @param originClass the class to create the proxy for
-	 * @param reactive    a descriptor which methods to react to. Elements matched by this filter will NOT be matched if
+	 * @param reactive    a descriptor which methods to react to. Elements matched by this filter
+	 *                    will NOT be matched if
 	 *                    they are matched by the exclusion filter (unreactive parameter)
-	 * @param unreactive  a descriptor which methods <b>not</b> to react to. Elements matched by this filter will
+	 * @param unreactive  a descriptor which methods <b>not</b> to react to. Elements matched by
+	 *                    this filter will
 	 *                    never be reacted to.
 	 * @param <T>         the type the proxy will emulate
+	 *
 	 * @return the template for the proxy class. Can be extended using {@link ByteBuddy}
 	 */
 	public <T> ReceiverTypeDefinition<T> buildProxy(
@@ -154,6 +156,10 @@ public class ProxyBuilder {
 						MethodDelegation.to(ProxyForwardImpl.Equals.class)
 				)
 				;
+	}
+
+	private static int nextProxyId() {
+		return counter++;
 	}
 
 }
