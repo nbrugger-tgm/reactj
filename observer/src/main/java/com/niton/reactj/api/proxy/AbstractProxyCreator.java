@@ -45,7 +45,7 @@ public abstract class AbstractProxyCreator {
 		}
 	}
 
-	private void assertIsProxy(Object proxy) {
+	protected void assertIsProxy(Object proxy) {
 		if (!proxy.getClass().getName().matches(ProxyBuilder.PROXY_NAME_REGEX))
 			throw new IllegalArgumentException("sync() requires an proxy");
 	}
@@ -100,8 +100,8 @@ public abstract class AbstractProxyCreator {
 		}
 	}
 
-	private void assertNotProxy(Class<?> originClass) {
-		if (originClass.getName().endsWith(PROXY_SUFFIX))
+	protected void assertNotProxy(Class<?> originClass) {
+		if (originClass.getName().matches(PROXY_NAME_REGEX))
 			throw ProxyException.doubleProxyException(originClass);
 	}
 

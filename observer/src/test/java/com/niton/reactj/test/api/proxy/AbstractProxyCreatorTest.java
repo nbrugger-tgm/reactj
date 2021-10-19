@@ -8,7 +8,9 @@ import com.niton.reactj.api.react.ReactiveWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 import static com.niton.reactj.test.api.proxy.SimpleProxyTest.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +24,10 @@ class AbstractProxyCreatorTest {
 			super(accessor);
 		}
 
+		public static Field getField(Class<?> proxyClass, String field) {
+			return AbstractProxyCreator.getField(proxyClass, Map.of(), field);
+		}
+
 		@Override
 		//expose for testing
 		public Object getOrigin(Object proxy) throws IllegalAccessException {
@@ -30,6 +36,7 @@ class AbstractProxyCreatorTest {
 
 		@Override
 		protected <T> Class<? extends T> createProxyClass(Class<? extends T> aClass) {
+			assertNotProxy(aClass);
 			return aClass;
 		}
 
@@ -38,12 +45,27 @@ class AbstractProxyCreatorTest {
 		public <T> void setProxyFields(T object, Class<?> proxyClass, T proxy) {
 			super.setProxyFields(object, proxyClass, proxy);
 		}
-
 	}
 
 	public static class FakeProxy {
 		public Object                  PROXY_ORIGIN = fakeOrigin;
 		public ReactiveWrapper<Object> PROXY_WRAPPER;
+	}
+
+	public static class ValidBase {
+		public final String yeet;
+		private      String yeet2;
+
+		public ValidBase(String yeet) {this.yeet = yeet;}
+	}
+
+	@Test
+	void testErrorOnGetField() {
+		assertDoesNotThrow(() -> ProxyCreatorTestImpl.getField(FakeProxy.class, "PROXY_WRAPPER"));
+		assertThrows(
+				ReactiveException.class,
+				() -> ProxyCreatorTestImpl.getField(FakeProxy.class, "notAField")
+		);
 	}
 
 	@Test
@@ -67,10 +89,32 @@ class AbstractProxyCreatorTest {
 				() -> AbstractProxyCreator.verifyOriginClass(FakeProxy.class),
 				"A class with a public mutable field should be forbidden"
 		);
+		assertDoesNotThrow(() -> AbstractProxyCreator.verifyOriginClass(ValidBase.class));
 	}
 
 	@Test
-	void sync() throws NoSuchFieldException, InvocationTargetException, InstantiationException, IllegalAccessException,
+	void proxyFromProxy()
+			throws NoSuchFieldException, InvocationTargetException, InstantiationException,
+			       IllegalAccessException, NoSuchMethodException {
+		var creator   = new ProxyCreatorTestImpl(new BesideOriginInfuser(MethodHandles.lookup()));
+		var proxy     = buildSimpleProxy(MethodHandles.lookup());
+		var proxClass = proxy.getClass();
+		assertThrows(
+				ReactiveException.class,
+				() -> creator.createProxyClass(proxClass),
+				"Creating a proxy for a proxy should throw an exception"
+		);
+	}
+
+	@Test
+	void hasDefaultBuilder() {
+		var creator = new ProxyCreatorTestImpl(new BesideOriginInfuser(MethodHandles.lookup()));
+		assertNotNull(creator.getBuilder(), "A Proxy creator should contain a builder by default");
+	}
+
+	@Test
+	void sync() throws NoSuchFieldException, InvocationTargetException, InstantiationException,
+	                   IllegalAccessException,
 	                   NoSuchMethodException {
 		var    creator = new ProxyCreatorTestImpl(new BesideOriginInfuser(MethodHandles.lookup()));
 		Origin proxy;
@@ -80,7 +124,11 @@ class AbstractProxyCreatorTest {
 			origin = (Origin) creator.getOrigin(proxy);
 		} while (proxy.prop == origin.prop);//this test is useless when prop is the same anyways
 		creator.sync(proxy);
-		assertEquals(origin.prop, proxy.prop, "After syncing all common fields of origin and proxy should be equal");
+		assertEquals(
+				origin.prop,
+				proxy.prop,
+				"After syncing all common fields of origin and proxy should be equal"
+		);
 	}
 
 	@Test
@@ -89,7 +137,14 @@ class AbstractProxyCreatorTest {
 		Object newFakeOrigin = 198;
 		var    fakeProxy     = new FakeProxy();
 		creator.setProxyFields(newFakeOrigin, FakeProxy.class, fakeProxy);
-		assertNotNull(fakeProxy.PROXY_WRAPPER, "After setProxyFields the PROXY_WRAPPER should be set");
-		assertEquals(newFakeOrigin, fakeProxy.PROXY_ORIGIN, "The 1. parameter should be used as origin");
+		assertNotNull(
+				fakeProxy.PROXY_WRAPPER,
+				"After setProxyFields the PROXY_WRAPPER should be set"
+		);
+		assertEquals(
+				newFakeOrigin,
+				fakeProxy.PROXY_ORIGIN,
+				"The 1. parameter should be used as origin"
+		);
 	}
 }
