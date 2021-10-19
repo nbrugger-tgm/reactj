@@ -37,7 +37,7 @@ public abstract class AbstractProxyCreator {
 
 		try {
 			Object origin = getOrigin(proxy);
-			for (Field f : origin.getClass().getFields()) {
+			for (Field f : origin.getClass().getDeclaredFields()) {
 				syncField(proxy, origin, f);
 			}
 		} catch (IllegalAccessException e) {
@@ -45,9 +45,10 @@ public abstract class AbstractProxyCreator {
 		}
 	}
 
-	private void assertIsProxy(Object proxy) {
-		if (!proxy.getClass().getName().endsWith(PROXY_SUFFIX))
+	protected void assertIsProxy(Object proxy) {
+		if (!proxy.getClass().getName().matches(PROXY_NAME_REGEX)) {
 			throw new IllegalArgumentException("sync() requires an proxy");
+		}
 	}
 
 	protected Object getOrigin(Object proxy) throws IllegalAccessException {
@@ -60,7 +61,11 @@ public abstract class AbstractProxyCreator {
 		}
 	}
 
-	protected static Field getField(Class<?> proxyClass, Map<Class<?>, Field> fieldMap, String field) {
+	protected static Field getField(
+			Class<?> proxyClass,
+			Map<Class<?>, Field> fieldMap,
+			String field
+	) {
 		return fieldMap.computeIfAbsent(proxyClass, pc -> {
 			try {
 				Field f = pc.getDeclaredField(field);
@@ -90,14 +95,16 @@ public abstract class AbstractProxyCreator {
 	}
 
 	public static <T> void verifyOriginClass(Class<? extends T> originClass) {
-		for (Field f : originClass.getFields())
+		for (Field f : originClass.getFields()) {
 			if (ReflectiveUtil.isMutableInstanceVar(f))
 				ProxyException.publicFieldException(originClass);
+		}
 	}
 
-	private void assertNotProxy(Class<?> originClass) {
-		if (originClass.getName().endsWith(PROXY_SUFFIX))
+	protected void assertNotProxy(Class<?> originClass) {
+		if (originClass.getName().matches(PROXY_NAME_REGEX)) {
 			throw ProxyException.doubleProxyException(originClass);
+		}
 	}
 
 	protected abstract <T> Class<? extends T> createProxyClass(Class<? extends T> aClass);
@@ -120,7 +127,10 @@ public abstract class AbstractProxyCreator {
 	 */
 	protected <T> void setProxyFields(T object, Class<?> proxyClass, T proxy) {
 		try {
-			getField(proxyClass, wrapperFields, WRAPPER_FIELD).set(proxy, new ReactiveWrapper<>(object));
+			getField(proxyClass, wrapperFields, WRAPPER_FIELD).set(
+					proxy,
+					new ReactiveWrapper<>(object)
+			);
 			getField(proxyClass, originFields, ORIGIN_FIELD).set(proxy, object);
 		} catch (IllegalAccessException e) {
 			//not going to happen

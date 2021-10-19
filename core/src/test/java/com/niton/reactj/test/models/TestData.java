@@ -1,16 +1,20 @@
 package com.niton.reactj.test.models;
 
-import java.awt.*;
 
 public class TestData {
-	public int   id;
-	public Color c = Color.RED;
+	public int      id;
+	public TestEnum c = TestEnum.RED;
+	public static enum TestEnum {
+		RED,
+		BLUE,
+		GREEN
+	}
 
-	public Color getC() {
+	public TestEnum getC() {
 		return c;
 	}
 
-	public void setC(Color c) {
+	public void setC(TestEnum c) {
 		this.c = c;
 	}
 
@@ -22,7 +26,7 @@ public class TestData {
 		this.id = id;
 	}
 
-	public void setColor(Color c) {
+	public void setColor(TestEnum c) {
 		this.c = c;
 	}
 }

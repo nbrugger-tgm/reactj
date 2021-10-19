@@ -1,5 +1,8 @@
 engines:
   checkstyle:
+    exclude_patterns:
+      - "module-info.java"
+      - "**/module-info.java"
     enabled: true
     exclude_patterns:
       - "**/module-info.java"
@@ -13,3 +16,9 @@ engines:
         enabled: false
       com.puppycrawl.tools.checkstyle.checks.javadoc.SummaryJavadocCheck:
         enabled: false
+      com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocParagraphCheck:
+        enabled: false
+      com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck:
+        enabled: false
+      com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck:
+        enabled: false #Disabled as the check is not working properly (maybe due to \n\r stuff)

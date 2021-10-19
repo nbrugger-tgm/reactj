@@ -46,4 +46,11 @@ public abstract class CustomEventEmitter<E, L> implements Serializable {
 	 * @param event    the event to carry over to the listener
 	 */
 	protected abstract void call(L listener, E event);
+
+	/**
+	 * @return the number of listeners present
+	 */
+	public int listenerCount() {
+		return listeners.size();
+	}
 }

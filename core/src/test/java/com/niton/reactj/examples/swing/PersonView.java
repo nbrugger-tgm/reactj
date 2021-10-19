@@ -1,10 +1,10 @@
 package com.niton.reactj.examples.swing;
 
-import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.core.annotation.ReactiveListener;
 import com.niton.reactj.core.mvc.ReactiveView;
 import com.niton.reactj.core.proxy.ReactiveProxy;
 import com.niton.reactj.core.react.ReactiveBinder;
+import com.niton.reactj.utils.event.EventEmitter;
 
 import javax.swing.*;
 import java.awt.*;

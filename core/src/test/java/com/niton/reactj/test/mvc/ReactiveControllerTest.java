@@ -11,12 +11,10 @@ import com.niton.reactj.test.models.Base;
 import com.niton.reactj.test.models.DeepBase;
 import com.niton.reactj.test.models.FlatBase;
 import com.niton.reactj.test.models.TestData;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
-
-import static com.niton.reactj.core.proxy.ProxyCreator.INSTANCE;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("ReactiveController")
@@ -25,20 +23,15 @@ class ReactiveControllerTest {
 			SET_A = 12,
 			SET2  = 22,
 			SET_C = 83;
-
-	static {
-		//only for testing purposes- plz don't do this <3
-		INSTANCE.setAllowUnsafeProxies(true);
-	}
-
-	public final ReactiveProxy<DeepBase> deepProxy = INSTANCE.create(new DeepBase());
-	public final DeepBase                deep      = deepProxy.getObject();
-	public final ReactiveProxy<FlatBase> flatProxy = INSTANCE.create(new FlatBase());
-	public final FlatBase                flat      = flatProxy.getObject();
-	private      boolean
-	                                     aCalled   = false,
-			bCalled                                = false,
-			cCalled                                = false;
+	private static ProxyCreator            creator;
+	public final   ReactiveProxy<DeepBase> deepProxy = creator.create(new DeepBase());
+	public final   DeepBase                deep      = deepProxy.getObject();
+	public final   ReactiveProxy<FlatBase> flatProxy = creator.create(new FlatBase());
+	public final   FlatBase                flat      = flatProxy.getObject();
+	private        boolean
+	                                       aCalled   = false,
+			bCalled                                  = false,
+			cCalled                                  = false;
 	private String stringDeposit;
 	private int    intDeposit;
 	private Object lastValue;
@@ -46,6 +39,13 @@ class ReactiveControllerTest {
 
 	static class TestObject {
 		private int someInt;
+	}
+
+	@BeforeAll
+	static void createCreator() {
+		creator = ProxyCreator.besideOrigin();
+		//only for testing purposes- plz don't do this <3
+		creator.setAllowUnsafeProxies(true);
 	}
 
 	@Test
@@ -84,7 +84,7 @@ class ReactiveControllerTest {
 		ReactiveController<ReactiveProxy<TestObject>> badTypedController = new ReactiveController<>(
 				badTypedComponent
 		);
-		var proxy = ProxyCreator.INSTANCE.create(new TestObject());
+		var proxy = creator.create(new TestObject());
 		assertThrows(ReactiveException.class, () -> {
 			badTypedController.setModel(proxy);
 		}, "When a @ReactiveListener has a type that doesn't matches the property " +
@@ -230,24 +230,24 @@ class ReactiveControllerTest {
 	@Test
 	@DisplayName("simple binding")
 	void bindingTest() {
-		ReactiveProxy<TestData> proxy = INSTANCE.create(new TestData());
+		ReactiveProxy<TestData> proxy = creator.create(new TestData());
 		TestData                td    = proxy.getObject();
 
 		ReactiveComponent<ReactiveProxy<TestData>> testComponent = binder -> {
 			binder.bind("id", val -> lastValue = val);
 			binder.bind("c", val -> lastValue = val);
-			binder.bind("c", val -> converted = val, (Color c) -> String.valueOf(c.getRed()));
+			binder.bind("c", val -> converted = val, (TestData.TestEnum c) -> c.name());
 		};
 		ReactiveController<ReactiveProxy<TestData>> controller = new ReactiveController<>(
 				testComponent);
 		controller.setModel(proxy);
 
-		td.setColor(Color.GREEN);
-		assertEquals(Color.GREEN, lastValue);
-		assertEquals("0", converted);
+		td.setColor(TestData.TestEnum.GREEN);
+		assertEquals(TestData.TestEnum.GREEN, lastValue);
+		assertEquals("GREEN", converted);
 
 		td.setId(123);
 		assertEquals(123, lastValue);
-		assertEquals("0", converted);
+		assertEquals("GREEN", converted);
 	}
 }

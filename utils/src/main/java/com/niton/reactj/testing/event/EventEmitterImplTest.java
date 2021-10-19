@@ -10,7 +10,16 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public abstract class EventEmitterTest<E, L> {
+/**
+ * If you implement an {@link CustomEventEmitter} use this test template to test your
+ * implementation.
+ * <p>
+ * The checks ensure that the behaviour is the same as described by the documentation
+ *
+ * @param <E> the event your implementation fires
+ * @param <L> the type of the listener your emitter accepts
+ */
+public abstract class EventEmitterImplTest<E, L> {
 	private CustomEventEmitter<E, L> eventManager;
 
 
@@ -35,6 +44,7 @@ public abstract class EventEmitterTest<E, L> {
 	 * Creates a listener that calles the `testCallback` when fired.
 	 *
 	 * @param testCallback the runnable to call when the event is triggered
+	 *
 	 * @return the listener that forwards to the callback
 	 */
 	protected abstract L createListener(Runnable testCallback);
@@ -48,14 +58,16 @@ public abstract class EventEmitterTest<E, L> {
 
 	@Test
 	void addListener() {
-		eventManager.addListener(createListener(() -> {
-		}));
-		eventManager.addListener(createListener(() -> {
-		}));
-		eventManager.addListener(createListener(() -> {
-		}));
-		assertEquals(3, eventManager.getListeners().size(), "Adding 3 listeners to an empty event manager" +
-		                                                    "should result in 3 listeners in the manager list");
+		var count = 3;
+		for (int i = 0; i < count; i++) {
+			eventManager.addListener(createListener(() -> {
+			}));
+		}
+		assertEquals(
+				count, eventManager.listenerCount(),
+				"Adding " + count + " listeners to an empty event manager" +
+						" should result in " + count + " listeners in the manager list"
+		);
 	}
 
 	@Test
