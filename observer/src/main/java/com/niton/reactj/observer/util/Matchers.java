@@ -12,7 +12,9 @@ public class Matchers {
 	}
 
 	//TODO: solve ... better
-	public static ElementMatcher.Junction<MethodDescription> overwritesAnyOf(final Method... abstractMethods) {
+	public static ElementMatcher.Junction<MethodDescription> overwritesAnyOf(
+			final Method... abstractMethods
+	) {
 		return new ElementMatcher.Junction.AbstractBase<>() {
 			@Override
 			public boolean matches(MethodDescription target) {
