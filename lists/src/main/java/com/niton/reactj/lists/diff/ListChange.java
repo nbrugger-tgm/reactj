@@ -6,7 +6,8 @@ import com.niton.reactj.api.lists.ListOperation;
 import java.util.List;
 import java.util.Objects;
 
-import static com.niton.reactj.api.lists.ListOperation.*;
+import static com.niton.reactj.api.lists.ListOperation.ADD;
+import static com.niton.reactj.api.lists.ListOperation.REMOVE;
 
 /**
  * Describes a change to a list
