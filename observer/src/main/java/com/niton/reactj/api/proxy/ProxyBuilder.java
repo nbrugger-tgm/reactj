@@ -50,7 +50,8 @@ public class ProxyBuilder {
 
 	static {
 		try {
-			getReactiveTarget = ReactiveForwarder.class.getDeclaredMethod("getReactableTarget");
+			var reactiveForwarder = ReactiveForwarder.class;
+			getReactiveTarget = reactiveForwarder.getDeclaredMethod("getReactableTarget");
 		} catch (NoSuchMethodException e) {
 			throw new ProxyException("FATAL: react method not loadable!", e);
 		}
@@ -66,16 +67,15 @@ public class ProxyBuilder {
 	 * Constructs a base proxy class that provides an {@link Reactable} implementation.
 	 * You can further modify the proxy class
 	 * <p>
-	 * The proxy can handle {@link Object#equals(Object)},  {@link Object#clone()} and {@link
-	 * Object#hashCode()}.
+	 * The proxy can handle : <br/>
+	 * {@link Object#equals(Object)},  {@link Object#clone()} and {@link Object#hashCode()}.<br/>
 	 * The proxy DOES NOT SUPPORT CLONING.
 	 * </p>
 	 * <p>
-	 * The proxy sends reactable calls to {@link Reactable#react()}. Also the handling of java
-	 * intern methods is
-	 * already done. Calls {@link Object} methods will never be reacted to, even if they ´change the
-	 * objects state
-	 * because the should never do so.
+	 * The proxy sends reactable calls to {@link Reactable#react()}.
+	 * Also the handling of java intern methods is already done.
+	 * Calls {@link Object} methods will never be reacted to,
+	 * even if they change the objects state because the should never do so.
 	 * </p>
 	 * <p>
 	 * This proxy is not complete and meant to be extended and built. To build use {@link
