@@ -1,6 +1,6 @@
 package com.niton.reactj.lists.diff;
 
-import com.niton.reactj.utils.diff.DiffTool;
+import com.niton.reactj.api.diff.DiffTool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,8 @@ import java.util.Optional;
 import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.niton.reactj.api.lists.ListOperation.*;
+import static com.niton.reactj.api.lists.ListOperation.ADD;
+import static com.niton.reactj.api.lists.ListOperation.REMOVE;
 import static java.lang.Math.min;
 
 /**
@@ -73,7 +74,6 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 	 * @param n       the size of list 2
 	 * @param changes the set to add the changes to
 	 * @param offset  the offset from {@link #trimEqualEntries(List, List)}
-	 *
 	 * @return true if linear operations were performed. if false continue with default cubic search
 	 */
 	private static <T> boolean handleLinearChanges(
@@ -114,9 +114,7 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 	 * @param newState the modified version of the list
 	 * @param m        the size of the 1. list
 	 * @param n        the size of the 2. list
-	 *
 	 * @return a cost metric.
-	 *
 	 * @see <a href="https://en.wikipedia.org/wiki/Wagner–Fischer_algorithm">Wagner Fischer WIKIPEDIA</a>
 	 * @see <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance WIKIPEDIA</a>
 	 */
@@ -272,7 +270,6 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 	 * @param n        size of new list
 	 * @param changes  the set to add the changes to
 	 * @param offset   the offset from {@link #trimEqualEntries(List, List)}
-	 *
 	 * @return empty when the set was not touched, or optional including the modified set (you can also use your old ref)
 	 */
 	private Optional<SortedSet<ListChange<T>>> divideTask(

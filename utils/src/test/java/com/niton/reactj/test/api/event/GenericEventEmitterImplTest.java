@@ -1,13 +1,13 @@
-package com.niton.reactj.api.event.test;
+package com.niton.reactj.test.api.event;
 
 import com.niton.reactj.api.event.CustomEventEmitter;
-import com.niton.reactj.testing.event.EventEmitterTest;
+import com.niton.reactj.testing.event.EventEmitterImplTest;
 import com.niton.reactj.utils.event.GenericEventEmitter;
 import com.niton.reactj.utils.event.GenericListener;
 import org.junit.jupiter.api.DisplayName;
 
 @DisplayName("GenericEventEmitter")
-class GenericEventEmitterTest extends EventEmitterTest<Void, GenericListener> {
+class GenericEventEmitterImplTest extends EventEmitterImplTest<Void, GenericListener> {
 
 	@Override
 	protected CustomEventEmitter<Void, GenericListener> createManager() {

@@ -89,6 +89,13 @@ class ModulePlugin implements Plugin<Project> {
                 csv.enabled false
                 html.destination p.layout.buildDirectory.dir("reports/jacoco/html").get().asFile
             }
+            p.afterEvaluate {
+                classDirectories.setFrom(p.files(classDirectories.files.collect {
+                    p.fileTree(dir: it, exclude: [
+                            "**/*Test.class" //for abstract tests in main package
+                    ])
+                }))
+            }
         }
         p.tasks.check {
             finalizedBy p.tasks.jacocoTestCoverageVerification

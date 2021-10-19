@@ -8,9 +8,10 @@ allprojects {
 subprojects { sub ->
     sub.apply plugin: 'org.sonarqube'
     sub.apply plugin: 'java-library-module'
+
     sub.sonarqube {
         properties {
-            property 'sonar.coverage.jacoco.xmlReportPaths', "$sub.layout.buildDirectory/reports/reports/jacoco/coverage.xml"
+            property 'sonar.coverage.jacoco.xmlReportPaths', "build/reports/jacoco/coverage.xml"
         }
     }
     sub.module.publishing {
