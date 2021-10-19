@@ -65,7 +65,7 @@ public abstract class EventEmitterImplTest<E, L> {
 		eventManager.addListener(createListener(() -> {
 		}));
 		assertEquals(
-				3, eventManager.getListeners().size(),
+				3, eventManager.listenerCount(),
 				"Adding 3 listeners to an empty event manager" +
 						" should result in 3 listeners in the manager list"
 		);
