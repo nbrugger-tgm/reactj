@@ -1,6 +1,6 @@
 package com.niton.reactj.lists.diff;
 
-import com.niton.reactj.utils.diff.DiffTool;
+import com.niton.reactj.api.diff.DiffTool;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -53,7 +53,7 @@ public final class ReflectiveUtil {
 	 *
 	 * @return the return value of the method call
 	 */
-	public static Object executeCall(Object target, Method method, Object[] args)
+	public static Object executeCall(Object target, Method method, Object... args)
 			throws InvocationTargetException, IllegalAccessException {
 		try {
 			return target.getClass().getMethod(
@@ -107,8 +107,8 @@ public final class ReflectiveUtil {
 		                               .unwrap()
 		                               .returnType();
 
-		boolean unwrappedValid = base.isAssignableFrom(paramType);
-		boolean wrappedValid   = unwrapped.isAssignableFrom(paramType);
+		boolean unwrappedValid = paramType.isAssignableFrom(base);
+		boolean wrappedValid   = paramType.isAssignableFrom(unwrapped);
 
 		return unwrappedValid || wrappedValid;
 	}
@@ -141,9 +141,6 @@ public final class ReflectiveUtil {
 		//} catch (IllegalAccessException e) {
 		//	throw new ReactiveAccessException(e);
 		//}
-		System.out.println("ReflectiveUtil.getLookup");
-		System.out.println("originClass = " + originClass + ", module = " + module);
-		System.out.println("lookup() -> " + lookup.lookupClass().getModule());
 		return lookup;
 	}
 

@@ -1,7 +1,7 @@
 package com.niton.reactj.api.react;
 
+import com.niton.reactj.api.event.GenericEventEmitter;
 import com.niton.reactj.api.observer.Reactable;
-import com.niton.reactj.utils.event.GenericEventEmitter;
 
 import java.io.Serializable;
 

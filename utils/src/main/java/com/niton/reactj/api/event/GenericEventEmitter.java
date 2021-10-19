@@ -1,7 +1,5 @@
-package com.niton.reactj.utils.event;
+package com.niton.reactj.api.event;
 
-
-import com.niton.reactj.api.event.CustomEventEmitter;
 
 public class GenericEventEmitter extends CustomEventEmitter<Void, GenericListener> {
 	@Override

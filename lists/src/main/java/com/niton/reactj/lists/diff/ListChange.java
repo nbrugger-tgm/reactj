@@ -1,7 +1,7 @@
 package com.niton.reactj.lists.diff;
 
+import com.niton.reactj.api.diff.DiffEntry;
 import com.niton.reactj.api.lists.ListOperation;
-import com.niton.reactj.utils.diff.DiffEntry;
 
 import java.util.List;
 import java.util.Objects;

@@ -28,11 +28,12 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
  * <
  */
 public class ProxyBuilder {
-	public static final  String PROXY_SUFFIX  = "PROXY";
-	public static final  String ORIGIN_FIELD  = "PROXY_ORIGIN";
-	public static final  String WRAPPER_FIELD = "PROXY_WRAPPER";
+	public static final  String PROXY_SUFFIX     = "PROXY";
+	public static final  String ORIGIN_FIELD     = "PROXY_ORIGIN";
+	public static final  String WRAPPER_FIELD    = "PROXY_WRAPPER";
+	public static final  String PROXY_NAME_REGEX = ".+_" + PROXY_SUFFIX + "\\$[0-9]+";
 	private static final Method getReactiveTarget;
-	private static int                    counter = 0;
+	private static       int    counter          = 0;
 
 	static {
 		try {
@@ -42,7 +43,7 @@ public class ProxyBuilder {
 		}
 	}
 
-	private final  InfusionAccessProvider accessor;
+	private final InfusionAccessProvider accessor;
 
 	public ProxyBuilder(InfusionAccessProvider accessProvider) {
 		this.accessor = accessProvider;
@@ -101,7 +102,7 @@ public class ProxyBuilder {
 						accessor.getPackage(originClass),
 						originClass.getSimpleName(),
 						PROXY_SUFFIX,
-						counter++
+						nextProxyId()
 				))
 
 				.defineField(ORIGIN_FIELD, originClass, PRIVATE)
@@ -137,6 +138,10 @@ public class ProxyBuilder {
 						MethodDelegation.to(ProxyForwardImpl.Equals.class)
 				)
 				;
+	}
+
+	private static int nextProxyId() {
+		return counter++;
 	}
 
 }

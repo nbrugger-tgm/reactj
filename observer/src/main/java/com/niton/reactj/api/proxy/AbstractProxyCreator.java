@@ -37,7 +37,7 @@ public abstract class AbstractProxyCreator {
 
 		try {
 			Object origin = getOrigin(proxy);
-			for (Field f : origin.getClass().getFields()) {
+			for (Field f : origin.getClass().getDeclaredFields()) {
 				syncField(proxy, origin, f);
 			}
 		} catch (IllegalAccessException e) {
@@ -46,7 +46,7 @@ public abstract class AbstractProxyCreator {
 	}
 
 	private void assertIsProxy(Object proxy) {
-		if (!proxy.getClass().getName().endsWith(PROXY_SUFFIX))
+		if (!proxy.getClass().getName().matches(PROXY_NAME_REGEX))
 			throw new IllegalArgumentException("sync() requires an proxy");
 	}
 

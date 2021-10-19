@@ -1,11 +1,11 @@
 package com.niton.reactj.test.proxy;
 
+import com.niton.reactj.api.event.GenericListener;
 import com.niton.reactj.core.annotation.Reactive;
 import com.niton.reactj.core.annotation.Unreactive;
 import com.niton.reactj.core.proxy.ProxyCreator;
 import com.niton.reactj.core.proxy.ProxySubject;
 import com.niton.reactj.core.react.ReactiveStrategy;
-import com.niton.reactj.utils.event.GenericListener;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
