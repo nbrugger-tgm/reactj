@@ -6,7 +6,7 @@ import com.niton.reactj.api.event.CustomEventEmitter;
 /**
  * An event emitter that emits events without data
  */
-public class GenericEventEmitter extends CustomEventEmitter<Void, GenericListener> {
+public class GenericEventEmitter extends CustomEventEmitter<Object, GenericListener> {
 	@Override
 	protected void call(GenericListener listener, Object event) {
 		listener.onAction();

@@ -3,9 +3,9 @@ package com.niton.reactj.test.api.proxy;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.proxy.AbstractProxyCreator;
 import com.niton.reactj.api.proxy.ProxyException;
-import com.niton.reactj.api.proxy.infusion.BesideOriginInfuser;
-import com.niton.reactj.api.proxy.infusion.InfusionAccessProvider;
 import com.niton.reactj.api.react.ReactiveWrapper;
+import com.niton.reactj.observer.infusion.BesideOriginInfuser;
+import com.niton.reactj.observer.infusion.InfusionAccessProvider;
 import org.junit.jupiter.api.Test;
 
 import java.lang.invoke.MethodHandles;

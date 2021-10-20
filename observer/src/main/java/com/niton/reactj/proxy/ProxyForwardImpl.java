@@ -12,10 +12,12 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static com.niton.reactj.proxy.ProxyBuilder.*;
+import static com.niton.reactj.api.proxy.ProxyBuilder.*;
+
 
 /**
- * These are the method implementations used for {@link com.niton.reactj.api.observer.Reactable} proxies
+ * These are the method implementations used for {@link com.niton.reactj.api.observer.Reactable}
+ * proxies
  */
 public class ProxyForwardImpl {
 	/**
@@ -47,7 +49,8 @@ public class ProxyForwardImpl {
 	}
 
 	/**
-	 * Implementation of {@link Object#equals(Object)} that uses the origin of the Proxy for comparison
+	 * Implementation of {@link Object#equals(Object)} that uses the origin of the Proxy for
+	 * comparison
 	 */
 	public static class Equals {
 		private Equals() {

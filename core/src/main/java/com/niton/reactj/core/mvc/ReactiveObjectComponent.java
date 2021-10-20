@@ -1,7 +1,6 @@
 package com.niton.reactj.core.mvc;
 
 import com.niton.reactj.api.binding.builder.ReactiveBinder;
-import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.exceptions.ReactiveAccessException;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.mvc.ReactiveComponent;
@@ -12,6 +11,7 @@ import com.niton.reactj.core.observer.PropertyObservation;
 import com.niton.reactj.core.observer.Reflective;
 import com.niton.reactj.core.proxy.ReactiveProxy;
 import com.niton.reactj.core.util.ReactiveComponentUtil;
+import com.niton.reactj.utils.event.EventEmitter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,7 +29,8 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 
 	@Override
 	protected void registerBindings(
-			ReactiveBinder<ModelCallBuilder<M>> builder, EventEmitter<PropertyObservation<M>> observerEvent
+			ReactiveBinder<ModelCallBuilder<M>> builder,
+			EventEmitter<PropertyObservation<M>> observerEvent
 	) {
 		observerEvent.listen(obs -> onModelChange.fire(obs.observed));
 		createBindings(builder, onModelChange, observerEvent);
@@ -43,7 +44,8 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 	);
 
 	/**
-	 * Registers all @{@link com.niton.reactj.core.annotation.ReactiveListener} annotated methods in component to the
+	 * Registers all @{@link com.niton.reactj.core.annotation.ReactiveListener} annotated methods in
+	 * component to the
 	 * binder
 	 */
 	private void registerAnnotatedBindings(
@@ -84,7 +86,10 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 	}
 
 	private static ReactiveException parameterCountException(Method method) {
-		return new ReactiveException(format("@ReactiveListener method '%s' has more than one parameter", method));
+		return new ReactiveException(format(
+				"@ReactiveListener method '%s' has more than one parameter",
+				method
+		));
 	}
 
 	private void invokeReactiveListener(Method listener, Object param) {
@@ -92,12 +97,18 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 			if (listener.getParameterTypes().length == 1) {
 				ReactiveComponentUtil.checkParameterType(listener, param);
 				listener.invoke(this, param);
+			} else if (listener.getParameterTypes().length == 0) {
+				listener.invoke(this);
+			} else {
+				throw parameterCountException(listener);
 			}
-			listener.invoke(this, param);
 		} catch (IllegalAccessException eac) {
 			throw new ReactiveAccessException(eac);
 		} catch (InvocationTargetException e) {
-			throw new ReactiveException(format("Failed to call automatic binding (%s)", listener), e);
+			throw new ReactiveException(
+					format("Failed to call automatic binding (%s)", listener),
+					e
+			);
 		}
 	}
 

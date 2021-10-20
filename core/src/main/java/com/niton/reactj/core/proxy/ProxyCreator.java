@@ -26,8 +26,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.niton.reactj.api.proxy.ProxyBuilder.ORIGIN_FIELD;
 import static com.niton.reactj.observer.util.Matchers.from;
-import static com.niton.reactj.proxy.ProxyBuilder.ORIGIN_FIELD;
 import static net.bytebuddy.implementation.DefaultMethodCall.prioritize;
 import static net.bytebuddy.matcher.ElementMatchers.is;
 
@@ -37,7 +37,8 @@ public class ProxyCreator extends AbstractProxyCreator {
 
 	static {
 		try {
-			getReflectiveTargetMethod = ReflectiveWrapper.class.getDeclaredMethod("getReflectiveTarget");
+			getReflectiveTargetMethod = ReflectiveWrapper.class.getDeclaredMethod(
+					"getReflectiveTarget");
 		} catch (NoSuchMethodException e) {
 			throw new ReactiveException("FATAL: react method not loadable!", e);
 		}
@@ -52,22 +53,29 @@ public class ProxyCreator extends AbstractProxyCreator {
 	}
 
 	/**
-	 * Stores created proxies within reactj. Therefore only exports access is needed. But the proxy cant contain
-	 * any foreign classes, just the modules reactj depends on AND the module the origin class originates from
+	 * Stores created proxies within reactj. Therefore, only exports access is needed. But the proxy
+	 * can't contain
+	 * any foreign classes, just the modules reactj depends on AND the module the origin class
+	 * originates from
 	 *
 	 * @return a very permissive ProxyCreator
 	 */
 	public static ProxyCreator withinDependency() {
-		return new ProxyCreator(new StaticInfuserWithLookup(ProxyCreator.class, MethodHandles.lookup()));
+		return new ProxyCreator(new StaticInfuserWithLookup(
+				ProxyCreator.class,
+				MethodHandles.lookup()
+		));
 	}
 
 	/**
-	 * Stores proxies besides the orgin they impose. Needs open to reactj access (for every origin package).
+	 * Stores proxies besides the origin they impose. Needs open to reactj access (for every
+	 * origin package).
 	 * <p><b>
 	 * Only one instance should be used per module!
 	 * </b></p>
 	 *
-	 * @return an ProxyCreator that will have no issues with permissons if you open your module (to reactj)
+	 * @return an ProxyCreator that will have no issues with permissions
+	 * if you open your module (to reactj)
 	 */
 	public static ProxyCreator besideOrigin() {
 		return new ProxyCreator(new BesideOriginInfuser(MethodHandles.lookup()));
@@ -78,7 +86,7 @@ public class ProxyCreator extends AbstractProxyCreator {
 	 *
 	 * @param anchor the class to spawn the proxies nearby
 	 *
-	 * @return an Proxie creator that just needs a single open stanement
+	 * @return a proxy creator that just needs a single open statement
 	 */
 	public static ProxyCreator custom(Class<?> anchor) {
 		return new ProxyCreator(new StaticInfuser(anchor, MethodHandles.lookup()));
@@ -104,7 +112,10 @@ public class ProxyCreator extends AbstractProxyCreator {
 	private <T> T createProxy(T object) {
 		Class<?>              originClass = object.getClass();
 		Class<?>              proxyClass  = getProxyClass(originClass);
-		ObjectInstantiator<?> initiator   = proxyInitiators.computeIfAbsent(proxyClass, objenesis::getInstantiatorOf);
+		ObjectInstantiator<?> initiator   = proxyInitiators.computeIfAbsent(
+				proxyClass,
+				objenesis::getInstantiatorOf
+		);
 
 		@SuppressWarnings("unchecked")
 		T proxy = (T) initiator.newInstance();
@@ -135,7 +146,8 @@ public class ProxyCreator extends AbstractProxyCreator {
 		return new ReactiveProxy<>(createProxy(object));
 	}
 
-	protected <T> Class<? extends T> createProxyClass(Class<? extends T> originClass) throws ProxyException {
+	protected <T> Class<? extends T> createProxyClass(Class<? extends T> originClass)
+			throws ProxyException {
 
 		Module module = originClass.getModule();
 		getClass().getModule().addReads(module);

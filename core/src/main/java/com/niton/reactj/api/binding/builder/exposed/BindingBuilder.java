@@ -1,6 +1,6 @@
 package com.niton.reactj.api.binding.builder.exposed;
 
-import com.niton.reactj.api.binding.ConditionalBindingWithRunnables;
+import com.niton.reactj.api.binding.PredicateRunnable;
 import com.niton.reactj.api.binding.builder.RunnableCallBuilder;
 import com.niton.reactj.api.binding.predicates.Condition;
 
@@ -16,12 +16,13 @@ public interface BindingBuilder<T, R> extends ExposedBindingBuilder<T, R> {
 		return getConditionalReturn(conditional);
 	}
 
-	ConditionalBindingWithRunnables<T> createConditionalBinding();
+	PredicateRunnable<T> createConditionalBinding();
 
-	R getConditionalReturn(ConditionalBindingWithRunnables<T> conditional);
+	R getConditionalReturn(PredicateRunnable<T> conditional);
 
 	/**
-	 * Same as {@link RunnableCallBuilder#when(Condition)}, but using a {@link Predicate} as condition
+	 * Same as {@link RunnableCallBuilder#when(Condition)}, but using a {@link Predicate} as
+	 * condition
 	 */
 	default R when(Predicate<T> condition) {
 		var conditional = createConditionalBinding();

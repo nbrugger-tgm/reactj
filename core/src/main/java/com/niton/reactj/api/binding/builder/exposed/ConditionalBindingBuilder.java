@@ -1,8 +1,8 @@
 package com.niton.reactj.api.binding.builder.exposed;
 
-import com.niton.reactj.api.binding.ConditionalBinding;
-import com.niton.reactj.api.binding.builder.ConditionalRunnableBuilder;
+import com.niton.reactj.api.binding.builder.conditional.ConditionalRunnableBuilder;
 import com.niton.reactj.api.binding.predicates.Condition;
+import com.niton.reactj.api.binding.predicates.HasPredicate;
 
 import java.util.function.Predicate;
 
@@ -21,7 +21,7 @@ public interface ConditionalBindingBuilder<T, R> {
 		return getThis();
 	}
 
-	ConditionalBinding<T> getBinding();
+	HasPredicate<T> getBinding();
 
 	R getThis();
 

@@ -3,8 +3,8 @@ package com.niton.reactj.test.api.binding;
 import com.niton.reactj.api.binding.builder.CallBuilder;
 import com.niton.reactj.api.binding.builder.exposed.ExposedReactiveBinder;
 import com.niton.reactj.api.binding.predicates.Condition;
-import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.core.observer.PropertyObservation;
+import com.niton.reactj.utils.event.EventEmitter;
 import com.niton.reactj.utils.event.GenericEventEmitter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -221,7 +221,11 @@ class ConsumerBindingTest {
 		       .on(coolEvent);
 		source = "KJ7453";
 		coolEvent.fire();
-		assertEquals(source, received, "call(a).with(source).when(TRUE_PREDICATE).or(FALSE_PREDICATE) should trigger");
+		assertEquals(
+				source,
+				received,
+				"call(a).with(source).when(TRUE_PREDICATE).or(FALSE_PREDICATE) should trigger"
+		);
 	}
 
 	@Test
@@ -234,7 +238,11 @@ class ConsumerBindingTest {
 		       .on(coolEvent);
 		source = "GF7950";
 		coolEvent.fire();
-		assertEquals(source, received, "call(a).with(source).when(YES).and(TRUE_PREDICATE) should trigger");
+		assertEquals(
+				source,
+				received,
+				"call(a).with(source).when(YES).and(TRUE_PREDICATE) should trigger"
+		);
 	}
 
 	@Test
@@ -247,7 +255,10 @@ class ConsumerBindingTest {
 		       .on(coolEvent);
 		source = "MG4307";
 		coolEvent.fire();
-		assertNull(received, "call(a).with(source).when(FALSE_PREDICATE).or(NO) should not trigger");
+		assertNull(
+				received,
+				"call(a).with(source).when(FALSE_PREDICATE).or(NO) should not trigger"
+		);
 	}
 
 	@Test

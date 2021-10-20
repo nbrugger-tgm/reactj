@@ -33,4 +33,8 @@ public class RunnableGroup implements Runnable {
 	public void run() {
 		runnables.forEach(Runnable::run);
 	}
+
+	public Runnable[] toArray() {
+		return runnables.toArray(new Runnable[0]);
+	}
 }

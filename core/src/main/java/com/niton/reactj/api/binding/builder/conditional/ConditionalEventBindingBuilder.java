@@ -1,18 +1,18 @@
-package com.niton.reactj.api.binding.builder;
+package com.niton.reactj.api.binding.builder.conditional;
 
-import com.niton.reactj.api.binding.ConditionalBinding;
 import com.niton.reactj.api.binding.builder.exposed.ConditionalBindingBuilder;
+import com.niton.reactj.api.binding.predicates.HasPredicate;
 
 public class ConditionalEventBindingBuilder<T>
 		implements ConditionalBindingBuilder<T, ConditionalEventBindingBuilder<T>> {
-	private final ConditionalBinding<T> binding;
+	private final HasPredicate<T> binding;
 
-	public ConditionalEventBindingBuilder(ConditionalBinding<T> binding) {
+	public ConditionalEventBindingBuilder(HasPredicate<T> binding) {
 		this.binding = binding;
 	}
 
 	@Override
-	public ConditionalBinding<T> getBinding() {
+	public HasPredicate<T> getBinding() {
 		return binding;
 	}
 

@@ -41,10 +41,10 @@ public class PersonApp {
 		person.setIq(120);
 		person.setName("Niton");
 
-		while (information.getAge() < 100) {
+		while (person.getAge() < 100) {
 			Thread.sleep(1000);
-			System.out.println(information);
-			information.setAge(information.getAge() + 1);
+			System.out.println(person);
+			person.setAge(person.getAge() + 1);
 		}
 	}
 }

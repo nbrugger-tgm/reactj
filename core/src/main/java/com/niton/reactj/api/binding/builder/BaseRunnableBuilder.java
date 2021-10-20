@@ -2,7 +2,7 @@ package com.niton.reactj.api.binding.builder;
 
 import com.niton.reactj.api.binding.builder.exposed.ExposedBaseRunnableBuilder;
 import com.niton.reactj.api.binding.builder.exposed.ExposedReactiveBinder;
-import com.niton.reactj.api.event.EventEmitter;
+import com.niton.reactj.utils.event.EventEmitter;
 import com.niton.reactj.utils.event.GenericEventEmitter;
 
 import java.util.function.Consumer;

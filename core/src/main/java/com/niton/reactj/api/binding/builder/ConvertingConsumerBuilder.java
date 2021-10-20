@@ -1,11 +1,12 @@
 package com.niton.reactj.api.binding.builder;
 
-import com.niton.reactj.api.binding.ConditionalBindingWithRunnables;
 import com.niton.reactj.api.binding.ConvertingConsumer;
+import com.niton.reactj.api.binding.PredicateRunnable;
 import com.niton.reactj.api.binding.ReactiveBinding;
+import com.niton.reactj.api.binding.builder.conditional.ConditionalEventBindingBuilder;
 import com.niton.reactj.api.binding.builder.exposed.ExposedBindingBuilder;
 import com.niton.reactj.api.binding.builder.exposed.ExposedSourceBindingCallBuilder;
-import com.niton.reactj.api.event.EventEmitter;
+import com.niton.reactj.utils.event.EventEmitter;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -46,7 +47,7 @@ public class ConvertingConsumerBuilder<T> {
 	 */
 	public ExposedSourceBindingCallBuilder<T> from(Supplier<T> source) {
 		ReactiveBinding<T> binding = new ReactiveBinding<>(consumer, source);
-		return new SourceBindingCallBuilder<>(binding, rootBuilder);
+		return new SourceBindingBuilder<>(binding, rootBuilder);
 	}
 
 	/**
@@ -56,17 +57,18 @@ public class ConvertingConsumerBuilder<T> {
 	 */
 	public ExposedBindingBuilder<T, ConditionalEventBindingBuilder<T>> from(EventEmitter<T> event) {
 		var eventBinding = new EventBinding<>(consumer);
-		ConditionalBindingWithRunnables<T> binding = new ConditionalBindingWithRunnables<>(
+		rootBuilder.add(eventBinding);
+		PredicateRunnable<T> runnable = new PredicateRunnable<>(
 				eventBinding,
 				rootBuilder.getTarget()
 		);
 		event.listen(e -> {
 			synchronized (eventBinding) {
 				eventBinding.setEvent(e);
-				binding.run();
+				runnable.run();
 			}
 		});
-		return new EventBindingBuilder<>(binding);
+		return new EventBindingBuilder<>(runnable);
 	}
 
 

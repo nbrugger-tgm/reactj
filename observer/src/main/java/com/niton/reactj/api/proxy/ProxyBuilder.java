@@ -1,9 +1,10 @@
 package com.niton.reactj.api.proxy;
 
 import com.niton.reactj.api.observer.Reactable;
-import com.niton.reactj.api.proxy.infusion.InfusionAccessProvider;
 import com.niton.reactj.api.react.ReactiveForwarder;
 import com.niton.reactj.api.react.ReactiveWrapper;
+import com.niton.reactj.observer.infusion.InfusionAccessProvider;
+import com.niton.reactj.proxy.ProxyForwardImpl;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.DynamicType;

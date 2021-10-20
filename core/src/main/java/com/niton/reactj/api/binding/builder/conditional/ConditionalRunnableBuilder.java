@@ -1,10 +1,13 @@
-package com.niton.reactj.api.binding.builder;
+package com.niton.reactj.api.binding.builder.conditional;
 
+import com.niton.reactj.api.binding.builder.BaseRunnableBuilder;
+import com.niton.reactj.api.binding.builder.CallBuilder;
 import com.niton.reactj.api.binding.predicates.CombiningCondition;
 import com.niton.reactj.api.binding.predicates.Condition;
 import com.niton.reactj.api.binding.predicates.HasCondition;
 
-public class ConditionalRunnableBuilder<T extends HasCondition & Runnable> extends BaseRunnableBuilder<T> {
+public class ConditionalRunnableBuilder<T extends HasCondition & Runnable> extends
+                                                                           BaseRunnableBuilder<T> {
 
 	public ConditionalRunnableBuilder(T runnable, CallBuilder rootBuilder) {
 		super(runnable, rootBuilder);

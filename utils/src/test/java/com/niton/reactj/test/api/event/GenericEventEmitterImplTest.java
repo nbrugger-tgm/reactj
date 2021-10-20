@@ -7,10 +7,10 @@ import com.niton.reactj.utils.event.GenericListener;
 import org.junit.jupiter.api.DisplayName;
 
 @DisplayName("GenericEventEmitter")
-class GenericEventEmitterImplTest extends EventEmitterImplTest<Void, GenericListener> {
+class GenericEventEmitterImplTest extends EventEmitterImplTest<Object, GenericListener> {
 
 	@Override
-	protected CustomEventEmitter<Void, GenericListener> createManager() {
+	protected CustomEventEmitter<Object, GenericListener> createManager() {
 		return new GenericEventEmitter();
 	}
 

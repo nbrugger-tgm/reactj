@@ -2,8 +2,8 @@ package com.niton.reactj.test.api.proxy;
 
 import com.niton.reactj.api.observer.Reactable;
 import com.niton.reactj.api.proxy.ProxyBuilder;
-import com.niton.reactj.api.proxy.infusion.BesideOriginInfuser;
 import com.niton.reactj.api.react.ReactiveWrapper;
+import com.niton.reactj.observer.infusion.BesideOriginInfuser;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,8 @@ class SimpleProxyTest {
 
 	@Test
 	void createSimpleProxy()
-			throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException,
+			throws NoSuchMethodException, InvocationTargetException, InstantiationException,
+			       IllegalAccessException,
 			       NoSuchFieldException {
 		var    thisLookup = MethodHandles.lookup();
 		Origin origin     = buildSimpleProxy(thisLookup);
@@ -43,7 +44,8 @@ class SimpleProxyTest {
 	}
 
 	public static Origin buildSimpleProxy(MethodHandles.Lookup thisLookup)
-			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException,
+			throws InstantiationException, IllegalAccessException, InvocationTargetException,
+			       NoSuchMethodException,
 			       NoSuchFieldException {
 		var builder = new ProxyBuilder(new BesideOriginInfuser(thisLookup));
 		Class<? extends Origin> proxyClass = builder

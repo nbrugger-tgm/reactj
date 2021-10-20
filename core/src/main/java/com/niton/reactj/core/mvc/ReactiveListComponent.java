@@ -1,16 +1,17 @@
 package com.niton.reactj.core.mvc;
 
 import com.niton.reactj.api.binding.builder.ReactiveBinder;
-import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.mvc.ReactiveComponent;
 import com.niton.reactj.lists.diff.ListChange;
 import com.niton.reactj.lists.observer.ListObserver;
+import com.niton.reactj.utils.event.EventEmitter;
 
 import java.util.List;
 
 import static com.niton.reactj.api.lists.ListOperation.*;
 
-public abstract class ReactiveListComponent<M, V> extends ReactiveComponent<List<M>, ListChange<M>, V> {
+public abstract class ReactiveListComponent<M, V>
+		extends ReactiveComponent<List<M>, ListChange<M>, V> {
 	public final EventEmitter<Integer> onRemove = new EventEmitter<>();
 	public final EventEmitter<Integer> onAdd    = new EventEmitter<>();
 
@@ -20,7 +21,8 @@ public abstract class ReactiveListComponent<M, V> extends ReactiveComponent<List
 
 	@Override
 	protected void registerBindings(
-			ReactiveBinder<ModelCallBuilder<List<M>>> builder, EventEmitter<ListChange<M>> observerEvent
+			ReactiveBinder<ModelCallBuilder<List<M>>> builder,
+			EventEmitter<ListChange<M>> observerEvent
 	) {
 		observerEvent.listen(change -> {
 			if (change.getOperation() == ADD)

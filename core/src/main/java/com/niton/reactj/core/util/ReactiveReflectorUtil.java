@@ -84,7 +84,8 @@ public final class ReactiveReflectorUtil {
 	 *
 	 * @param type the type to check
 	 *
-	 * @return true if the class is annotated with {@link ReactiveResolution}({@link ReactiveResolutionType#FLAT})
+	 * @return true if the class is annotated with {@link ReactiveResolution}({@link
+	 * ReactiveResolutionType#FLAT})
 	 */
 	public static boolean goDeep(Class<?> type) {
 		return !type.isAnnotationPresent(ReactiveResolution.class) ||
@@ -111,7 +112,7 @@ public final class ReactiveReflectorUtil {
 
 	private static Field[] getFields(Class<?> type) {
 		String typeName = type.getName();
-		return FIELD_CACHE.computeIfAbsent(typeName, n -> ReactiveReflectorUtil.loadRelevantFields(type));
+		return FIELD_CACHE.computeIfAbsent(typeName, n -> loadRelevantFields(type));
 	}
 
 	private static Field findField(String property, Field[] fields) {
