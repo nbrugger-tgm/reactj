@@ -1,4 +1,3 @@
 dependencies {
-    implementation project(":utils")
-    implementation project(":observer")
+    implementation project(":api")
 }

@@ -5,7 +5,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.Method;
 
-import static com.niton.reactj.utils.reflections.ReflectiveUtil.*;
+import static com.niton.reactj.api.util.ReflectiveUtil.*;
 
 
 public final class ReactiveComponentUtil {

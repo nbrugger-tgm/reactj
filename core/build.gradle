@@ -1,9 +1,13 @@
 dependencies {
-    api project(":utils")
-    api project(":observer")
+    api project(":api")
     api project(":lists")
+    api project(":objects")
 
     implementation group: 'org.objenesis', name: 'objenesis', version: '3.2'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+    implementation 'net.bytebuddy:byte-buddy:1.11.20'
+}
 
+repositories {
+    mavenCentral()
 }

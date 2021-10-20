@@ -1,10 +1,10 @@
 package com.niton.reactj.core.util;
 
 import com.niton.reactj.api.exceptions.ReactiveException;
+import com.niton.reactj.api.util.ReflectiveUtil;
 import com.niton.reactj.core.annotation.ReactiveResolution;
 import com.niton.reactj.core.annotation.ReactiveResolution.ReactiveResolutionType;
 import com.niton.reactj.core.annotation.Unreactive;
-import com.niton.reactj.utils.reflections.ReflectiveUtil;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;

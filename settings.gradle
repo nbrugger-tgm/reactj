@@ -8,7 +8,11 @@
  */
 rootProject.name = 'reactj'
 
-include("utils")
-include("observer")
-include("core")
+include("api")
+include("objects")
 include("lists")
+include("core")
+
+//tbr
+include("observer")
+

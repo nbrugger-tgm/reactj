@@ -1,6 +1,6 @@
 package com.niton.reactj.core.annotation;
 
-import com.niton.reactj.core.react.ReactiveStrategy;
+import com.niton.reactj.objects.ReactiveStrategy;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

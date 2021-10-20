@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(":api")
+    implementation "org.objenesis:objenesis:3.2"
+    implementation "net.bytebuddy:bytebuddy:1.11.20"
+}
