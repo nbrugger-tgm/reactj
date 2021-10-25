@@ -72,6 +72,14 @@ class AbstractProxyCreatorTest {
 		private       ReactiveWrapper<Object> PROXY_WRAPPER;
 	}
 
+	public static class UnsafeProxy_PROXY$12 extends FakeProxy_PROXY$12 {
+		private final UnsafeProxy_PROXY$12    PROXY_ORIGIN;
+		public        Object                  prop;
+		private       ReactiveWrapper<Object> PROXY_WRAPPER;
+
+		UnsafeProxy_PROXY$12(UnsafeProxy_PROXY$12 proxy_origin) {PROXY_ORIGIN = proxy_origin;}
+	}
+
 	@Test
 	void testErrorOnGetField() {
 		assertDoesNotThrow(() -> ProxyCreatorTestImpl.getField(FakeProxy.class, "PROXY_WRAPPER"));
@@ -124,21 +132,19 @@ class AbstractProxyCreatorTest {
 	@Test
 	void sync() {
 		var creator = new ProxyCreatorTestImpl();
-		var proxy   = new FakeProxy();
-		var origin  = new FakeProxy();
-		proxy.PROXY_ORIGIN = "794123";
-		origin.PROXY_ORIGIN = 66123;
-		var toCopy = origin.PROXY_ORIGIN;
+		var origin  = new UnsafeProxy_PROXY$12(null);
+		var proxy   = new UnsafeProxy_PROXY$12(origin);
+		proxy.prop = "794123";
+		origin.prop = 66123;
+		var toCopy = proxy.prop;
 		creator.sync(proxy);
 		assertEquals(
-				origin.PROXY_ORIGIN,
-				proxy.PROXY_ORIGIN,
+				origin.prop, proxy.prop,
 				"After syncing all common fields of origin and proxy should be equal"
 		);
 		assertEquals(
-				toCopy,
-				origin.PROXY_ORIGIN,
-				"The values should be copied from origin to proxy not the other way around"
+				toCopy, origin.prop,
+				"The values should be copied from proxy to origin not the other way around"
 		);
 
 	}

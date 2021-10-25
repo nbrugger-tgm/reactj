@@ -1,25 +1,36 @@
 package com.niton.reactj.objects;
 
-import com.niton.reactj.api.binding.builder.ReactiveBinder;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.exceptions.ReactiveAccessException;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.mvc.ReactiveComponent;
 import com.niton.reactj.api.react.Reactable;
+import com.niton.reactj.implementation.binding.ModelCallBuilder;
+import com.niton.reactj.implementation.binding.ReactiveBinder;
+import com.niton.reactj.objects.annotations.ReactiveListener;
+import com.niton.reactj.objects.observer.ObjectObserver;
+import com.niton.reactj.objects.observer.PropertyObservation;
+import com.niton.reactj.objects.proxy.ReactiveProxy;
 import com.niton.reactj.objects.reflect.Reflective;
+import com.niton.reactj.objects.util.ReactiveReflectorUtil;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.Predicate;
 
+import static com.niton.reactj.api.util.ReflectiveUtil.invalidMethodParameterException;
+import static com.niton.reactj.api.util.ReflectiveUtil.isFitting;
 import static java.lang.String.format;
 
 public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, V>
 		extends ReactiveComponent<M, PropertyObservation<M>, V> {
-	private final EventEmitter<M> onModelChange = new EventEmitter<>();
+	private final EventEmitter<M>                     onModelChange = new EventEmitter<>();
+	private final ReactiveBinder<ModelCallBuilder<M>> builder;
 
 	protected ReactiveObjectComponent() {
 		super(new ObjectObserver<>());
+		builder = new ReactiveBinder<>(() -> new ModelCallBuilder<M>(this::getModel));
 	}
 
 	@Override
@@ -38,7 +49,7 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 	);
 
 	/**
-	 * Registers all @{@link com.niton.reactj.core.annotation.ReactiveListener} annotated methods in
+	 * Registers all @{@link ReactiveListener} annotated methods in
 	 * component to the
 	 * binder
 	 */
@@ -46,10 +57,19 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 			ReactiveBinder<ModelCallBuilder<M>> builder,
 			EventEmitter<PropertyObservation<M>> observerEvent
 	) {
-		for (Method listenerMethod : ReactiveComponentUtil.getListenerMethods(getClass())) {
+		for (Method listenerMethod : getListenerMethods()) {
 			processAnnotatedMethod(listenerMethod, builder, observerEvent);
 		}
 
+	}
+
+	public Method[] getListenerMethods() {
+		return MethodUtils.getMethodsWithAnnotation(
+				getClass(),
+				ReactiveListener.class,
+				ReactiveReflectorUtil.goDeep(getClass()),
+				true
+		);
 	}
 
 	/**
@@ -89,7 +109,7 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 	private void invokeReactiveListener(Method listener, Object param) {
 		try {
 			if (listener.getParameterTypes().length == 1) {
-				ReactiveComponentUtil.checkParameterType(listener, param);
+				checkParameterType(listener, param);
 				listener.invoke(this, param);
 			} else if (listener.getParameterTypes().length == 0) {
 				listener.invoke(this);
@@ -114,6 +134,20 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 		return observation -> observation.propertyName.equals(name);
 	}
 
+	/**
+	 * Checks if the object can be used as parameter for the given method.
+	 * It is assumed that the given method has <b>exactly</b> one argument
+	 *
+	 * @param method the method to fit the object into
+	 * @param val    the value to use as parameter
+	 */
+	public static void checkParameterType(Method method, Object val) {
+		Class<?> paramType = method.getParameterTypes()[0];
+		if (!isFitting(val, paramType)) {
+			throw invalidMethodParameterException(method, val);
+		}
+	}
+
 	private EventEmitter<M> proxyUnwrap(EventEmitter<ReactiveProxy<M>> onModelChange) {
 		EventEmitter<M> unwrappedEmitter = new EventEmitter<>();
 		onModelChange.listen(e -> unwrappedEmitter.fire(e.getObject()));
@@ -123,4 +157,5 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 	protected Predicate<PropertyObservation<M>> propertyValueIs(Predicate<Object> predicate) {
 		return observation -> predicate.test(observation.propertyValue);
 	}
+
 }

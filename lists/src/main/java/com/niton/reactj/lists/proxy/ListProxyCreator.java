@@ -1,10 +1,10 @@
 package com.niton.reactj.lists.proxy;
 
 import com.niton.reactj.api.exceptions.ReactiveException;
+import com.niton.reactj.api.exceptions.ReflectiveCallException;
 import com.niton.reactj.api.proxy.AbstractProxyCreator;
 import com.niton.reactj.api.proxy.ProxyException;
-import com.niton.reactj.core.observer.infusion.StaticInfuserWithLookup;
-import com.niton.reactj.utils.exceptions.ReflectiveCallException;
+import com.niton.reactj.implementation.infusion.StaticInfuserWithLookup;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.UsingLookup;
 
 import java.lang.invoke.MethodHandles;
@@ -16,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
-import static com.niton.reactj.core.observer.util.Matchers.overwritesAnyOf;
+import static com.niton.reactj.api.util.Matchers.overwritesAnyOf;
 import static net.bytebuddy.matcher.ElementMatchers.none;
 
 public class ListProxyCreator extends AbstractProxyCreator {

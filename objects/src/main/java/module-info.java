@@ -1,4 +1,10 @@
 module reactj.objects {
-	requires reactj.api;
-	requires net.bytebuddy;
+	exports com.niton.reactj.objects.proxy;
+	exports com.niton.reactj.objects;
+	exports com.niton.reactj.objects.annotations;
+	exports com.niton.reactj.objects.observer;
+	exports com.niton.reactj.objects.reflect;
+	requires transitive reactj.api;
+	requires org.objenesis;
+	requires org.apache.commons.lang3;
 }

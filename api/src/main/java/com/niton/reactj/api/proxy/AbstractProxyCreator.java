@@ -9,13 +9,12 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ServiceLoader;
 
-import static com.niton.reactj.api.proxy.AbstractProxyBuilder.*;
+import static com.niton.reactj.api.proxy.ProxyBuilder.*;
 
 
 public abstract class AbstractProxyCreator {
-	private final AbstractProxyBuilder    builder;
+	private final ProxyBuilder            builder;
 	private final Map<Class<?>, Class<?>> proxyClasses       = new HashMap<>();
 	private final Map<Class<?>, Field>    wrapperFields      = new HashMap<>();
 	private final Map<Class<?>, Field>    originFields       = new HashMap<>();
@@ -24,15 +23,9 @@ public abstract class AbstractProxyCreator {
 
 	protected AbstractProxyCreator(InfusionAccessProvider accessor) {
 		this.accessor = accessor;
-		builder = ServiceLoader.load(AbstractProxyBuilder.class).findFirst().orElseThrow(this::noProxyBuilderException);
-		builder.useInfusion(accessor);
+		builder = ProxyBuilder.load(accessor);
 	}
 
-	private RuntimeException noProxyBuilderException() {
-		return new RuntimeException(
-				new ClassNotFoundException("No AbstractProxyBuilder implementation found. Use JPMS to provide an impl.")
-		);
-	}
 
 	/**
 	 * Copies values from the proxy to the actual object.
@@ -45,7 +38,7 @@ public abstract class AbstractProxyCreator {
 
 		try {
 			Object origin = getOrigin(proxy);
-			for (Field f : origin.getClass().getDeclaredFields()) {
+			for (Field f : origin.getClass().getFields()) {
 				syncField(proxy, origin, f);
 			}
 		} catch (IllegalAccessException e) {
@@ -139,14 +132,14 @@ public abstract class AbstractProxyCreator {
 					proxy,
 					new ReactiveWrapper<>(object)
 			);
-			getField(proxyClass, originFields, AbstractProxyBuilder.ORIGIN_FIELD).set(proxy, object);
+			getField(proxyClass, originFields, ProxyBuilder.ORIGIN_FIELD).set(proxy, object);
 		} catch (IllegalAccessException e) {
 			//not going to happen
 			e.printStackTrace();
 		}
 	}
 
-	public AbstractProxyBuilder getBuilder() {
+	public ProxyBuilder getBuilder() {
 		return builder;
 	}
 }

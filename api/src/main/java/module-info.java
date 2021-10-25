@@ -1,6 +1,10 @@
+import com.niton.reactj.api.proxy.ProxyBuilder;
+
 module reactj.api {
 	requires static org.junit.jupiter.api;
-	requires net.bytebuddy;
+	requires transitive net.bytebuddy;
+
+	uses ProxyBuilder;
 
 	exports com.niton.reactj.api.binding.builder.conditional;
 	exports com.niton.reactj.api.binding.builder.exposed;
@@ -17,6 +21,7 @@ module reactj.api {
 	exports com.niton.reactj.api.react;
 	exports com.niton.reactj.api.util;
 
+	exports com.niton.reactj.implementation.infusion;
 
 	exports com.niton.reactj.testing.event;
 	exports com.niton.reactj.testing.mvc;
@@ -24,4 +29,6 @@ module reactj.api {
 	opens com.niton.reactj.testing.event to org.junit.platform.commons;
 	opens com.niton.reactj.testing.mvc to org.junit.platform.commons;
 	opens com.niton.reactj.testing.observer to org.junit.platform.commons;
+	exports com.niton.reactj.implementation.binding;
+
 }

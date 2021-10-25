@@ -7,7 +7,8 @@ import org.junit.jupiter.api.*;
 
 import java.util.*;
 
-import static com.niton.reactj.api.lists.ListOperation.*;
+import static com.niton.reactj.lists.diff.ListOperation.ADD;
+import static com.niton.reactj.lists.diff.ListOperation.REMOVE;
 import static java.lang.String.format;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;

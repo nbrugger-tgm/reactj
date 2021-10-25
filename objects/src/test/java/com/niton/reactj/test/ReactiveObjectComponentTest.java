@@ -1,15 +1,16 @@
 package com.niton.reactj.test;
 
-import com.niton.reactj.api.binding.builder.ReactiveBinder;
+import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.core.annotation.ReactiveListener;
-import com.niton.reactj.core.mvc.ModelCallBuilder;
-import com.niton.reactj.core.mvc.ReactiveObjectComponent;
-import com.niton.reactj.core.observer.PropertyObservation;
-import com.niton.reactj.core.proxy.ProxyCreator;
-import com.niton.reactj.core.proxy.ProxySubject;
+import com.niton.reactj.implementation.binding.ModelCallBuilder;
+import com.niton.reactj.implementation.binding.ReactiveBinder;
+import com.niton.reactj.objects.ReactiveObjectComponent;
+import com.niton.reactj.objects.annotations.ReactiveListener;
+import com.niton.reactj.objects.observer.PropertyObservation;
+import com.niton.reactj.objects.proxy.ProxyCreator;
+import com.niton.reactj.objects.proxy.ProxySubject;
+import com.niton.reactj.test.ReactiveObjectComponentTest.Person;
 import com.niton.reactj.testing.mvc.ReactiveComponentImplTest;
-import com.niton.reactj.utils.event.EventEmitter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("ReactiveObjectComponent")
 class ReactiveObjectComponentTest
 		extends ReactiveComponentImplTest<
-		ReactiveObjectComponent<ReactiveObjectComponentTest.Person, Object>,
+		ReactiveObjectComponent<Person, Object>,
 		ReactiveObjectComponentTest.Person,
-		PropertyObservation<ReactiveObjectComponentTest.Person>
+		PropertyObservation<Person>
 		> {
 	private static ProxyCreator creator;
 	private        int          received;

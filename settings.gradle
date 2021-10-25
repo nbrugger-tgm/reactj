@@ -12,7 +12,6 @@ include("api")
 include("objects")
 include("lists")
 include("core")
-
-//tbr
-include("observer")
+include("examples")
+include("core:impl")
 

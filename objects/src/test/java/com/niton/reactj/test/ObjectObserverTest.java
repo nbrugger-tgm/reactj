@@ -1,11 +1,11 @@
 package com.niton.reactj.test;
 
 import com.niton.reactj.api.react.ReactiveObject;
-import com.niton.reactj.core.observer.ObjectObserver;
-import com.niton.reactj.core.observer.ObserverImplTest;
-import com.niton.reactj.core.observer.PropertyObservation;
-import com.niton.reactj.core.observer.SelfReflective;
+import com.niton.reactj.objects.observer.ObjectObserver;
+import com.niton.reactj.objects.observer.PropertyObservation;
+import com.niton.reactj.objects.reflect.SelfReflective;
 import com.niton.reactj.test.ObjectObserverTest.Subject;
+import com.niton.reactj.testing.observer.ObserverImplTest;
 import org.junit.jupiter.api.DisplayName;
 
 @DisplayName("ObjectObserver")

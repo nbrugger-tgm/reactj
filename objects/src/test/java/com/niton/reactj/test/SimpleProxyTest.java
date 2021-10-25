@@ -1,9 +1,9 @@
 package com.niton.reactj.test;
 
-import com.niton.reactj.api.observer.Reactable;
 import com.niton.reactj.api.proxy.ProxyBuilder;
+import com.niton.reactj.api.react.Reactable;
 import com.niton.reactj.api.react.ReactiveWrapper;
-import com.niton.reactj.core.observer.infusion.BesideOriginInfuser;
+import com.niton.reactj.implementation.infusion.BesideOriginInfuser;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +47,8 @@ class SimpleProxyTest {
 			throws InstantiationException, IllegalAccessException, InvocationTargetException,
 			       NoSuchMethodException,
 			       NoSuchFieldException {
-		var builder = new ProxyBuilder(new BesideOriginInfuser(thisLookup));
+		var infus   = new BesideOriginInfuser(thisLookup);
+		var builder = ProxyBuilder.load(infus);
 		Class<? extends Origin> proxyClass = builder
 				.buildProxy(
 						Origin.class,

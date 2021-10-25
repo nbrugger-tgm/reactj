@@ -1,12 +1,13 @@
 package com.niton.reactj.test;
 
-import com.niton.reactj.api.observer.Reactable;
-import com.niton.reactj.core.annotation.ReactiveResolution;
-import com.niton.reactj.core.observer.ObjectObserver;
-import com.niton.reactj.core.observer.Reflective;
-import com.niton.reactj.core.proxy.ProxyCreator;
-import com.niton.reactj.core.proxy.ProxySubject;
-import com.niton.reactj.core.proxy.ReactiveProxy;
+import com.niton.reactj.api.react.Reactable;
+import com.niton.reactj.objects.annotations.ReactiveResolution;
+import com.niton.reactj.objects.annotations.ReactiveResolution.ReactiveResolutionType;
+import com.niton.reactj.objects.observer.ObjectObserver;
+import com.niton.reactj.objects.proxy.ProxyCreator;
+import com.niton.reactj.objects.proxy.ProxySubject;
+import com.niton.reactj.objects.proxy.ReactiveProxy;
+import com.niton.reactj.objects.reflect.Reflective;
 import com.niton.reactj.test.models.TestData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Objects;
 
-import static com.niton.reactj.core.annotation.ReactiveResolution.ReactiveResolutionType.DEEP;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Object-Proxy")

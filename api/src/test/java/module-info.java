@@ -1,8 +1,10 @@
-import com.niton.reactj.api.proxy.AbstractProxyBuilder;
+import com.niton.reactj.api.proxy.ProxyBuilder;
 import com.niton.reactj.test.proxy.MockProxyBuilder;
 
 open module reactj.api.test {
 	requires reactj.api;
-	requires org.junit.jupiter.api;
-	provides AbstractProxyBuilder with MockProxyBuilder;
+	requires static org.junit.jupiter.api;
+	requires net.bytebuddy;
+
+	provides ProxyBuilder with MockProxyBuilder;
 }

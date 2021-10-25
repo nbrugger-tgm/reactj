@@ -1,9 +1,8 @@
 module reactj.lists {
-	requires reactj.api;
-	requires static org.junit.jupiter.api;
+	requires transitive reactj.api;
 
-	exports com.niton.reactj.api.lists;
 	exports com.niton.reactj.lists.diff;
 	exports com.niton.reactj.lists.observer;
 	exports com.niton.reactj.lists.proxy;
+	exports com.niton.reactj.lists.mvc;
 }

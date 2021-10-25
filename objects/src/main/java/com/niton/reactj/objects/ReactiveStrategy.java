@@ -1,12 +1,10 @@
 package com.niton.reactj.objects;
 
-import com.niton.reactj.core.annotation.Reactive;
-import com.niton.reactj.core.annotation.Unreactive;
+import com.niton.reactj.objects.annotations.Reactive;
+import com.niton.reactj.objects.annotations.Unreactive;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
-
-import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
  * Defines methods that should be reacted to

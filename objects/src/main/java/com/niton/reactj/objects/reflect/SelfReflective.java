@@ -1,6 +1,6 @@
 package com.niton.reactj.objects.reflect;
 
-import com.niton.reactj.core.util.ReactiveReflectorUtil;
+import com.niton.reactj.objects.util.ReactiveReflectorUtil;
 
 import java.util.Map;
 

@@ -1,10 +1,10 @@
 package com.niton.reactj.api.binding.builder.conditional;
 
 import com.niton.reactj.api.binding.PredicateRunnable;
-import com.niton.reactj.api.binding.builder.BaseRunnableBuilder;
-import com.niton.reactj.api.binding.builder.CallBuilder;
-import com.niton.reactj.api.binding.builder.exposed.ConditionalBindingBuilder;
+import com.niton.reactj.api.binding.builder.ConditionalBindingBuilder;
 import com.niton.reactj.api.binding.predicates.HasPredicate;
+import com.niton.reactj.implementation.binding.BaseRunnableBuilder;
+import com.niton.reactj.implementation.binding.CallBuilder;
 
 
 public class ConditionalSourceBindingBuilder<T>
