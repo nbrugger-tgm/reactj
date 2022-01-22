@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface ObjectConvertingConsumerDsl<T, O> extends ConvertingConsumerDsl<T> {
-	PredicatableDsl<O> onObjectChange();
+	PredicatableDsl<O> onObjectChange(Function<O, T> getter);
 
 	@Override
 	ObjectBindingDsl<T> from(Supplier<? extends T> source);

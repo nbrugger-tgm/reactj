@@ -6,10 +6,11 @@ import com.niton.reactj.objects.dsl.impl.ObjectDslImpl;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public interface ObjectDsl<T> extends BinderDsl {
 
-	static <T> ObjectDsl<T> create(T object, EventEmitter<T> emitter) {
+	static <T> ObjectDsl<T> create(Supplier<T> object, EventEmitter<T> emitter) {
 		return new ObjectDslImpl<>(object, emitter);
 	}
 

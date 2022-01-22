@@ -12,7 +12,6 @@ import java.util.function.Supplier;
  * @param <O> the model/object type
  */
 public interface ObjectConsumerDsl<T, O> extends ConsumerDsl<T> {
-	PredicatableDsl<O> onModelChange();
 
 	@Override
 	ObjectConsumerDsl<T, O> and(Consumer<? super T> consumer);
@@ -28,4 +27,6 @@ public interface ObjectConsumerDsl<T, O> extends ConsumerDsl<T> {
 
 	@Override
 	ObjectBindingDsl<T> with(Supplier<? extends T> source);
+
+	PredicatableDsl<O> onObjectChange(Function<O, T> getter);
 }

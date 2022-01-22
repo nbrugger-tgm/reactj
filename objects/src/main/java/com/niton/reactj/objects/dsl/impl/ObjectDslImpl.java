@@ -1,5 +1,6 @@
 package com.niton.reactj.objects.dsl.impl;
 
+import com.niton.reactj.api.binding.dsl.BinderDsl;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.objects.dsl.ObjectConsumerDsl;
 import com.niton.reactj.objects.dsl.ObjectDsl;
@@ -7,28 +8,30 @@ import com.niton.reactj.objects.dsl.ObjectRunnableDsl;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ObjectDslImpl<T> implements ObjectDsl<T> {
-	private final T               model;
+	private final Supplier<T>     model;
 	private final EventEmitter<T> objectChangeEvent;
+	private final BinderDsl       impl = BinderDsl.create();
 
-	public ObjectDslImpl(T model, EventEmitter<T> objectChangeEvent) {
+	public ObjectDslImpl(Supplier<T> model, EventEmitter<T> objectChangeEvent) {
 		this.model             = model;
 		this.objectChangeEvent = objectChangeEvent;
 	}
 
 	@Override
-	public ObjectConsumerDsl call(BiConsumer setter) {
-		return null;
+	public <P> ObjectConsumerDsl<P, T> call(BiConsumer<T, P> setter) {
+		return call(v -> setter.accept(model.get(), v));
 	}
 
 	@Override
 	public ObjectRunnableDsl call(Runnable runnable) {
-		return null;
+		return new ObjectRunnableDslImpl(impl.call(runnable), objectChangeEvent);
 	}
 
 	@Override
-	public ObjectConsumerDsl call(Consumer runnable) {
-		return null;
+	public <N> ObjectConsumerDsl<N, T> call(Consumer<N> runnable) {
+		return new ObjectConsumerDslImpl<>(impl.call(runnable), objectChangeEvent);
 	}
 }
