@@ -2,10 +2,9 @@ package com.niton.reactj.test;
 
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.exceptions.ReactiveException;
-import com.niton.reactj.implementation.binding.ModelCallBuilder;
-import com.niton.reactj.implementation.binding.ReactiveBinder;
 import com.niton.reactj.objects.ReactiveObjectComponent;
 import com.niton.reactj.objects.annotations.ReactiveListener;
+import com.niton.reactj.objects.dsl.ObjectDsl;
 import com.niton.reactj.objects.observer.PropertyObservation;
 import com.niton.reactj.objects.proxy.ProxyCreator;
 import com.niton.reactj.objects.proxy.ProxySubject;
@@ -53,7 +52,7 @@ class ReactiveObjectComponentTest
 		return new ReactiveObjectComponent<>() {
 			@Override
 			protected void createBindings(
-					ReactiveBinder<ModelCallBuilder<Person>> builder,
+					ObjectDsl<Person> builder,
 					EventEmitter<Person> onModelChange,
 					EventEmitter<PropertyObservation<Person>> onPropertyChange
 			) {
@@ -89,7 +88,7 @@ class ReactiveObjectComponentTest
 
 			@Override
 			protected void createBindings(
-					ReactiveBinder<ModelCallBuilder<Person>> builder,
+					ObjectDsl<Person> builder,
 					EventEmitter<Person> onModelChange,
 					EventEmitter<PropertyObservation<Person>> onPropertyChange
 			) {
@@ -110,7 +109,7 @@ class ReactiveObjectComponentTest
 				ReactiveException.class,
 				wrongImplementation::getView,
 				"@ReactiveListeners are not allowed to have more than one parameter," +
-				" and if they do, an exception should be thrown"
+						" and if they do, an exception should be thrown"
 		);
 	}
 
@@ -121,7 +120,7 @@ class ReactiveObjectComponentTest
 
 			@Override
 			protected void createBindings(
-					ReactiveBinder<ModelCallBuilder<Person>> builder,
+					ObjectDsl<Person> builder,
 					EventEmitter<Person> onModelChange,
 					EventEmitter<PropertyObservation<Person>> onPropertyChange
 			) {
@@ -144,14 +143,14 @@ class ReactiveObjectComponentTest
 		assertThrows(
 				ClassCastException.class, () -> wrongImplementation.setModel(proxy),
 				"When a @ReactiveListener has a type that doesn't matches the property" +
-				" it should fail to set such a model"
+						" it should fail to set such a model"
 		);
 	}
 
 	@BeforeEach
 	void reset() {
 		received = -1;
-		called = false;
+		called   = false;
 	}
 
 	@Test
@@ -161,7 +160,7 @@ class ReactiveObjectComponentTest
 
 			@Override
 			protected void createBindings(
-					ReactiveBinder<ModelCallBuilder<Person>> builder,
+					ObjectDsl<Person> builder,
 					EventEmitter<Person> onModelChange,
 					EventEmitter<PropertyObservation<Person>> onPropertyChange
 			) {
@@ -184,8 +183,8 @@ class ReactiveObjectComponentTest
 		assertThrows(
 				ReactiveException.class, () -> wrongImplementation.setModel(proxy),
 				"When a @ReactiveListener throws an exception," +
-				"the call that triggered the exception should throw an" +
-				"ReactiveException with the regarding cause"
+						"the call that triggered the exception should throw an" +
+						"ReactiveException with the regarding cause"
 		);
 	}
 
@@ -196,7 +195,7 @@ class ReactiveObjectComponentTest
 
 			@Override
 			protected void createBindings(
-					ReactiveBinder<ModelCallBuilder<Person>> builder,
+					ObjectDsl<Person> builder,
 					EventEmitter<Person> onModelChange,
 					EventEmitter<PropertyObservation<Person>> onPropertyChange
 			) {
@@ -228,7 +227,7 @@ class ReactiveObjectComponentTest
 
 			@Override
 			protected void createBindings(
-					ReactiveBinder<ModelCallBuilder<Person>> builder,
+					ObjectDsl<Person> builder,
 					EventEmitter<Person> onModelChange,
 					EventEmitter<PropertyObservation<Person>> onPropertyChange
 			) {
@@ -259,7 +258,7 @@ class ReactiveObjectComponentTest
 
 			@Override
 			protected void createBindings(
-					ReactiveBinder<ModelCallBuilder<Person>> builder,
+					ObjectDsl<Person> builder,
 					EventEmitter<Person> onModelChange,
 					EventEmitter<PropertyObservation<Person>> onPropertyChange
 			) {

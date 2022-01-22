@@ -1,13 +1,13 @@
 package com.niton.reactj.testing.observer;
 
-import com.niton.reactj.api.observer.AbstractObserver;
+import com.niton.reactj.api.observer.Observer;
 
 /**
  * This observer shall only be used for testing.
  * <p>
  * Fires an empty Observation on every {@link #update()} call
  */
-public class MockObserver extends AbstractObserver<MockObserver.Observation, Object> {
+public class MockObserver extends Observer<MockObserver.Observation, Object> {
 	public static class Observation {
 	}
 

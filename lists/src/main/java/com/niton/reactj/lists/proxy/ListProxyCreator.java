@@ -4,7 +4,7 @@ import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.exceptions.ReflectiveCallException;
 import com.niton.reactj.api.proxy.AbstractProxyCreator;
 import com.niton.reactj.api.proxy.ProxyException;
-import com.niton.reactj.implementation.infusion.StaticInfuserWithLookup;
+import com.niton.reactj.api.proxy.infusion.StaticInfuserWithLookup;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.UsingLookup;
 
 import java.lang.invoke.MethodHandles;
@@ -40,7 +40,10 @@ public class ListProxyCreator extends AbstractProxyCreator {
 					list.getDeclaredMethod("sort", Comparator.class)
 			};
 		} catch (NoSuchMethodException e) {
-			throw new ReactiveException("Failed to prefetch list operations, java 11 should help out", e);
+			throw new ReactiveException(
+					"Failed to prefetch list operations, java 11 should help out",
+					e
+			);
 		}
 	}
 

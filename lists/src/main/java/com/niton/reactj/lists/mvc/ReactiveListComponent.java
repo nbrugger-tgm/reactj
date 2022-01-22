@@ -1,16 +1,14 @@
 package com.niton.reactj.lists.mvc;
 
+import com.niton.reactj.api.binding.dsl.BinderDsl;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.mvc.ReactiveComponent;
-import com.niton.reactj.implementation.binding.ModelCallBuilder;
-import com.niton.reactj.implementation.binding.ReactiveBinder;
 import com.niton.reactj.lists.diff.ListChange;
 import com.niton.reactj.lists.observer.ListObserver;
 
 import java.util.List;
 
-import static com.niton.reactj.lists.diff.ListOperation.ADD;
-import static com.niton.reactj.lists.diff.ListOperation.REMOVE;
+import static com.niton.reactj.lists.diff.ListOperation.*;
 
 public abstract class ReactiveListComponent<M, V>
 		extends ReactiveComponent<List<M>, ListChange<M>, V> {
@@ -31,15 +29,16 @@ public abstract class ReactiveListComponent<M, V>
 			else if (change.getOperation() == REMOVE)
 				onRemove.fire(change.getIndex());
 		});
-		createBindings(new ReactiveBinder<>(() -> new ModelCallBuilder<>(this::getModel)),
-		               onRemove,
-		               onAdd,
-		               observerEvent
+		createBindings(
+				BinderDsl.create(),
+				onRemove,
+				onAdd,
+				observerEvent
 		);
 	}
 
 	protected abstract void createBindings(
-			ReactiveBinder<ModelCallBuilder<List<M>>> builder,
+			BinderDsl builder,
 			EventEmitter<Integer> onRemove,
 			EventEmitter<Integer> onAdd,
 			EventEmitter<ListChange<M>> anyListChange

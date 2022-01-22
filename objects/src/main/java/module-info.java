@@ -1,4 +1,5 @@
 module reactj.objects {
+	exports com.niton.reactj.objects.dsl;
 	exports com.niton.reactj.objects.proxy;
 	exports com.niton.reactj.objects;
 	exports com.niton.reactj.objects.annotations;

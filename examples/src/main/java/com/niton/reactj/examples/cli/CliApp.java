@@ -1,7 +1,6 @@
 package com.niton.reactj.examples.cli;
 
-import com.niton.reactj.api.binding.builder.exposed.ExposedCallBuilder;
-import com.niton.reactj.implementation.binding.CallBuilder;
+import com.niton.reactj.api.binding.dsl.BinderDsl;
 import com.niton.reactj.objects.proxy.ProxyCreator;
 import com.niton.reactj.objects.proxy.ReactiveProxy;
 
@@ -13,11 +12,11 @@ public class CliApp {
 		ReactiveProxy<Progress> proxy    = creator.create(new Progress());
 		Progress                progress = proxy.getObject();
 
-		CliApp app = new CliApp();
+		CliApp    app    = new CliApp();
+		BinderDsl binder = BinderDsl.create();
 
-		ExposedCallBuilder binder = new CallBuilder();
-		binder.call(app::renderProgress).with(progress::getProgress)
-		      .andAlso().call(app::displayDone).when(progress::isDone)
+		binder.call(app::renderProgress).with(progress::getProgress);
+		binder.call(app::displayDone).when(progress::isDone)
 		      .on(proxy.reactEvent());
 
 

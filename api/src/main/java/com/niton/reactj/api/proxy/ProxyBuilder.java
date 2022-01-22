@@ -1,5 +1,6 @@
 package com.niton.reactj.api.proxy;
 
+import com.niton.reactj.api.exceptions.Exceptions;
 import com.niton.reactj.api.react.ReactiveWrapper;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder.MethodDefinition.ReceiverTypeDefinition;
@@ -30,15 +31,9 @@ public interface ProxyBuilder {
 	static ProxyBuilder load(InfusionAccessProvider accessor) {
 		var builder = ServiceLoader.load(ProxyBuilder.class)
 		                           .findFirst()
-		                           .orElseThrow(ProxyBuilder::noProxyBuilderException);
+		                           .orElseThrow(Exceptions.noImplementation(ProxyBuilder.class));
 		builder.useInfusion(accessor);
 		return builder;
-	}
-
-	private static RuntimeException noProxyBuilderException() {
-		return new RuntimeException(
-				new ClassNotFoundException("No AbstractProxyBuilder implementation found. Use JPMS to provide an impl.")
-		);
 	}
 
 	void useInfusion(InfusionAccessProvider accessor);

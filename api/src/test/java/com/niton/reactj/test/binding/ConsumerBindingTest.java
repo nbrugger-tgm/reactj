@@ -1,19 +1,15 @@
 package com.niton.reactj.test.binding;
 
-import com.niton.reactj.api.binding.builder.exposed.ExposedCallBuilder;
+import com.niton.reactj.api.binding.dsl.BinderDsl;
 import com.niton.reactj.api.binding.predicates.Condition;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.event.GenericEventEmitter;
-import com.niton.reactj.implementation.binding.CallBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static java.util.function.Predicate.not;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("ConsumerBindings")
 class ConsumerBindingTest {
@@ -25,7 +21,7 @@ class ConsumerBindingTest {
 	private        String               received;
 
 	//use the "exposed" to hide unneeded methods
-	private ExposedCallBuilder builder;
+	private BinderDsl builder;
 
 
 	@BeforeEach
@@ -33,8 +29,8 @@ class ConsumerBindingTest {
 		coolEvent.removeListeners();
 		stringEvent.removeListeners();
 		received = null;
-		source = null;
-		builder = new CallBuilder();
+		source   = null;
+		builder  = BinderDsl.create();
 	}
 
 	@Test
@@ -260,49 +256,14 @@ class ConsumerBindingTest {
 		);
 	}
 
-	@Test
-	@DisplayName("call(runnable).andAlso().call(consumer).with(source)")
-	void mixBindingsAndRunnables() {
-		AtomicInteger counter = new AtomicInteger();
-		builder
-				.call(counter::incrementAndGet)
-				.andAlso()
-				.call(this::setReceived)
-				.with(this::getSomeValue)
-				.on(coolEvent);
-		source = "LO6450";
-		coolEvent.fire();
-		String msg = "When runnables and consumers/bindings are mixed, all should be fired";
-		assertEquals(1, counter.get(), msg);
-		assertEquals(source, received, msg);
-	}
-
-	@Test
-	@DisplayName("call(runnable).andAlso().call(consumer).with(source)")
-	void mixBindingsAndRunnablesWithCondition() {
-		AtomicInteger counter = new AtomicInteger();
-		builder
-				.call(counter::incrementAndGet)
-				.andAlso()
-				.call(this::setReceived)
-				.with(this::getSomeValue)
-				.when(Condition.NO)
-				.on(coolEvent);
-		source = "CF6491";
-		coolEvent.fire();
-		String msg = "When this is done: 'call(a).andAlso().call(b).when(condition)' the condition only applies to b";
-		assertEquals(1, counter.get(), msg);
-		assertNull(received, msg);
-	}
 
 	@Test
 	@DisplayName("call(consumer1).and(consumer2).with(source)")
 	void multipleConsumersSameSource() {
-		builder
-				.call(this::setReceived)
-				.and(v -> VAL1 = v)
-				.with(this::getSomeValue)
-				.on(coolEvent);
+		builder.call(this::setReceived)
+		       .and(v -> VAL1 = v)
+		       .with(this::getSomeValue)
+		       .on(coolEvent);
 		source = "KH9757";
 		coolEvent.fire();
 		assertEquals(received, source);

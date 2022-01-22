@@ -1,12 +1,11 @@
 package com.niton.reactj.examples.swing;
 
 import com.niton.reactj.api.event.EventEmitter;
-import com.niton.reactj.core.mvc.ReactiveObjectComponent;
-import com.niton.reactj.implementation.binding.ModelCallBuilder;
-import com.niton.reactj.implementation.binding.ReactiveBinder;
+import com.niton.reactj.api.event.GenericEventEmitter;
+import com.niton.reactj.objects.ReactiveObjectComponent;
 import com.niton.reactj.objects.annotations.ReactiveListener;
+import com.niton.reactj.objects.dsl.ObjectDsl;
 import com.niton.reactj.objects.observer.PropertyObservation;
-import com.niton.reactj.utils.event.GenericEventEmitter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,12 +29,12 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
 
 	@Override
 	protected JPanel createView() {
-		panel = new JPanel();
-		surnameInput = new JTextField();
-		ageInput = new JTextField();
-		iqField = new JTextField();
+		panel           = new JPanel();
+		surnameInput    = new JTextField();
+		ageInput        = new JTextField();
+		iqField         = new JTextField();
 		genderJComboBox = new JComboBox<>(Gender.values());
-		selectButton = new JButton("Reset");
+		selectButton    = new JButton("Reset");
 
 
 		panel.add(surnameInput);
@@ -54,72 +53,56 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
 		return panel;
 	}
 
-	@ReactiveListener("age")
-	public void adaptSizeToAge(int age) {
-		System.out.println("adapt font size for age of " + age + " years");
-	}
-
 	@Override
 	protected void createBindings(
-			ReactiveBinder<ModelCallBuilder<Person>> binder,
+			ObjectDsl<Person> binder,
 			EventEmitter<Person> onModelChange,
 			EventEmitter<PropertyObservation<Person>> onPropertyChange
 	) {
 
 		Function<String, Integer> parseInt = Integer::parseInt;
-		binder.newBinding()
-		      .call(surnameInput::setText)
+		binder.call(surnameInput::setText)
 		      .with(Person::getName)
 		      .from(onModelChange);
-		binder.newBinding()
-		      .call(iqField::setText)
+		binder.call(iqField::setText)
 		      .with(String::valueOf)
 		      .from(Person::getIq)
 		      .from(onModelChange)
-		      .when(Objects::nonNull)
-		      .andAlso();
-		binder.newBinding()
-		      .invoke(genderJComboBox::setSelectedItem)
+		      .when(Objects::nonNull);
+		binder.call(genderJComboBox::setSelectedItem)
 		      .with(Person::getGender)
 		      .from(onModelChange);
 
 
-		binder.newBinding()
-		      .invoke(Person::setName)
+		binder.call(Person::setName)
 		      .with(surnameInput::getText)
 		      .on(surnameFieldChange);
 		surnameInput.getDocument().addUndoableEditListener(surnameFieldChange::fire);
 		//surnameInput.addActionListener(bindings::react);
 
-		binder.newBinding()
-		      .invoke(Person::setGender)
-		      .with((o) -> (Gender) o)
-		      .from(genderJComboBox::getSelectedItem)
+		binder.call(Person::setGender)
+		      .withCasted(genderJComboBox::getSelectedItem)
 		      .on(changeGender);
 		genderJComboBox.addActionListener(changeGender::fire);
 
 		//react to changes in many and different ways
-		binder.newBinding()
-		      .call(this::adaptColorToGender)
+		binder.call(this::adaptColorToGender)
 		      .with(Person::getGender)
 		      .from(onModelChange);
 
 		//bidirectional binding (With value conversion)
-		binder.newBinding()
-		      .call(ageInput::setText)
+		binder.call(ageInput::setText)
 		      .with(Object::toString)
 		      .from(Person::getAge)
 		      .from(onModelChange);
 
-		binder.newBinding()
-		      .invoke(Person::setAge)
+		binder.call(Person::setAge)
 		      .with(parseInt)
 		      .from(ageInput::getText)
 		      .on(ageChange);
 
 		ageInput.addActionListener(ageChange::fire);
 	}
-
 
 	public void adaptColorToGender(Gender g) {
 		Color c = Color.WHITE;
@@ -128,5 +111,10 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
 		if (g == Gender.FEMALE)
 			c = Color.PINK;
 		panel.setBackground(c);
+	}
+
+	@ReactiveListener("age")
+	public void adaptSizeToAge(int age) {
+		System.out.println("adapt font size for age of " + age + " years");
 	}
 }

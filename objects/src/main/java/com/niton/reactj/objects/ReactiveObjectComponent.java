@@ -5,9 +5,8 @@ import com.niton.reactj.api.exceptions.ReactiveAccessException;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.mvc.ReactiveComponent;
 import com.niton.reactj.api.react.Reactable;
-import com.niton.reactj.implementation.binding.ModelCallBuilder;
-import com.niton.reactj.implementation.binding.ReactiveBinder;
 import com.niton.reactj.objects.annotations.ReactiveListener;
+import com.niton.reactj.objects.dsl.ObjectDsl;
 import com.niton.reactj.objects.observer.ObjectObserver;
 import com.niton.reactj.objects.observer.PropertyObservation;
 import com.niton.reactj.objects.proxy.ReactiveProxy;
@@ -19,18 +18,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.Predicate;
 
-import static com.niton.reactj.api.util.ReflectiveUtil.invalidMethodParameterException;
-import static com.niton.reactj.api.util.ReflectiveUtil.isFitting;
+import static com.niton.reactj.api.util.ReflectiveUtil.*;
 import static java.lang.String.format;
 
 public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, V>
 		extends ReactiveComponent<M, PropertyObservation<M>, V> {
-	private final EventEmitter<M>                     onModelChange = new EventEmitter<>();
-	private final ReactiveBinder<ModelCallBuilder<M>> builder;
+	private final EventEmitter<M> onModelChange = new EventEmitter<>();
 
 	protected ReactiveObjectComponent() {
 		super(new ObjectObserver<>());
-		builder = new ReactiveBinder<>(() -> new ModelCallBuilder<M>(this::getModel));
 	}
 
 	@Override
@@ -38,12 +34,15 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 			EventEmitter<PropertyObservation<M>> observerEvent
 	) {
 		observerEvent.listen(obs -> onModelChange.fire(obs.observed));
-		createBindings(builder, onModelChange, observerEvent);
-		registerAnnotatedBindings(builder, observerEvent);
+
+		ObjectDsl<M> binder = ObjectDsl.create(getModel(), onModelChange);
+
+		createBindings(binder, onModelChange, observerEvent);
+		registerAnnotatedBindings(binder, observerEvent);
 	}
 
 	protected abstract void createBindings(
-			ReactiveBinder<ModelCallBuilder<M>> builder,
+			ObjectDsl<M> builder,
 			EventEmitter<M> onModelChange,
 			EventEmitter<PropertyObservation<M>> onPropertyChange
 	);
@@ -54,7 +53,7 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 	 * binder
 	 */
 	private void registerAnnotatedBindings(
-			ReactiveBinder<ModelCallBuilder<M>> builder,
+			ObjectDsl<M> builder,
 			EventEmitter<PropertyObservation<M>> observerEvent
 	) {
 		for (Method listenerMethod : getListenerMethods()) {
@@ -80,7 +79,7 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 	 */
 	private void processAnnotatedMethod(
 			Method method,
-			ReactiveBinder<ModelCallBuilder<M>> binder,
+			ObjectDsl<M> binder,
 			EventEmitter<PropertyObservation<M>> onChange
 	) {
 		if (method.getParameterTypes().length > 1) {
@@ -92,8 +91,7 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 
 
 		String propertyName = method.getAnnotation(ReactiveListener.class).value();
-		binder.newBinding()
-		      .call(value -> invokeReactiveListener(method, value))
+		binder.call(value -> invokeReactiveListener(method, value))
 		      .with(this::propertyValue)
 		      .from(onChange)
 		      .when(propertyNameIs(propertyName));

@@ -1,7 +1,7 @@
 package com.niton.reactj.testing.observer;
 
 import com.niton.reactj.api.event.Listener;
-import com.niton.reactj.api.observer.AbstractObserver;
+import com.niton.reactj.api.observer.Observer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @param <S> the type to observable
  */
 @TestInstance(Lifecycle.PER_CLASS)
-public abstract class ObserverImplTest<O extends AbstractObserver<R, S>, R, S> {
+public abstract class ObserverImplTest<O extends Observer<R, S>, R, S> {
 	private       R           fired;
 	private final Listener<R> listener = event -> fired = event;
 	private       O           observer;
@@ -33,7 +33,7 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R, S>, R, S> {
 
 	@BeforeEach
 	void prepare() {
-		fired = null;
+		fired    = null;
 		observer = createObserverInstance();
 		observer.addListener(listener);
 	}
@@ -89,7 +89,10 @@ public abstract class ObserverImplTest<O extends AbstractObserver<R, S>, R, S> {
 		observer.setObserveOnRebind(false);
 		observer.observe(observable);
 		observer.reset();
-		assertNull(fired, "reset() is not allowed to trigger listeners when observeOnRebind is false");
+		assertNull(
+				fired,
+				"reset() is not allowed to trigger listeners when observeOnRebind is false"
+		);
 		observer.setObserveOnRebind(true);
 		observer.reset();
 		assertNotNull(fired, "Observer is not reporting changes after reset");

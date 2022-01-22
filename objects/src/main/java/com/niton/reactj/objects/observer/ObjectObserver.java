@@ -1,7 +1,7 @@
 package com.niton.reactj.objects.observer;
 
 
-import com.niton.reactj.api.observer.AbstractObserver;
+import com.niton.reactj.api.observer.Observer;
 import com.niton.reactj.api.react.Reactable;
 import com.niton.reactj.objects.reflect.Reflective;
 
@@ -15,7 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * e.g. reports changes to the properties
  * <p>Only works with {@link Reactable} classes. There are multiple ways to achieve this.</p>
  */
-public class ObjectObserver<M extends Reactable & Reflective> extends AbstractObserver<PropertyObservation<M>, M> {
+public class ObjectObserver<M extends Reactable & Reflective> extends
+                                                              Observer<PropertyObservation<M>, M> {
 
 	private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
 

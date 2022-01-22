@@ -16,5 +16,5 @@ public interface HasPredicate<T> {
 	/**
 	 * @param predicate a predicate that determines if the object is allowed to execute
 	 */
-	void setPredicate(Predicate<T> predicate);
+	void setPredicate(Predicate<? super T> predicate);
 }

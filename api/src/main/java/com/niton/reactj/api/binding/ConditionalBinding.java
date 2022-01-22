@@ -1,23 +1,23 @@
 package com.niton.reactj.api.binding;
 
-import com.niton.reactj.api.binding.predicates.HasPredicate;
+import com.niton.reactj.api.binding.runnable.PredicatedRunnable;
 
 import java.util.function.Predicate;
 
-public class ConditionalBinding<T> implements Runnable, HasPredicate<T> {
+public class ConditionalBinding<T> extends Binding<T> implements PredicatedRunnable<T> {
 
-	protected final ReactiveBinding<T> binding;
-	private         Predicate<T>       predicate = i -> true;
+	private Predicate<T> predicate;
 
-	public ConditionalBinding(ReactiveBinding<T> binding) {
-		this.binding = binding;
+	public ConditionalBinding(Binding<T> binding, Predicate<? super T> predicate) {
+		super(binding.consumer, binding.source);
+		this.predicate = predicate::test;
 	}
 
 	@Override
 	public void run() {
-		T val = binding.source.get();
+		T val = source.get();
 		if (predicate.test(val))
-			binding.consumer.accept(val);
+			consumer.accept(val);
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class ConditionalBinding<T> implements Runnable, HasPredicate<T> {
 	}
 
 	@Override
-	public void setPredicate(Predicate<T> predicate) {
-		this.predicate = predicate;
+	public void setPredicate(Predicate<? super T> predicate) {
+		this.predicate = predicate::test;
 	}
 }

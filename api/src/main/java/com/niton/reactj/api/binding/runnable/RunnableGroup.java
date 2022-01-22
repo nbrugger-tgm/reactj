@@ -35,6 +35,10 @@ public class RunnableGroup implements Runnable {
 	}
 
 	public Runnable[] toArray() {
-		return runnables.toArray(new Runnable[0]);
+		return runnables.toArray(Runnable[]::new);
+	}
+
+	public void remove(Runnable binding) {
+		runnables.remove(binding);
 	}
 }

@@ -1,9 +1,9 @@
 package com.niton.reactj.test;
 
 import com.niton.reactj.api.proxy.ProxyBuilder;
+import com.niton.reactj.api.proxy.infusion.BesideOriginInfuser;
 import com.niton.reactj.api.react.Reactable;
 import com.niton.reactj.api.react.ReactiveWrapper;
-import com.niton.reactj.implementation.infusion.BesideOriginInfuser;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +22,7 @@ class SimpleProxyTest {
 		private static int counter = 0;
 		public         int prop    = counter++;
 
-		public Origin() {}
+		public Origin()           {}
 
 		public void doSomething() {}
 	}
