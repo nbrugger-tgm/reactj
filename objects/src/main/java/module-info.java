@@ -1,11 +1,12 @@
 module reactj.objects {
-	exports com.niton.reactj.objects.dsl;
-	exports com.niton.reactj.objects.proxy;
-	exports com.niton.reactj.objects;
-	exports com.niton.reactj.objects.annotations;
-	exports com.niton.reactj.objects.observer;
-	exports com.niton.reactj.objects.reflect;
 	requires transitive reactj.api;
 	requires org.objenesis;
 	requires org.apache.commons.lang3;
+
+	exports com.niton.reactj.objects;
+	exports com.niton.reactj.objects.dsl;
+	exports com.niton.reactj.objects.proxy;
+	exports com.niton.reactj.objects.annotations;
+	exports com.niton.reactj.objects.observer;
+	exports com.niton.reactj.objects.reflect;
 }

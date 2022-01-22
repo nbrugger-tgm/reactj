@@ -13,6 +13,7 @@ public interface ObjectDsl<T> extends BinderDsl {
 		return new ObjectDslImpl<>(object, emitter);
 	}
 
+
 	<P> ObjectConsumerDsl<P, T> call(BiConsumer<T, P> setter);
 
 	@Override

@@ -1,4 +1,4 @@
-package com.niton.reactj.test.binding;
+package com.niton.reactj.testing.binding;
 
 import com.niton.reactj.api.binding.dsl.BinderDsl;
 import com.niton.reactj.api.binding.predicates.Condition;
@@ -12,7 +12,7 @@ import static java.util.function.Predicate.not;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("ConsumerBindings")
-class ConsumerBindingTest {
+public abstract class ConsumerBindingTest {
 	private static String               VAL1        = "SOME123";
 	private final  int                  VAL2        = 321;
 	private final  GenericEventEmitter  coolEvent   = new GenericEventEmitter();
@@ -30,8 +30,10 @@ class ConsumerBindingTest {
 		stringEvent.removeListeners();
 		received = null;
 		source   = null;
-		builder  = BinderDsl.create();
+		builder  = createBinder();
 	}
+
+	protected abstract BinderDsl createBinder();
 
 	@Test
 	@DisplayName(".call(consumer).with(source)")

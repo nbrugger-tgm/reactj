@@ -1,4 +1,4 @@
-package com.niton.reactj.test.binding;
+package com.niton.reactj.testing.binding;
 
 import com.niton.reactj.api.binding.dsl.BinderDsl;
 import com.niton.reactj.api.binding.predicates.Condition;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("RunnableBindings")
-class RunnableBindingTest {
+public abstract class RunnableBindingTest {
 
 	private final GenericEventEmitter coolEvent  = new GenericEventEmitter();
 	private final GenericEventEmitter coolEvent2 = new GenericEventEmitter();
@@ -23,8 +23,10 @@ class RunnableBindingTest {
 		coolEvent.removeListeners();
 		coolEvent2.removeListeners();
 		counter = 0;
-		builder = BinderDsl.create();
+		builder = createBinder();
 	}
+
+	protected abstract BinderDsl createBinder();
 
 	@Test
 	@DisplayName(".call(runnable).on(event)")
@@ -128,5 +130,5 @@ class RunnableBindingTest {
 			);
 		}
 	}
-	
+
 }
