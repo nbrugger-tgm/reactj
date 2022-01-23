@@ -38,8 +38,8 @@ public abstract class AbstractProxyCreator {
 
 		try {
 			Object origin = getOrigin(proxy);
-			for (Field f : origin.getClass().getFields()) {
-				syncField(proxy, origin, f);
+			for (Field field : origin.getClass().getFields()) {
+				syncField(proxy, origin, field);
 			}
 		} catch (IllegalAccessException e) {
 			throw new ProxyException("Syncing origin to proxy failed", e);
@@ -56,26 +56,26 @@ public abstract class AbstractProxyCreator {
 		return getField(proxy.getClass(), originFields, ORIGIN_FIELD).get(proxy);
 	}
 
-	private void syncField(Object proxy, Object origin, Field f) throws IllegalAccessException {
-		if (ReflectiveUtil.isMutableInstanceVar(f)) {
-			f.set(origin, f.get(proxy));
-		}
-	}
-
 	protected static Field getField(
 			Class<?> proxyClass,
 			Map<Class<?>, Field> fieldMap,
-			String field
+			String fieldName
 	) {
 		return fieldMap.computeIfAbsent(proxyClass, pc -> {
 			try {
-				Field f = pc.getDeclaredField(field);
-				f.setAccessible(true);
-				return f;
+				Field field = pc.getDeclaredField(fieldName);
+				field.setAccessible(true);
+				return field;
 			} catch (NoSuchFieldException e) {
 				throw new ReactiveException("Can't find wrapper field in proxy", e);
 			}
 		});
+	}
+
+	private void syncField(Object proxy, Object origin, Field field) throws IllegalAccessException {
+		if (ReflectiveUtil.isMutableInstanceVar(field)) {
+			field.set(origin, field.get(proxy));
+		}
 	}
 
 	public void setAllowUnsafeProxies(boolean allowUnsafeProxies) {

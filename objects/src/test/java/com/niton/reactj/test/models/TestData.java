@@ -4,7 +4,8 @@ package com.niton.reactj.test.models;
 public class TestData {
 	public int      id;
 	public TestEnum c = TestEnum.RED;
-	public static enum TestEnum {
+
+	public enum TestEnum {
 		RED,
 		BLUE,
 		GREEN

@@ -55,24 +55,32 @@ public final class ReflectiveUtil {
 	public static Object executeCall(Object target, Method method, Object... args)
 			throws InvocationTargetException, IllegalAccessException {
 		try {
-			return target.getClass().getMethod(
-					             method.getName(),
-					             method.getParameterTypes()
-			             )
+			return target.getClass()
+			             .getMethod(method.getName(), method.getParameterTypes())
 			             .invoke(target, args);
 		} catch (NoSuchMethodException e) {
 			throw new IllegalArgumentException(
-					format(
-							"Method %s is not compatible with %s.%s(%s)",
-							getMethodSignature(method),
-							target.getClass().getSimpleName(),
-							method.getName(),
-							Arrays.stream(args)
-							      .map(Object::getClass)
-							      .map(Class::getTypeName)
-							      .collect(Collectors.joining())
-					), e);
+					incompatibleMethodMessage(method, target, args),
+					e
+			);
 		}
+	}
+
+	private static String incompatibleMethodMessage(
+			Method method,
+			Object target,
+			Object[] args
+	) {
+		return format(
+				"Method %s is not compatible with %s.%s(%s)",
+				getMethodSignature(method),
+				target.getClass().getSimpleName(),
+				method.getName(),
+				Arrays.stream(args)
+				      .map(Object::getClass)
+				      .map(Class::getTypeName)
+				      .collect(Collectors.joining())
+		);
 	}
 
 	/**
@@ -120,16 +128,16 @@ public final class ReflectiveUtil {
 				.toArray(Class[]::new);
 	}
 
-	public static boolean isMutableInstanceVar(Field f) {
-		return !isStatic(f) && !isFinal(f);
+	public static boolean isMutableInstanceVar(Field field) {
+		return !isStatic(field) && !isFinal(field);
 	}
 
-	public static boolean isStatic(Field f) {
-		return Modifier.isStatic(f.getModifiers());
+	public static boolean isStatic(Field field) {
+		return Modifier.isStatic(field.getModifiers());
 	}
 
-	public static boolean isFinal(Field f) {
-		return Modifier.isFinal(f.getModifiers());
+	public static boolean isFinal(Field field) {
+		return Modifier.isFinal(field.getModifiers());
 	}
 
 

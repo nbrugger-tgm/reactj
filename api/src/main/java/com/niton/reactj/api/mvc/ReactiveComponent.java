@@ -19,7 +19,9 @@ public abstract class ReactiveComponent<M, O, V> {
 	protected final Observer<O, M>      observer;
 	private         V                   view;
 
-	protected ReactiveComponent(Observer<O, M> observer) {this.observer = observer;}
+	protected ReactiveComponent(Observer<O, M> observer) {
+		this.observer = observer;
+	}
 
 	public V getView() {
 		if (view == null) {

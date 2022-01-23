@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConsumerGroupTest {
-	private List<Object> consumed = new LinkedList<>();
+	private final List<Object> consumed = new LinkedList<>();
 
 	@Test
 	void flow() {
