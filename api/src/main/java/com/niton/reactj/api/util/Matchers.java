@@ -11,7 +11,6 @@ public class Matchers {
 	private Matchers() {
 	}
 
-	//TODO: solve ... better
 	public static ElementMatcher.Junction<MethodDescription> overwritesAnyOf(
 			final Method... abstractMethods
 	) {

@@ -1,5 +1,7 @@
 package com.niton.reactj.objects.observer;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import java.util.Objects;
 
 public class PropertyObservation<M> {
@@ -10,9 +12,9 @@ public class PropertyObservation<M> {
 	public PropertyObservation(String propertyName, Object propertyValue, M observed) {
 		if (propertyName == null || propertyValue == null || observed == null)
 			throw new IllegalArgumentException("PropertyObservation can't have 'null' parameters");
-		this.propertyName = propertyName;
+		this.propertyName  = propertyName;
 		this.propertyValue = propertyValue;
-		this.observed = observed;
+		this.observed      = observed;
 	}
 
 	@Override
@@ -23,9 +25,15 @@ public class PropertyObservation<M> {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
+
 		if (!(o instanceof PropertyObservation)) return false;
+
 		PropertyObservation<?> that = (PropertyObservation<?>) o;
-		return propertyName.equals(that.propertyName) && propertyValue.equals(that.propertyValue) && observed.equals(
-				that.observed);
+
+		return new EqualsBuilder()
+				.append(propertyName, that.propertyName)
+				.append(propertyValue, that.propertyValue)
+				.append(observed, that.observed)
+				.isEquals();
 	}
 }

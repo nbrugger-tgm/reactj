@@ -146,7 +146,7 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 		}
 	}
 
-	private EventEmitter<M> proxyUnwrap(EventEmitter<ReactiveProxy<M>> onModelChange) {
+	protected EventEmitter<M> proxyUnwrap(EventEmitter<ReactiveProxy<M>> onModelChange) {
 		EventEmitter<M> unwrappedEmitter = new EventEmitter<>();
 		onModelChange.listen(e -> unwrappedEmitter.fire(e.getObject()));
 		return unwrappedEmitter;

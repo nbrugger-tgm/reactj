@@ -4,6 +4,7 @@ engines:
     exclude_patterns:
       - "**/module-info.java"
       - "module-info.java"
+      - "**/examples/**/*.java"
     checks:
       com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck:
         enabled: false

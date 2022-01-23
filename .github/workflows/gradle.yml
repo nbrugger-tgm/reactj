@@ -63,9 +63,14 @@ jobs:
         run: |
           for i in $MODULES; do
             echo "$i"
-            export JACOCO_SOURCE_PATH=$(pwd)/$i/src/main/java/
-            ./cc-test-reporter format-coverage $(pwd)/$i/build/reports/jacoco/coverage.xml --input-type jacoco
-            ./cc-test-reporter upload-coverage
+            FILE=$(pwd)/$i/build/reports/jacoco/coverage.xml
+            if [ -f "$FILE" ]; then
+                export JACOCO_SOURCE_PATH=$(pwd)/$i/src/main/java/
+                ./cc-test-reporter format-coverage $FILE --input-type jacoco
+                ./cc-test-reporter upload-coverage
+            else
+                echo "Coverage file $FILE does not exist. (Module $i)"
+            fi
           done
       - name: "Stop Gradle deamon"
         if: always()

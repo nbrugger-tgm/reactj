@@ -15,6 +15,7 @@ sonarqube {
         property "sonar.organization", "nbrugger-tgm"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.coverage.exclusions", "examples/**/*.java"
+        property "sonar.cpd.exclusions", "sonar.exclusions"
     }
 }
 

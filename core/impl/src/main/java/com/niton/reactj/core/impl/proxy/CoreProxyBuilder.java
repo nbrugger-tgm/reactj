@@ -8,6 +8,8 @@ import com.niton.reactj.api.react.Reactable;
 import com.niton.reactj.api.react.ReactiveForwarder;
 import com.niton.reactj.api.react.ReactiveWrapper;
 import com.niton.reactj.api.util.Matchers;
+import com.niton.reactj.core.impl.proxy.ProxyForwardImpl.Equals;
+import com.niton.reactj.core.impl.proxy.ProxyForwardImpl.ToOrigin;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.DynamicType;
@@ -21,6 +23,7 @@ import java.lang.reflect.Method;
 
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.PRIVATE;
+import static net.bytebuddy.matcher.ElementMatchers.not;
 
 /**
  * Used to construct raw proxy templates that are {@link Reactable}
@@ -39,9 +42,6 @@ public class CoreProxyBuilder implements ProxyBuilder {
 	}
 
 	private InfusionAccessProvider accessor;
-
-	public CoreProxyBuilder() {
-	}
 
 	@Override
 	public void useInfusion(InfusionAccessProvider accessor) {
@@ -85,63 +85,74 @@ public class CoreProxyBuilder implements ProxyBuilder {
 			ElementMatcher.Junction<MethodDescription> reactive,
 			ElementMatcher.Junction<MethodDescription> unreactive
 	) {
-		var ignored =
-				Matchers.from(Reactable.class)
-				        .or(Matchers.from(ReactiveForwarder.class))
-				        .or(ElementMatchers.isEquals())
-				        .or(ElementMatchers.isClone());
-		var reactTo =
-				reactive.and(
-						ElementMatchers.not(
-								Matchers.from(Object.class)
-								        .or(unreactive)
-								        .or(ignored)
-						)
-				);
-		return new ByteBuddy()
+		var ignored = Matchers.from(Reactable.class)
+		                      .or(Matchers.from(ReactiveForwarder.class))
+		                      .or(ElementMatchers.isEquals())
+		                      .or(ElementMatchers.isClone());
+		var reactTo = reactive.and(
+				not(
+						Matchers.from(Object.class)
+						        .or(unreactive)
+						        .or(ignored)
+				)
+		);
+		var proxy = new ByteBuddy()
 				.subclass(originClass, ConstructorStrategy.Default.IMITATE_SUPER_CLASS)
 				.implement(ReactiveForwarder.class)
-				.name(format(
-						"%s.%s_%s$%s",
-						accessor.getPackage(originClass),
-						originClass.getSimpleName(),
-						PROXY_SUFFIX,
-						nextProxyId()
-				))
+				.name(getNextQualifiedProxyName(originClass));
 
-				.defineField(ORIGIN_FIELD, originClass, PRIVATE)
-				.defineField(WRAPPER_FIELD, ReactiveWrapper.class, PRIVATE)
+		proxy = defineFields(proxy, originClass);
+		return defineMethodInterceptors(proxy, reactTo, ignored);
+	}
 
-				.method(Matchers.from(Reactable.class))
-				.intercept(DefaultMethodCall.prioritize(ReactiveForwarder.class))
+	private <T> String getNextQualifiedProxyName(Class<T> originClass) {
+		return format(
+				"%s.%s_%s$%s",
+				accessor.getPackage(originClass),
+				originClass.getSimpleName(),
+				PROXY_SUFFIX,
+				nextProxyId()
+		);
+	}
 
-				.method(ElementMatchers.is(getReactiveTarget))
-				.intercept(FieldAccessor.ofField(WRAPPER_FIELD))
+	private <T> DynamicType.Builder<T> defineFields(
+			DynamicType.Builder<T> proxy,
+			Class<T> originClass
+	) {
+		return proxy.defineField(ORIGIN_FIELD, originClass, PRIVATE)
+		            .defineField(WRAPPER_FIELD, ReactiveWrapper.class, PRIVATE);
+	}
 
-				.method(reactTo)
-				.intercept(
-						MethodDelegation.to(ProxyForwardImpl.ToOrigin.class)
-				)
+	private <T> ReceiverTypeDefinition<T> defineMethodInterceptors(
+			DynamicType.Builder<T> proxy,
+			ElementMatcher.Junction<MethodDescription> reactTo,
+			ElementMatcher<? super MethodDescription> ignored
+	) {
+		return proxy.method(Matchers.from(Reactable.class))
+		            .intercept(DefaultMethodCall.prioritize(ReactiveForwarder.class))
 
-				.method(
-						ElementMatchers.isPublic()
-						               .and(ElementMatchers.not(reactTo))
-						               .and(ElementMatchers.not(ignored))
-				)
-				.intercept(
-						MethodCall.invokeSelf()
-						          .onField(ORIGIN_FIELD)
-						          .withAllArguments()
-				)
+		            .method(ElementMatchers.is(getReactiveTarget))
+		            .intercept(FieldAccessor.ofField(WRAPPER_FIELD))
 
-				.method(ElementMatchers.isClone())
-				.intercept(ExceptionMethod.throwing(CloneNotSupportedException.class))
+		            .method(reactTo)
+		            .intercept(MethodDelegation.to(ToOrigin.class))
 
-				.method(ElementMatchers.isEquals())
-				.intercept(
-						MethodDelegation.to(ProxyForwardImpl.Equals.class)
-				)
-				;
+		            .method(
+				            ElementMatchers.isPublic()
+				                           .and(not(reactTo))
+				                           .and(not(ignored))
+		            )
+		            .intercept(
+				            MethodCall.invokeSelf()
+				                      .onField(ORIGIN_FIELD)
+				                      .withAllArguments()
+		            )
+
+		            .method(ElementMatchers.isClone())
+		            .intercept(ExceptionMethod.throwing(CloneNotSupportedException.class))
+
+		            .method(ElementMatchers.isEquals())
+		            .intercept(MethodDelegation.to(Equals.class));
 	}
 
 	private static int nextProxyId() {

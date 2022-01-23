@@ -55,7 +55,7 @@ public class ObjectObserver<M extends Reactable & Reflective> extends
 	 */
 	public void update(Map<String, Object> changed) {
 		for (Map.Entry<String, Object> property : changed.entrySet()) {
-			PropertyObservation<M> change = new PropertyObservation<M>(
+			PropertyObservation<M> change = new PropertyObservation<>(
 					property.getKey(),
 					property.getValue(),
 					getObserved()
