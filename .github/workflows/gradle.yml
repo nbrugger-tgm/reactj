@@ -58,7 +58,7 @@ jobs:
       - name: commit-code-coverage
         if: always()
         env:
-          MODULES: "core lists observer utils"
+          MODULES: "api core core/impl lists objects"
           CC_TEST_REPORTER_ID: ${{ secrets.CC_RUNNER_TOKEN }}
         run: |
           for i in $MODULES; do
