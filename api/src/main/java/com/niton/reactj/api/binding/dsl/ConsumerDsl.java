@@ -8,6 +8,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * A DSL to deal with a consumer.
+ *
+ * @param <T> The type of the consumer.
+ */
 public interface ConsumerDsl<T> {
     /**
      * Execute this consumer too (with the same value)
@@ -18,6 +23,19 @@ public interface ConsumerDsl<T> {
 
     /**
      * Execute this consumer too (with the same value)
+     * <p>
+     * Use this over {@link #and(Consumer)} if the consumer you want to add
+     * takes a parameter whose type is a extending the type of the consumer(s) so far.
+     * <br/>
+     * Example: Lets assume the {@code Teacher} class extends {@code Person}.
+     * <br/>
+     * if you use {@code call(personConsumer)} you cannot chain {@code and(teacherConsumer)}
+     * since Person != Teacher. But if you use {@code andCall(teacherConsumer)} you can chain.
+     * </p>
+     * <p>
+     * This enables you later down the line to use predicates based on the highest type
+     * (Teacher in the case before) so you can be more specific.
+     * </p>
      *
      * @see ConsumerGroup
      */
@@ -70,7 +88,4 @@ public interface ConsumerDsl<T> {
      * @param source the supplier to get the value for the consumer from
      */
     BindingDsl<T> with(Supplier<? extends T> source);
-
-    interface SuperConsumer<N> extends Consumer<N> {
-    }
 }

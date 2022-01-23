@@ -5,9 +5,17 @@ import com.niton.reactj.api.binding.runnable.PredicatedRunnable;
 
 import java.util.function.Predicate;
 
+/**
+ * Enables you to further configure a conditional binding with logical operators.
+ *
+ * @param <T> the type of the binding
+ */
 public interface ConditionalBindingDsl<T>
         extends PredicateDsl<T>, ConditionalRunnableDsl {
 
+    /**
+     * Returns the {@link PredicatedRunnable}, that the dsl crafted so far.
+     */
     @Override
     PredicatedRunnable<T> build();
 

@@ -11,11 +11,11 @@ import java.util.function.Function;
  */
 public class ConvertingConsumer<F, T> implements Consumer<F> {
     /**
-     * This consumer will be called with the converted value
+     * This consumer will be called with the converted value.
      */
     private final Consumer<T>    target;
     /**
-     * This function acts as a converter between the types
+     * This function acts as a converter between the types.
      */
     private final Function<F, T> converter;
 
