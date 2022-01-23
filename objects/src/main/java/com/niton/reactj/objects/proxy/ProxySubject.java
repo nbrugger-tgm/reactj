@@ -14,21 +14,22 @@ import java.util.Map;
  * This interface should <b>only</b> be used when the class is constructed as proxy {@link
  * ProxyCreator#create(Object)}<br><br>
  * <p>
- * "implementing" this interface removes the need to use {@code ReactiveProxy<MyDataType>} as type definition
+ * "implementing" this interface removes the need to use {@code ReactiveProxy<MyDataType>} as type
+ * definition
  */
 public interface ProxySubject extends Reactable, Reflective {
-	@Override
-	default GenericEventEmitter reactEvent() {
-		throw new SubjectCallException();
-	}
+    @Override
+    default GenericEventEmitter reactEvent() {
+        throw new SubjectCallException();
+    }
 
-	@Override
-	default void set(String property, Object value) {
-		throw new SubjectCallException();
-	}
+    @Override
+    default void set(String property, Object value) {
+        throw new SubjectCallException();
+    }
 
-	@Override
-	default Map<String, Object> getState() {
-		throw new SubjectCallException();
-	}
+    @Override
+    default Map<String, Object> getState() {
+        throw new SubjectCallException();
+    }
 }

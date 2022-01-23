@@ -10,28 +10,28 @@ import java.util.function.Function;
  * @param <T> TO, the type it converts to
  */
 public class ConvertingConsumer<F, T> implements Consumer<F> {
-	/**
-	 * This consumer will be called with the converted value
-	 */
-	private final Consumer<T>    target;
-	/**
-	 * This function acts as a converter between the types
-	 */
-	private final Function<F, T> converter;
+    /**
+     * This consumer will be called with the converted value
+     */
+    private final Consumer<T>    target;
+    /**
+     * This function acts as a converter between the types
+     */
+    private final Function<F, T> converter;
 
-	/**
-	 * @param target    {@link #target}
-	 * @param converter {@link #converter}
-	 */
-	public ConvertingConsumer(Consumer<T> target, Function<F, T> converter) {
-		this.target = target;
-		if (converter == null)
-			throw new IllegalArgumentException("converter cannot be null");
-		this.converter = converter;
-	}
+    /**
+     * @param target    {@link #target}
+     * @param converter {@link #converter}
+     */
+    public ConvertingConsumer(Consumer<T> target, Function<F, T> converter) {
+        this.target = target;
+        if (converter == null)
+            throw new IllegalArgumentException("converter cannot be null");
+        this.converter = converter;
+    }
 
-	@Override
-	public void accept(F value) {
-		target.accept(converter.apply(value));
-	}
+    @Override
+    public void accept(F value) {
+        target.accept(converter.apply(value));
+    }
 }

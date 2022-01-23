@@ -6,11 +6,11 @@ package com.niton.reactj.api.exceptions;
  */
 public class ReactiveException extends RuntimeException {
 
-	public ReactiveException(String message) {
-		super(message);
-	}
+    public ReactiveException(String message) {
+        super(message);
+    }
 
-	public ReactiveException(String message, Throwable fail) {
-		super(message, fail);
-	}
+    public ReactiveException(String message, Throwable fail) {
+        super(message, fail);
+    }
 }

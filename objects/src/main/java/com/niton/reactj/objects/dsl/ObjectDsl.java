@@ -11,42 +11,42 @@ import java.util.function.Supplier;
 
 public interface ObjectDsl<T> extends BinderDsl {
 
-	static <T> ObjectDsl<T> create(Supplier<T> object, EventEmitter<T> emitter) {
-		return new ObjectDslImpl<>(object, emitter);
-	}
+    static <T> ObjectDsl<T> create(Supplier<T> object, EventEmitter<T> emitter) {
+        return new ObjectDslImpl<>(object, emitter);
+    }
 
-	@Override
-	ObjectRunnableDsl call(Runnable runnable);
+    @Override
+    ObjectRunnableDsl call(Runnable runnable);
 
-	@Override
-	default <C> ObjectBindingDsl<C> bind(Consumer<C> setter, Supplier<C> getter) {
-		return call(setter).with(getter);
-	}
+    @Override
+    default <C> ObjectBindingDsl<C> bind(Consumer<C> setter, Supplier<C> getter) {
+        return call(setter).with(getter);
+    }
 
-	@Override
-	<N> ObjectConsumerDsl<N, T> call(Consumer<N> runnable);
+    @Override
+    <N> ObjectConsumerDsl<N, T> call(Consumer<N> runnable);
 
-	@Override
-	default <C, S> ObjectBindingDsl<S> bind(
-			Consumer<C> setter, Supplier<S> getter, Function<S, C> converter
-	) {
-		return call(setter).with(converter).from(getter);
-	}
+    @Override
+    default <C, S> ObjectBindingDsl<S> bind(
+            Consumer<C> setter, Supplier<S> getter, Function<S, C> converter
+    ) {
+        return call(setter).with(converter).from(getter);
+    }
 
-	default <P> ObjectBindingDsl<P> bind(BiConsumer<T, P> setter, Supplier<P> getter) {
-		return call(setter).with(getter);
-	}
+    default <P> ObjectBindingDsl<P> bind(BiConsumer<T, P> setter, Supplier<P> getter) {
+        return call(setter).with(getter);
+    }
 
-	<P> ObjectConsumerDsl<P, T> call(BiConsumer<T, P> setter);
+    <P> ObjectConsumerDsl<P, T> call(BiConsumer<T, P> setter);
 
-	default <P, S> ObjectBindingDsl<S> bind(
-			BiConsumer<T, P> setter, Supplier<S> getter, Function<S, P> converter
-	) {
-		return call(setter).with(converter).from(getter);
-	}
+    default <P, S> ObjectBindingDsl<S> bind(
+            BiConsumer<T, P> setter, Supplier<S> getter, Function<S, P> converter
+    ) {
+        return call(setter).with(converter).from(getter);
+    }
 
-	default <C> ObjectBindingDsl<T> bind(Consumer<C> setter, Function<T, C> getter) {
-		return call(setter).withModel(getter);
-	}
+    default <C> ObjectBindingDsl<T> bind(Consumer<C> setter, Function<T, C> getter) {
+        return call(setter).withModel(getter);
+    }
 
 }

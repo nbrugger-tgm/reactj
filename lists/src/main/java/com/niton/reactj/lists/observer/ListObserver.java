@@ -9,20 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListObserver<T> extends Observer<ListChange<T>, List<T>> {
-	private final List<T>         lastState = new ArrayList<>();
-	private final ListDiffTool<T> git       = new ListDiffTool<>();
+    private final List<T>         lastState = new ArrayList<>();
+    private final ListDiffTool<T> git       = new ListDiffTool<>();
 
-	@Override
-	public void update() {
-		ListDiff<T> diff = git.diff(lastState, getObserved());
-		diff.applyChanges(lastState);
-		diff.forEach(this::fireObservation);
-	}
+    @Override
+    public void update() {
+        ListDiff<T> diff = git.diff(lastState, getObserved());
+        diff.applyChanges(lastState);
+        diff.forEach(this::fireObservation);
+    }
 
-	@Override
-	public void reset() {
-		lastState.clear();
-		if (isObservingRebind())
-			update();
-	}
+    @Override
+    public void reset() {
+        lastState.clear();
+        if (isObservingRebind())
+            update();
+    }
 }

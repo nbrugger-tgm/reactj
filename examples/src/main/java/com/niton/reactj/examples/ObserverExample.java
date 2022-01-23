@@ -8,39 +8,39 @@ import com.niton.reactj.objects.proxy.ProxySubject;
 
 public class ObserverExample {
 
-	public static class Data implements ProxySubject {
-		int    a = 1;
-		int    b = 2;
-		Object d = (Runnable) () -> {
-		};
+    public static class Data implements ProxySubject {
+        int    a = 1;
+        int    b = 2;
+        Object d = (Runnable) () -> {
+        };
 
-		public void setA(int a) {
-			this.a = a;
-		}
+        public void setA(int a) {
+            this.a = a;
+        }
 
-		public void setB(int b) {
-			this.b = b;
-		}
+        public void setB(int b) {
+            this.b = b;
+        }
 
-		public void setD(Object d) {
-			this.d = d;
-		}
-	}
+        public void setD(Object d) {
+            this.d = d;
+        }
+    }
 
-	public static void main(String[] args) {
-		ProxyCreator creator = ProxyCreator.besideOrigin();
-		Data         model   = creator.create(new Data());
+    public static void main(String[] args) {
+        ProxyCreator creator = ProxyCreator.besideOrigin();
+        Data         model   = creator.create(new Data());
 
-		ObjectObserver<Data> observer = new ObjectObserver<>();
+        ObjectObserver<Data> observer = new ObjectObserver<>();
 
-		observer.addListener(
-				change -> System.out.println("Property " + change.propertyName + " changed to " + change.propertyName)
-		);
-		observer.observe(model);
+        observer.addListener(
+                change -> System.out.println("Property " + change.propertyName + " changed to " + change.propertyName)
+        );
+        observer.observe(model);
 
-		model.setA(10);
-		model.setB(20);
-		model.setD("Some value");
-		model.setD(new ThreadGroup("Some grp"));
-	}
+        model.setA(10);
+        model.setB(20);
+        model.setD("Some value");
+        model.setD(new ThreadGroup("Some grp"));
+    }
 }

@@ -4,8 +4,8 @@ import com.niton.reactj.api.binding.Listenable;
 
 public interface ListenerDsl {
 
-	MultiListenerDsl on(Listenable event);
+    MultiListenerDsl on(Listenable event);
 
 
-	Runnable build();
+    Runnable build();
 }

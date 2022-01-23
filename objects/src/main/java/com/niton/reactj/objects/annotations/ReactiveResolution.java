@@ -13,16 +13,16 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ReactiveResolution {
-	enum ReactiveResolutionType {
-		/**
-		 * Only fields of the class itself will be considered
-		 */
-		FLAT,
-		/**
-		 * All fields (inherited and super field) will also be included
-		 */
-		DEEP
-	}
+    enum ReactiveResolutionType {
+        /**
+         * Only fields of the class itself will be considered
+         */
+        FLAT,
+        /**
+         * All fields (inherited and super field) will also be included
+         */
+        DEEP
+    }
 
-	ReactiveResolutionType value();
+    ReactiveResolutionType value();
 }

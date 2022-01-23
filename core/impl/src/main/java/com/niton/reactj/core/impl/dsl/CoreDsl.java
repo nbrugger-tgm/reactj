@@ -7,13 +7,13 @@ import com.niton.reactj.api.binding.dsl.RunnableDsl;
 import java.util.function.Consumer;
 
 public class CoreDsl implements BinderDsl {
-	@Override
-	public RunnableDsl call(Runnable runnable) {
-		return new CoreRunnableDsl(runnable);
-	}
+    @Override
+    public RunnableDsl call(Runnable runnable) {
+        return new CoreRunnableDsl(runnable);
+    }
 
-	@Override
-	public <T> ConsumerDsl<T> call(Consumer<T> runnable) {
-		return new CoreConsumerDsl<>(runnable);
-	}
+    @Override
+    public <T> ConsumerDsl<T> call(Consumer<T> runnable) {
+        return new CoreConsumerDsl<>(runnable);
+    }
 }

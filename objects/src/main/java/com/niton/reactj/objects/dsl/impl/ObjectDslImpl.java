@@ -11,27 +11,27 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ObjectDslImpl<T> implements ObjectDsl<T> {
-	private final Supplier<T>     model;
-	private final EventEmitter<T> objectChangeEvent;
-	private final BinderDsl       impl = BinderDsl.create();
+    private final Supplier<T>     model;
+    private final EventEmitter<T> objectChangeEvent;
+    private final BinderDsl       impl = BinderDsl.create();
 
-	public ObjectDslImpl(Supplier<T> model, EventEmitter<T> objectChangeEvent) {
-		this.model             = model;
-		this.objectChangeEvent = objectChangeEvent;
-	}
+    public ObjectDslImpl(Supplier<T> model, EventEmitter<T> objectChangeEvent) {
+        this.model             = model;
+        this.objectChangeEvent = objectChangeEvent;
+    }
 
-	@Override
-	public ObjectRunnableDsl call(Runnable runnable) {
-		return new ObjectRunnableDslImpl(impl.call(runnable), objectChangeEvent);
-	}
+    @Override
+    public ObjectRunnableDsl call(Runnable runnable) {
+        return new ObjectRunnableDslImpl(impl.call(runnable), objectChangeEvent);
+    }
 
-	@Override
-	public <N> ObjectConsumerDsl<N, T> call(Consumer<N> runnable) {
-		return new ObjectConsumerDslImpl<>(impl.call(runnable), objectChangeEvent, model);
-	}
+    @Override
+    public <N> ObjectConsumerDsl<N, T> call(Consumer<N> runnable) {
+        return new ObjectConsumerDslImpl<>(impl.call(runnable), objectChangeEvent, model);
+    }
 
-	@Override
-	public <P> ObjectConsumerDsl<P, T> call(BiConsumer<T, P> setter) {
-		return call(v -> setter.accept(model.get(), v));
-	}
+    @Override
+    public <P> ObjectConsumerDsl<P, T> call(BiConsumer<T, P> setter) {
+        return call(v -> setter.accept(model.get(), v));
+    }
 }

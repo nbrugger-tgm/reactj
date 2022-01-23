@@ -10,22 +10,22 @@ import java.io.Serializable;
  * @param <T> the type of the object to wrap
  */
 public class ReactiveWrapper<T> implements Reactable, Serializable {
-	private final GenericEventEmitter reactEvent = new GenericEventEmitter();
-	private final T                   wrappedObject;
+    private final GenericEventEmitter reactEvent = new GenericEventEmitter();
+    private final T                   wrappedObject;
 
-	/**
-	 * @param obj the object to forward calls to
-	 */
-	public ReactiveWrapper(T obj) {
-		wrappedObject = obj;
-	}
+    /**
+     * @param obj the object to forward calls to
+     */
+    public ReactiveWrapper(T obj) {
+        wrappedObject = obj;
+    }
 
-	@Override
-	public GenericEventEmitter reactEvent() {
-		return reactEvent;
-	}
+    @Override
+    public GenericEventEmitter reactEvent() {
+        return reactEvent;
+    }
 
-	public T getObject() {
-		return wrappedObject;
-	}
+    public T getObject() {
+        return wrappedObject;
+    }
 }

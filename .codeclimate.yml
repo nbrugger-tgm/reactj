@@ -6,6 +6,15 @@ engines:
       - "module-info.java"
       - "**/examples/**/*.java"
     checks:
+      #This is a good check,
+      #but sadly IntelliJ doesn't support the required arranging
+      #The arrangement option for "keep overloaded methods together" would be needed
+      #Enable this check as soon as IntelliJ supports it
+      com.puppycrawl.tools.checkstyle.checks.coding.OverloadMethodsDeclarationOrderCheck:
+        enabled: false
+      #Again a good check, but IntelliJ doesn't support the required arrangement with @return
+      com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTagContinuationIndentationCheck:
+        enabled: false
       com.puppycrawl.tools.checkstyle.checks.coding.VariableDeclarationUsageDistanceCheck:
         allowedDistance: 8
       com.puppycrawl.tools.checkstyle.checks.blocks.NeedBracesCheck:

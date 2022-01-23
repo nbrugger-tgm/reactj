@@ -8,31 +8,31 @@ import com.niton.reactj.api.binding.predicates.Condition;
 import com.niton.reactj.api.binding.runnable.RunnableGroup;
 
 public class CoreRunnableDsl implements RunnableDsl {
-	protected final RunnableGroup group = new RunnableGroup();
+    protected final RunnableGroup group = new RunnableGroup();
 
-	public CoreRunnableDsl(Runnable runnable) {
-		group.add(runnable);
-	}
+    public CoreRunnableDsl(Runnable runnable) {
+        group.add(runnable);
+    }
 
-	@Override
-	public MultiListenerDsl on(Listenable event) {
-		event.listen(group);
-		return this::on;
-	}
+    @Override
+    public MultiListenerDsl on(Listenable event) {
+        event.listen(group);
+        return this::on;
+    }
 
-	@Override
-	public Runnable build() {
-		return group;
-	}
+    @Override
+    public Runnable build() {
+        return group;
+    }
 
-	@Override
-	public RunnableDsl and(Runnable runnable) {
-		group.add(runnable);
-		return this;
-	}
+    @Override
+    public RunnableDsl and(Runnable runnable) {
+        group.add(runnable);
+        return this;
+    }
 
-	@Override
-	public ConditionalRunnableDsl when(Condition condition) {
-		return new CoreConditionalRunnableDsl(group, condition);
-	}
+    @Override
+    public ConditionalRunnableDsl when(Condition condition) {
+        return new CoreConditionalRunnableDsl(group, condition);
+    }
 }

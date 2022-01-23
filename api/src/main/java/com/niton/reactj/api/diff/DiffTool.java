@@ -9,5 +9,5 @@ import java.util.SortedSet;
  * @param <D> the type of the atomic changes to be reported
  */
 public interface DiffTool<T, D extends DiffEntry<T>> {
-	SortedSet<D> diff(T origin, T modified);
+    SortedSet<D> diff(T origin, T modified);
 }

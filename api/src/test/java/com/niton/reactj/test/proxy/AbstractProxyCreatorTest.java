@@ -48,8 +48,8 @@ class AbstractProxyCreatorTest {
 		}
 
 		@Override
-		protected <T> Class<? extends T> createProxyClass(Class<? extends T> aClass) {
-			return aClass;
+		protected <T> Class<? extends T> createProxyClass(Class<? extends T> baseClass) {
+			return baseClass;
 		}
 
 		@Override

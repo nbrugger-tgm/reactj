@@ -8,17 +8,17 @@ import com.niton.reactj.api.observer.Observer;
  * Fires an empty Observation on every {@link #update()} call
  */
 public class MockObserver extends Observer<MockObserver.Observation, Object> {
-	public static class Observation {
-	}
+    public static class Observation {
+    }
 
-	@Override
-	protected void update() {
-		fireObservation(new Observation());
-	}
+    @Override
+    protected void update() {
+        fireObservation(new Observation());
+    }
 
-	@Override
-	public void reset() {
-		if (isObservingRebind())
-			fireObservation(new Observation());
-	}
+    @Override
+    public void reset() {
+        if (isObservingRebind())
+            fireObservation(new Observation());
+    }
 }

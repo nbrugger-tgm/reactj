@@ -13,22 +13,22 @@ import java.util.function.Supplier;
  */
 public interface ObjectConsumerDsl<T, O> extends ConsumerDsl<T> {
 
-	@Override
-	ObjectConsumerDsl<T, O> and(Consumer<? super T> consumer);
+    @Override
+    ObjectConsumerDsl<T, O> and(Consumer<? super T> consumer);
 
-	@Override
-	<N extends T> ObjectConsumerDsl<N, O> andCall(Consumer<N> consumer);
+    @Override
+    <N extends T> ObjectConsumerDsl<N, O> andCall(Consumer<N> consumer);
 
-	@Override
-	ObjectBindingDsl<T> withValue(T constant);
+    @Override
+    <F> ObjectConvertingConsumerDsl<F, O> with(Function<F, T> converter);
 
-	@Override
-	ObjectBindingDsl<T> with(Supplier<? extends T> source);
+    @Override
+    ObjectBindingDsl<T> withValue(T constant);
 
-	@Override
-	<F> ObjectConvertingConsumerDsl<F, O> with(Function<F, T> converter);
+    @Override
+    ObjectBindingDsl<T> with(Supplier<? extends T> source);
 
-	ObjectBindingDsl<O> withModel(Function<O, T> converter);
+    ObjectBindingDsl<O> withModel(Function<O, T> converter);
 
-	PredicatableDsl<O> onObjectChange(Function<O, T> getter);
+    PredicatableDsl<O> onObjectChange(Function<O, T> getter);
 }

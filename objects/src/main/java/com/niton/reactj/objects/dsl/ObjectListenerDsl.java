@@ -4,5 +4,5 @@ import com.niton.reactj.api.binding.dsl.ListenerDsl;
 import com.niton.reactj.api.binding.dsl.MultiListenerDsl;
 
 public interface ObjectListenerDsl extends ListenerDsl {
-	MultiListenerDsl onModelChange();
+    MultiListenerDsl onModelChange();
 }

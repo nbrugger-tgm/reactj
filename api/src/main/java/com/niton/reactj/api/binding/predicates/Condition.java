@@ -8,33 +8,33 @@ import java.util.function.Predicate;
  */
 @FunctionalInterface
 public interface Condition {
-	/**
-	 * This condition is always false
-	 */
-	Condition NO  = () -> false;
-	/**
-	 * Always true
-	 */
-	Condition YES = () -> true;
+    /**
+     * This condition is always false
+     */
+    Condition NO  = () -> false;
+    /**
+     * Always true
+     */
+    Condition YES = () -> true;
 
-	default Condition or(Condition condition) {
-		return () -> check() || condition.check();
-	}
+    default Condition or(Condition condition) {
+        return () -> check() || condition.check();
+    }
 
-	/**
-	 * @return result of the condition check
-	 */
-	boolean check();
+    /**
+     * @return result of the condition check
+     */
+    boolean check();
 
-	default Condition and(Condition condition) {
-		return () -> check() && condition.check();
-	}
+    default Condition and(Condition condition) {
+        return () -> check() && condition.check();
+    }
 
-	default Condition not() {
-		return () -> !check();
-	}
+    default Condition not() {
+        return () -> !check();
+    }
 
-	default Predicate<Object> toPredicate() {
-		return o -> this.check();
-	}
+    default Predicate<Object> toPredicate() {
+        return o -> this.check();
+    }
 }

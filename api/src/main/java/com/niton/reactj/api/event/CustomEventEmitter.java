@@ -11,46 +11,46 @@ import java.util.List;
  * @param <L> the type to be used for listeners
  */
 public abstract class CustomEventEmitter<E, L> implements Serializable {
-	private final List<L> listeners = new ArrayList<>(1);
+    private final List<L> listeners = new ArrayList<>(1);
 
-	public void addListener(L listener) {
-		listen(listener);
-	}
+    public void addListener(L listener) {
+        listen(listener);
+    }
 
-	public void listen(L listener) {
-		if (listener == null)
-			throw new IllegalArgumentException();
-		listeners.add(listener);
-	}
+    public void listen(L listener) {
+        if (listener == null)
+            throw new IllegalArgumentException();
+        listeners.add(listener);
+    }
 
-	public void stopListening(L listener) {
-		listeners.remove(listener);
-	}
+    public void stopListening(L listener) {
+        listeners.remove(listener);
+    }
 
-	public void removeListeners() {
-		listeners.clear();
-	}
+    public void removeListeners() {
+        listeners.clear();
+    }
 
-	public List<L> getListeners() {
-		return listeners;
-	}
+    public List<L> getListeners() {
+        return listeners;
+    }
 
-	public void fire(E event) {
-		listeners.forEach(l -> call(l, event));
-	}
+    public void fire(E event) {
+        listeners.forEach(l -> call(l, event));
+    }
 
-	/**
-	 * Call the listener with the given event
-	 *
-	 * @param listener the listener to call
-	 * @param event    the event to carry over to the listener
-	 */
-	protected abstract void call(L listener, E event);
+    /**
+     * Call the listener with the given event
+     *
+     * @param listener the listener to call
+     * @param event    the event to carry over to the listener
+     */
+    protected abstract void call(L listener, E event);
 
-	/**
-	 * @return the number of listeners present
-	 */
-	public int listenerCount() {
-		return listeners.size();
-	}
+    /**
+     * @return the number of listeners present
+     */
+    public int listenerCount() {
+        return listeners.size();
+    }
 }
