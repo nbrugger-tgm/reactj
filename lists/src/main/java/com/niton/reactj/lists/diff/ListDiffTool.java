@@ -69,30 +69,30 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
     /**
      * Handles list that only require one type of modification therefore being linear in O(n)
      *
-     * @param m       the size of list 1
-     * @param n       the size of list 2
-     * @param changes the set to add the changes to
-     * @param offset  the offset from {@link #trimEqualEntries(List, List)}
+     * @param list1Size the size of list 1
+     * @param list2Size the size of list 2
+     * @param changes   the set to add the changes to
+     * @param offset    the offset from {@link #trimEqualEntries(List, List)}
      *
      * @return true if linear operations were performed. if false continue with default cubic search
      */
     private static <T> boolean handleLinearChanges(
             List<T> oldState,
             List<T> newState,
-            int m,
-            int n,
             SortedSet<ListChange<T>> changes,
             int offset
     ) {
-        if (m == n && n == 0)
+        int list2Size = newState.size();
+        int list1Size = oldState.size();
+        if (list1Size == list2Size && list2Size == 0)
             return true;
-        else if (m == 0) {
+        else if (list1Size == 0) {
             AtomicInteger index = new AtomicInteger();
             newState.stream()
                     .map(obj -> new ListChange<>(ADD, offset + index.getAndIncrement(), obj))
                     .forEach(changes::add);
             return true;
-        } else if (n == 0) {
+        } else if (list2Size == 0) {
             AtomicInteger index = new AtomicInteger();
             oldState.stream()
                     .map(obj -> new ListChange<>(REMOVE, offset + index.getAndIncrement(), obj))
@@ -131,28 +131,38 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
         for (int i = 0; i <= m; i++) {
             costs[0][i] = i;
         }
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= m; j++) {
-                calculateCost(costs, i, j, oldState, newState);
+        for (int row = 1; row <= n; row++) {
+            for (int column = 1; column <= m; column++) {
+                calculateCost(costs, row, column, oldState, newState);
             }
         }
         return costs;
     }
 
+    /**
+     * Calculates the cost of the given cell and writes it to the cost matrix
+     *
+     * @param costs    the cost matrix
+     * @param row      the row of the cell
+     * @param col      the column of the cell
+     * @param oldState the origin list (base of the changes)
+     * @param newState the modified version of the list
+     * @param <T>      the type of the list
+     */
     private static <T> void calculateCost(
             int[][] costs,
-            int i,
-            int j,
+            int row,
+            int col,
             List<T> oldState,
             List<T> newState
     ) {
-        if (i == 0 || j == 0)
+        if (row == 0 || col == 0)
             return;
-        costs[i][j] = getCost(
-                newState.get(i - 1), oldState.get(j - 1),
-                costs[i][j - 1],
-                costs[i - 1][j],
-                costs[i - 1][j - 1]
+        costs[row][col] = getCost(
+                newState.get(row - 1), oldState.get(col - 1),
+                costs[row][col - 1],
+                costs[row - 1][col],
+                costs[row - 1][col - 1]
         );
     }
 
@@ -251,7 +261,7 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
 
         ListDiff<T> changes = new ListDiff<>();
 
-        if (handleLinearChanges(oldList, newList, m, n, changes, offset))
+        if (handleLinearChanges(oldList, newList, changes, offset))
             return changes;
 
         if (min(m, n) > maxSpliceSize) {

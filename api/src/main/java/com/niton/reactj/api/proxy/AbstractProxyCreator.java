@@ -7,17 +7,17 @@ import com.niton.reactj.api.util.ReflectiveUtil;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.niton.reactj.api.proxy.ProxyBuilder.*;
 
 
 public abstract class AbstractProxyCreator {
     private final ProxyBuilder            builder;
-    private final Map<Class<?>, Class<?>> proxyClasses       = new HashMap<>();
-    private final Map<Class<?>, Field>    wrapperFields      = new HashMap<>();
-    private final Map<Class<?>, Field>    originFields       = new HashMap<>();
+    private final Map<Class<?>, Class<?>> proxyClasses       = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Field>    wrapperFields      = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Field>    originFields       = new ConcurrentHashMap<>();
     private final InfusionAccessProvider  accessor;
     private       boolean                 allowUnsafeProxies = false;
 

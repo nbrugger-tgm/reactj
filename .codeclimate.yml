@@ -4,7 +4,7 @@ engines:
     exclude_patterns:
       - "**/module-info.java"
       - "module-info.java"
-      - "**/examples/**/*.java"
+      - "examples/**/*.java"
     checks:
       #This is a good check,
       #but sadly IntelliJ doesn't support the required arranging

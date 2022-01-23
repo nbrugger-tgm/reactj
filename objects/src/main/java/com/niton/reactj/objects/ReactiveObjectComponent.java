@@ -106,10 +106,10 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 
     private void invokeReactiveListener(Method listener, Object param) {
         try {
-            if (listener.getParameterTypes().length == 1) {
+            if (listener.getParameterCount() == 1) {
                 checkParameterType(listener, param);
                 listener.invoke(this, param);
-            } else if (listener.getParameterTypes().length == 0) {
+            } else if (listener.getParameterCount() == 0) {
                 listener.invoke(this);
             } else {
                 throw parameterCountException(listener);

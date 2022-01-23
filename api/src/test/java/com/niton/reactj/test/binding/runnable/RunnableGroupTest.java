@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RunnableGroupTest {
     private       int      count     = 0;
     private final Runnable increment = () -> count++;
-    private       String   yoink     = null;
+    private       String   yoink;
     private final Runnable initYoink = () -> yoink = "yoink";
 
     @BeforeEach
