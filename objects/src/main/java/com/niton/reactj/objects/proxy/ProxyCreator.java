@@ -95,6 +95,17 @@ public class ProxyCreator extends AbstractProxyCreator {
         return new ProxyCreator(new StaticInfuser(anchor, MethodHandles.lookup()));
     }
 
+
+    /**
+     * Creates proxies that will reside beside the given class.
+     * In comparison to {@link #custom(Class)}, this method will use the provided lookup to
+     * create the proxies.
+     *
+     * @param anchor the class to spawn the proxies nearby
+     * @param access the lookup to use
+     *
+     * @return a proxy creator that just needs a single open statement
+     */
     public static ProxyCreator custom(Class<?> anchor, Lookup access) {
         return new ProxyCreator(new StaticInfuserWithLookup(anchor, access));
     }

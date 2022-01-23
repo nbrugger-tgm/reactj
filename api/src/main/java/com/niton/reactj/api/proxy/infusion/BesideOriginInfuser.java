@@ -4,6 +4,14 @@ import com.niton.reactj.api.proxy.InfusionAccessProvider;
 
 import java.lang.invoke.MethodHandles;
 
+/**
+ * This class is used to infuse a proxy into the same package as the class it proxies.
+ * <p>
+ * Requires a {@link MethodHandles#privateLookupIn(Class, MethodHandles.Lookup)}
+ * so the module providing this class needs private reflection access to the base class of the
+ * proxy.
+ * </p>
+ */
 public class BesideOriginInfuser implements InfusionAccessProvider {
     private final MethodHandles.Lookup requestingLookup;
 

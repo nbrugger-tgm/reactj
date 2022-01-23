@@ -12,17 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReflectiveUtilTest2 {
 
 
-    private static class TestObj {
-        public static final  int fspub = 0;
-        private static final int fspri = 0;
-        public static        int spub;
-        private static       int spri;
-        public final         int fpub  = 0;
-        private final        int fpri  = 0;
-        public               int pub;
-        private              int pri;
-    }
-
     @Test
     void getMethodSignature() throws NoSuchMethodException {
         assertEquals(
@@ -127,5 +116,16 @@ class ReflectiveUtilTest2 {
         assertFalse(ReflectiveUtil.isFinal(cls.getDeclaredField("pub")));
         assertFalse(ReflectiveUtil.isFinal(cls.getDeclaredField("pri")));
         assertFalse(ReflectiveUtil.isFinal(cls.getDeclaredField("spri")));
+    }
+
+    private static class TestObj {
+        public static final  int fspub = 0;
+        private static final int fspri = 0;
+        public static        int spub;
+        private static       int spri;
+        public final         int fpub  = 0;
+        private final        int fpri  = 0;
+        public               int pub;
+        private              int pri;
     }
 }

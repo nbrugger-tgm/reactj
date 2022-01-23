@@ -8,6 +8,9 @@ package com.niton.reactj.api.react;
  * ReactiveObject#react()} whenever needed
  */
 public class ReactiveObject implements ReactiveForwarder {
+    /**
+     * A wrapper that warps this very object and is used as the {@link Reactable} implementation
+     */
     private final ReactiveWrapper<ReactiveObject> thisWrapper = new ReactiveWrapper<>(this);
 
     @Override

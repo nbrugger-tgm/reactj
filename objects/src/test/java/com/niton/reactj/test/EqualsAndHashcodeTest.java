@@ -27,89 +27,6 @@ public class EqualsAndHashcodeTest {
     public static final boolean      testHashless = false;
     private final       ProxyCreator creator      = ProxyCreator.INSTANCE;
 
-    public static class RProxySubject {
-        public static class Base {
-            private int i = 0;
-
-            public int getI() {
-                return i;
-            }
-
-            public void setI(int i) {
-                this.i = i;
-            }
-
-            @Override
-            public String toString() {
-                return format("%s{i=%d}", getClass().getSimpleName(), i);
-            }
-        }
-
-        public static class WithoutHashEquals extends Base implements ProxySubject, Serializable {
-        }
-
-        public static class WithHashEquals extends Base implements ProxySubject, Serializable {
-            @Override
-            public int hashCode() {
-                return Objects.hash(getI());
-            }
-
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (!(o instanceof RProxySubject.WithHashEquals)) return false;
-                RProxySubject.WithHashEquals yeet = (RProxySubject.WithHashEquals) o;
-                return getI() == yeet.getI();
-            }
-        }
-    }
-
-    public static class RProxy {
-        public static class Base {
-            private int i = 0;
-
-            public void add(int i) {
-                this.i += i;
-            }
-
-            public int getI() {
-                return i;
-            }
-
-            public void setI(int i) {
-                this.i = i;
-            }
-
-            @Override
-            public String toString() {
-                final StringBuffer sb = new StringBuffer("Base{");
-                sb.append("i=").append(i);
-                sb.append('}');
-                return sb.toString();
-            }
-        }
-
-        public static class WithoutHashEquals extends Base implements Serializable {
-            @Override
-            public String toString() {
-                return format("WithoutHashEquals{i=%d}", getI());
-            }
-        }
-
-        public static class WithHashEquals extends Base implements Serializable {
-            @Override
-            public int hashCode() {
-                return Objects.hash(getI());
-            }
-
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (!(o instanceof RProxy.WithHashEquals)) return false;
-                RProxy.WithHashEquals yeet = (RProxy.WithHashEquals) o;
-                return getI() == yeet.getI();
-            }
-        }
-    }
-
     @TestFactory
     @DisplayName("Reactive Object")
     Stream<DynamicNode> testReactiveObjects() {
@@ -336,6 +253,89 @@ public class EqualsAndHashcodeTest {
                 unique,
                 unique2
         );
+    }
+
+    public static class RProxySubject {
+        public static class Base {
+            private int i = 0;
+
+            public int getI() {
+                return i;
+            }
+
+            public void setI(int i) {
+                this.i = i;
+            }
+
+            @Override
+            public String toString() {
+                return format("%s{i=%d}", getClass().getSimpleName(), i);
+            }
+        }
+
+        public static class WithoutHashEquals extends Base implements ProxySubject, Serializable {
+        }
+
+        public static class WithHashEquals extends Base implements ProxySubject, Serializable {
+            @Override
+            public int hashCode() {
+                return Objects.hash(getI());
+            }
+
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof RProxySubject.WithHashEquals)) return false;
+                RProxySubject.WithHashEquals yeet = (RProxySubject.WithHashEquals) o;
+                return getI() == yeet.getI();
+            }
+        }
+    }
+
+    public static class RProxy {
+        public static class Base {
+            private int i = 0;
+
+            public void add(int i) {
+                this.i += i;
+            }
+
+            public int getI() {
+                return i;
+            }
+
+            public void setI(int i) {
+                this.i = i;
+            }
+
+            @Override
+            public String toString() {
+                final StringBuffer sb = new StringBuffer("Base{");
+                sb.append("i=").append(i);
+                sb.append('}');
+                return sb.toString();
+            }
+        }
+
+        public static class WithoutHashEquals extends Base implements Serializable {
+            @Override
+            public String toString() {
+                return format("WithoutHashEquals{i=%d}", getI());
+            }
+        }
+
+        public static class WithHashEquals extends Base implements Serializable {
+            @Override
+            public int hashCode() {
+                return Objects.hash(getI());
+            }
+
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof RProxy.WithHashEquals)) return false;
+                RProxy.WithHashEquals yeet = (RProxy.WithHashEquals) o;
+                return getI() == yeet.getI();
+            }
+        }
     }
 }
 

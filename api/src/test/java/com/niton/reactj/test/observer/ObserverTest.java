@@ -13,12 +13,6 @@ class ObserverTest {
     private boolean observationStopped;
     private boolean observationFired;
 
-    static class Observable {
-    }
-
-    static class ObserverResult {
-    }
-
     @BeforeEach
     void resetState() {
         observationStopped = false;
@@ -41,7 +35,6 @@ class ObserverTest {
         };
         observer.addListener(event -> observationFired = true);
     }
-
 
     @Test
     @DisplayName("Argument verification")
@@ -82,6 +75,12 @@ class ObserverTest {
         assertNull(observer.getObserved(), "Observers shouldn't initially observe an object");
         observer.observe(new Observable());
         assertNotNull(observer.getObserved(), "observe() should assign `observedObject`");
+    }
+
+    static class Observable {
+    }
+
+    static class ObserverResult {
     }
 
 }

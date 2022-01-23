@@ -13,43 +13,6 @@ class ReactiveComponentTest {
     private static String  bindingCalled;
     private static boolean onUiUpdate   = false;
 
-    private static class MockObserver extends Observer<String, String> {
-
-        @Override
-        protected void update() {
-            updateCalled = true;
-            fireObservation("test");
-        }
-
-        @Override
-        public void reset() {
-            updateCalled = false;
-            if (isObservingRebind())
-                update();
-        }
-    }
-
-    private static class MockComponent extends ReactiveComponent<String, String, Integer> {
-
-        protected MockComponent() {
-            super(new MockObserver());
-        }
-
-        @Override
-        protected Integer createView() {
-            return 12;
-        }
-
-        @Override
-        protected void registerBindings(EventEmitter<String> onObservation) {
-            onObservation.listen(s -> bindingCalled = s);
-        }
-
-        public Observer<String, String> getObserver() {
-            return observer;
-        }
-    }
-
     @BeforeEach
     void init() {
         updateCalled = false;
@@ -125,5 +88,42 @@ class ReactiveComponentTest {
                 observer.getObserved(), component.getModel(),
                 "The model should be the same as the observed value"
         );
+    }
+
+    private static class MockObserver extends Observer<String, String> {
+
+        @Override
+        protected void update() {
+            updateCalled = true;
+            fireObservation("test");
+        }
+
+        @Override
+        public void reset() {
+            updateCalled = false;
+            if (isObservingRebind())
+                update();
+        }
+    }
+
+    private static class MockComponent extends ReactiveComponent<String, String, Integer> {
+
+        protected MockComponent() {
+            super(new MockObserver());
+        }
+
+        @Override
+        protected Integer createView() {
+            return 12;
+        }
+
+        @Override
+        protected void registerBindings(EventEmitter<String> onObservation) {
+            onObservation.listen(s -> bindingCalled = s);
+        }
+
+        public Observer<String, String> getObserver() {
+            return observer;
+        }
     }
 }

@@ -9,6 +9,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * A DSL flavor of {@link BinderDsl} that is tailored to operate on a specific object.
+ *
+ * @param <T> The type of the object that is the target of some bindings.
+ */
 public interface ObjectDsl<T> extends BinderDsl {
 
     static <T> ObjectDsl<T> create(Supplier<T> object, EventEmitter<T> emitter) {

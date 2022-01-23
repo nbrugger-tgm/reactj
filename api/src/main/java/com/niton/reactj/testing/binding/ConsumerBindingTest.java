@@ -46,7 +46,8 @@ public abstract class ConsumerBindingTest {
         assertEquals(
                 source,
                 received,
-                "call(a).with(b).on(ev) should call method a with the return value of b when event fires"
+                "call(a).with(b).on(ev) should call method a " +
+                        "with the return value of b when event fires"
         );
     }
 

@@ -9,9 +9,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface ConsumerDsl<T> {
-    interface SuperConsumer<N> extends Consumer<N> {
-    }
-
     /**
      * Execute this consumer too (with the same value)
      *
@@ -25,7 +22,6 @@ public interface ConsumerDsl<T> {
      * @see ConsumerGroup
      */
     <N extends T> ConsumerDsl<N> andCall(Consumer<N> consumer);
-
 
     /**
      * Execute <b>all</b> previously defined runnables and consumers on the occurrence of {@code
@@ -74,4 +70,7 @@ public interface ConsumerDsl<T> {
      * @param source the supplier to get the value for the consumer from
      */
     BindingDsl<T> with(Supplier<? extends T> source);
+
+    interface SuperConsumer<N> extends Consumer<N> {
+    }
 }

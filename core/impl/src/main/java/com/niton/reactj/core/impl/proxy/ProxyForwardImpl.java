@@ -20,10 +20,13 @@ import static com.niton.reactj.api.proxy.ProxyBuilder.*;
  * proxies
  */
 public class ProxyForwardImpl {
+    private ProxyForwardImpl() {
+    }
+
     /**
      * Forwards calls to the origin of the proxy and calls {@link Reactable#react()} afterwards
      */
-    public static class ToOrigin {
+    public static final class ToOrigin {
         private ToOrigin() {
         }
 
@@ -56,7 +59,7 @@ public class ProxyForwardImpl {
      * Implementation of {@link Object#equals(Object)} that uses the origin of the Proxy for
      * comparison
      */
-    public static class Equals {
+    public static final class Equals {
         private Equals() {
         }
 
@@ -69,8 +72,5 @@ public class ProxyForwardImpl {
         ) {
             return arg[0].equals(origin);
         }
-    }
-
-    private ProxyForwardImpl() {
     }
 }

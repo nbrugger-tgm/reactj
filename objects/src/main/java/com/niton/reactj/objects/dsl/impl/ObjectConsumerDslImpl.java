@@ -46,6 +46,15 @@ public class ObjectConsumerDslImpl<N, O> implements ObjectConsumerDsl<N, O> {
     }
 
     @Override
+    public <F> ObjectConvertingConsumerDsl<F, O> with(Function<F, N> converter) {
+        return new ObjectConvertingConsumerDslImpl<>(
+                impl.with(converter),
+                objectChangeEvent,
+                objectSupplier
+        );
+    }
+
+    @Override
     public ObjectBindingDsl<N> withValue(N constant) {
         return new ObjectBindingDslImpl<>(impl.withValue(constant), objectChangeEvent);
     }
@@ -53,15 +62,6 @@ public class ObjectConsumerDslImpl<N, O> implements ObjectConsumerDsl<N, O> {
     @Override
     public ObjectBindingDsl<N> with(Supplier<? extends N> source) {
         return new ObjectBindingDslImpl<>(impl.with(source), objectChangeEvent);
-    }
-
-    @Override
-    public <F> ObjectConvertingConsumerDsl<F, O> with(Function<F, N> converter) {
-        return new ObjectConvertingConsumerDslImpl<>(
-                impl.with(converter),
-                objectChangeEvent,
-                objectSupplier
-        );
     }
 
     @Override

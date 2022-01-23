@@ -7,6 +7,9 @@ import java.lang.reflect.Method;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
+/**
+ * Contains some useful matchers for Byte Buddy used for proxy generation.
+ */
 public class Matchers {
     private Matchers() {
     }

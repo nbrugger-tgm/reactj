@@ -5,12 +5,6 @@ public class TestData {
     public int      id;
     public TestEnum c = TestEnum.RED;
 
-    public enum TestEnum {
-        RED,
-        BLUE,
-        GREEN
-    }
-
     public TestEnum getC() {
         return c;
     }
@@ -29,5 +23,11 @@ public class TestData {
 
     public void setColor(TestEnum c) {
         this.c = c;
+    }
+
+    public enum TestEnum {
+        RED,
+        BLUE,
+        GREEN
     }
 }

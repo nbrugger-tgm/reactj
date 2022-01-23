@@ -30,26 +30,6 @@ class ProxyTest {
     public Object lastValue;
     public int    changeCounter = 0;
 
-    @ReactiveResolution(ReactiveResolutionType.DEEP)
-    public static class SubjectTestData extends TestData implements ProxySubject {
-        @Override
-        public int hashCode() {
-            return Objects.hash(id, c);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof TestData)) return false;
-            TestData testData = (TestData) o;
-            return id == testData.id && Objects.equals(c, testData.c);
-        }
-    }
-
-    @ReactiveResolution(ReactiveResolutionType.DEEP)
-    public static class NonEqualSubjectTestData extends TestData implements ProxySubject {
-    }
-
     @Test
     @DisplayName("ReactiveProxy<...>")
     void testLiveProxyObserving() {
@@ -158,6 +138,26 @@ class ProxyTest {
         NonEqualSubjectTestData d1 = creator.create(new NonEqualSubjectTestData());
         NonEqualSubjectTestData d2 = creator.create(new NonEqualSubjectTestData());
         proxyTest(d1, d2);
+    }
+
+    @ReactiveResolution(ReactiveResolutionType.DEEP)
+    public static class SubjectTestData extends TestData implements ProxySubject {
+        @Override
+        public int hashCode() {
+            return Objects.hash(id, c);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof TestData)) return false;
+            TestData testData = (TestData) o;
+            return id == testData.id && Objects.equals(c, testData.c);
+        }
+    }
+
+    @ReactiveResolution(ReactiveResolutionType.DEEP)
+    public static class NonEqualSubjectTestData extends TestData implements ProxySubject {
     }
 
 }

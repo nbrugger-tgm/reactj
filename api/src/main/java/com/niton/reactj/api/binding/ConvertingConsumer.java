@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * A consumer that converts the value it receives
+ * A consumer that converts the value it receives.
  *
  * @param <F> FROM, the type it converts from
  * @param <T> TO, the type it converts to

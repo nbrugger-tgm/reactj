@@ -12,19 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 class ObjectObserverTest
         extends ObserverImplTest<ObjectObserver<Subject>, PropertyObservation<Subject>, Subject> {
 
-    static class Subject extends ReactiveObject implements SelfReflective {
-        private int variable;
-
-        public int getVariable() {
-            return variable;
-        }
-
-        public void setVariable(int variable) {
-            this.variable = variable;
-            react();
-        }
-    }
-
     @Override
     protected ObjectObserver<Subject> createObserverInstance() {
         return new ObjectObserver<>();
@@ -39,5 +26,18 @@ class ObjectObserverTest
     protected PropertyObservation<Subject> modify(Subject observable) {
         observable.setVariable(observable.getVariable() + 1);
         return new PropertyObservation<>("variable", observable.getVariable(), observable);
+    }
+
+    static class Subject extends ReactiveObject implements SelfReflective {
+        private int variable;
+
+        public int getVariable() {
+            return variable;
+        }
+
+        public void setVariable(int variable) {
+            this.variable = variable;
+            react();
+        }
     }
 }

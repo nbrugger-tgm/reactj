@@ -14,15 +14,6 @@ import java.util.function.Supplier;
 public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl<N> {
     private Consumer<N> consumer;
 
-    private class ConditionalConsumer implements Consumer<N> {
-        private Predicate<N> predicate = o -> true;
-
-        @Override
-        public void accept(N value) {
-            if (predicate.test(value)) consumer.accept(value);
-        }
-    }
-
     public CoreConsumerDsl(Consumer<N> consumer) {
         this.consumer = consumer;
     }
@@ -92,5 +83,14 @@ public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl
                 }
             };
         };
+    }
+
+    private class ConditionalConsumer implements Consumer<N> {
+        private Predicate<N> predicate = o -> true;
+
+        @Override
+        public void accept(N value) {
+            if (predicate.test(value)) consumer.accept(value);
+        }
     }
 }

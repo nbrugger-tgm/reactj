@@ -7,10 +7,14 @@ import java.util.function.Consumer;
 
 /**
  * A group of multiple consumers of the same type. <b>mutable</b>
+ * This is a consumer itself that will forward the calls to all the consumers in the group.
  *
  * @param <T> the type of the consumers
  */
 public class ConsumerGroup<T> implements Consumer<T> {
+    /**
+     * The list of consumers in this group
+     */
     private final List<Consumer<? super T>> targets = new ArrayList<>();
 
     /**

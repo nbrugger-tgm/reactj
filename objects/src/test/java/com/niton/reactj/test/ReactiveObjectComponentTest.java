@@ -28,18 +28,6 @@ class ReactiveObjectComponentTest
     private        int          received;
     private        boolean      called = false;
 
-    protected static class Person implements ProxySubject {
-        private int age = 18;
-
-        public void celebrateBirthday() {
-            age++;
-        }
-
-        public int getAge() {
-            return age;
-        }
-    }
-
     @BeforeAll
     static void createCreator() {
         creator = ProxyCreator.besideOrigin();
@@ -279,5 +267,17 @@ class ReactiveObjectComponentTest
         proxy.celebrateBirthday();
         assertTrue(called);
         assertEquals(proxy.getAge(), received, "createBindings() was not properly called");
+    }
+
+    protected static class Person implements ProxySubject {
+        private int age = 18;
+
+        public void celebrateBirthday() {
+            age++;
+        }
+
+        public int getAge() {
+            return age;
+        }
     }
 }

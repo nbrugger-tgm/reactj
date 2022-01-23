@@ -16,46 +16,6 @@ class ReactiveStrategyTest {
     private       boolean      triggerFlag;
     private final Runnable     flagListener = () -> triggerFlag = true;
 
-    public static class UnreactiveObject implements ProxySubject {
-        private int prop;
-
-        @Unreactive
-        public int getProp() {
-            return prop;
-        }
-
-        @Unreactive
-        public void setProp(int prop) {
-            this.prop = prop;
-        }
-    }
-
-    public static class ReactiveObject implements ProxySubject {
-        private int prop;
-
-        @Reactive
-        public int getProp() {
-            return prop;
-        }
-
-        @Reactive
-        public void setProp(int prop) {
-            this.prop = prop;
-        }
-    }
-
-    public static class NeutralReactiveObject implements ProxySubject {
-        private int prop;
-
-        public int getProp() {
-            return prop;
-        }
-
-        public void setProp(int prop) {
-            this.prop = prop;
-        }
-    }
-
     @Test
     @DisplayName("NOTHING")
     void testNothing() {
@@ -138,5 +98,45 @@ class ReactiveStrategyTest {
         assertTrue(triggerFlag, "A proxy created with 'ANNOTATED' should trigger 'react' if the" +
                 "@Reactive annotation is present");
 
+    }
+
+    public static class UnreactiveObject implements ProxySubject {
+        private int prop;
+
+        @Unreactive
+        public int getProp() {
+            return prop;
+        }
+
+        @Unreactive
+        public void setProp(int prop) {
+            this.prop = prop;
+        }
+    }
+
+    public static class ReactiveObject implements ProxySubject {
+        private int prop;
+
+        @Reactive
+        public int getProp() {
+            return prop;
+        }
+
+        @Reactive
+        public void setProp(int prop) {
+            this.prop = prop;
+        }
+    }
+
+    public static class NeutralReactiveObject implements ProxySubject {
+        private int prop;
+
+        public int getProp() {
+            return prop;
+        }
+
+        public void setProp(int prop) {
+            this.prop = prop;
+        }
     }
 }

@@ -24,28 +24,6 @@ class ReflectiveUtilTest {
         }
     }
 
-    public static class TestClass {
-        public String returnPass(String val) {
-            return val;
-        }
-    }
-
-    public static class ExtendingTextClass extends TestClass {
-        @Override
-        public String returnPass(String val) {
-            return val + val;
-        }
-    }
-
-    public static class FieldClass {
-        private final static int staticFinal  = 0;
-        private static       int staticMutable;
-        public final         int publicFinal  = 0;
-        private final        int privateFinal = 0;
-        public               int publicMutable;
-        private              int privateMutable;
-    }
-
     @Test
     void invalidMethodParameterException() {
         Exception exc = ReflectiveUtil.invalidMethodParameterException(executeCallMethod, 67);
@@ -130,5 +108,27 @@ class ReflectiveUtilTest {
         assertTrue(ReflectiveUtil.isStatic(FieldClass.class.getDeclaredField("staticMutable")));
         assertFalse(ReflectiveUtil.isStatic(FieldClass.class.getDeclaredField("privateFinal")));
         assertFalse(ReflectiveUtil.isStatic(FieldClass.class.getDeclaredField("publicMutable")));
+    }
+
+    public static class TestClass {
+        public String returnPass(String val) {
+            return val;
+        }
+    }
+
+    public static class ExtendingTextClass extends TestClass {
+        @Override
+        public String returnPass(String val) {
+            return val + val;
+        }
+    }
+
+    public static class FieldClass {
+        private final static int staticFinal  = 0;
+        private static       int staticMutable;
+        public final         int publicFinal  = 0;
+        private final        int privateFinal = 0;
+        public               int publicMutable;
+        private              int privateMutable;
     }
 }

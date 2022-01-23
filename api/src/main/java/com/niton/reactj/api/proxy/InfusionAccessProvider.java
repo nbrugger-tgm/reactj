@@ -2,6 +2,9 @@ package com.niton.reactj.api.proxy;
 
 import java.lang.invoke.MethodHandles;
 
+/**
+ * Used to determine where a proxy should be created and how the access is handled.
+ */
 public interface InfusionAccessProvider {
     /**
      * Returns a lookup with access to the package returned by {@link #getPackage(Class)}

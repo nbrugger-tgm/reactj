@@ -12,18 +12,6 @@ import java.util.function.Predicate;
 public class CoreBindingDsl<T> extends CoreRunnableDsl implements BindingDsl<T> {
     private final Binding<T> binding;
 
-    private static class BundleBinding<T> extends Binding<T> {
-        public BundleBinding(
-                Binding<T> binding,
-                RunnableGroup group
-        ) {
-            super(v -> {
-                binding.getConsumer().accept(v);
-                group.run();
-            }, binding.getSource());
-        }
-    }
-
     public CoreBindingDsl(Binding<T> binding) {
         super(binding);
         this.binding = binding;
@@ -42,5 +30,17 @@ public class CoreBindingDsl<T> extends CoreRunnableDsl implements BindingDsl<T> 
         var bundled            = new BundleBinding<>(binding, group);
         var conditionalBinding = new ConditionalBinding<>(bundled, predicate);
         return new CoreConditionalBindingDsl<>(conditionalBinding);
+    }
+
+    private static class BundleBinding<T> extends Binding<T> {
+        public BundleBinding(
+                Binding<T> binding,
+                RunnableGroup group
+        ) {
+            super(v -> {
+                binding.getConsumer().accept(v);
+                group.run();
+            }, binding.getSource());
+        }
     }
 }

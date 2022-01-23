@@ -18,15 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SimpleProxyTest {
     private boolean called = false;
 
-    public static class Origin {
-        private static int counter = 0;
-        public         int prop    = counter++;
-
-        public Origin()           {}
-
-        public void doSomething() {}
-    }
-
     @Test
     void createSimpleProxy()
             throws NoSuchMethodException, InvocationTargetException, InstantiationException,
@@ -70,5 +61,14 @@ class SimpleProxyTest {
         originField.setAccessible(true);
         originField.set(origin, new Origin());
         return origin;
+    }
+
+    public static class Origin {
+        private static int counter = 0;
+        public         int prop    = counter++;
+
+        public Origin()           {}
+
+        public void doSomething() {}
     }
 }

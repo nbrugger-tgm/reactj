@@ -16,6 +16,9 @@ public class EventEmitter<E>
         listener.onAction(event);
     }
 
+    /**
+     * Same as {@link EventEmitter#listen(Object)} but using a runnable instead of a listener.
+     */
     public void listen(Runnable listener) {
         super.addListener(o -> listener.run());
     }
