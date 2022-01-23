@@ -20,7 +20,7 @@ public abstract class CombiningCondition implements Condition {
 		}
 
 		@Override
-		public boolean combine(boolean c1, boolean c2) {
+		protected boolean combine(boolean c1, boolean c2) {
 			return c1 && c2;
 		}
 	}
@@ -35,7 +35,7 @@ public abstract class CombiningCondition implements Condition {
 		}
 
 		@Override
-		public boolean combine(boolean c1, boolean c2) {
+		protected boolean combine(boolean c1, boolean c2) {
 			return c1 || c2;
 		}
 	}
@@ -61,5 +61,5 @@ public abstract class CombiningCondition implements Condition {
 	/**
 	 * Combine check and check2 in some logical way
 	 */
-	public abstract boolean combine(boolean check, boolean check1);
+	protected abstract boolean combine(boolean check, boolean check1);
 }

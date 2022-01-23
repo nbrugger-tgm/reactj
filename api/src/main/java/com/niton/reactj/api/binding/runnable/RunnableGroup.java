@@ -41,4 +41,8 @@ public class RunnableGroup implements Runnable {
 	public void remove(Runnable binding) {
 		runnables.remove(binding);
 	}
+
+	public int size() {
+		return runnables.size();
+	}
 }

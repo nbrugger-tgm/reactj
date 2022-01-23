@@ -15,9 +15,10 @@ class ReflectiveUtilTest {
 
 	static {
 		try {
-			executeCallMethod = ReflectiveUtilTest.class.getDeclaredMethod("executeCall");
+			executeCallMethod    = com.niton.reactj.test.util.ReflectiveUtilTest.class.getDeclaredMethod(
+					"executeCall");
 			executeCallMethodSig = ReflectiveUtil.getMethodSignature(executeCallMethod);
-			returnPassMethod = TestClass.class.getDeclaredMethod("returnPass", String.class);
+			returnPassMethod     = TestClass.class.getDeclaredMethod("returnPass", String.class);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
@@ -48,7 +49,10 @@ class ReflectiveUtilTest {
 	@Test
 	void invalidMethodParameterException() {
 		Exception exc = ReflectiveUtil.invalidMethodParameterException(executeCallMethod, 67);
-		assertTrue(exc.getMessage().contains(executeCallMethodSig), "Error message should contain signature");
+		assertTrue(
+				exc.getMessage().contains(executeCallMethodSig),
+				"Error message should contain signature"
+		);
 		assertTrue(
 				exc.getMessage().contains("Integer"),
 				"Error message should contain actual type (" + exc.getMessage() + ")"
@@ -67,7 +71,11 @@ class ReflectiveUtilTest {
 		);
 		assertEquals(
 				"Integer.compare(int, int)",
-				ReflectiveUtil.getMethodSignature(Integer.class.getMethod("compare", int.class, int.class))
+				ReflectiveUtil.getMethodSignature(Integer.class.getMethod(
+						"compare",
+						int.class,
+						int.class
+				))
 		);
 	}
 
@@ -76,6 +84,11 @@ class ReflectiveUtilTest {
 		String arg = "SOME_PASS_VAL";
 		String res = (String) ReflectiveUtil.executeCall(new TestClass(), returnPassMethod, arg);
 		assertEquals(arg, res);
+
+		assertThrows(
+				IllegalArgumentException.class,
+				() -> ReflectiveUtil.executeCall(Object.class, returnPassMethod, "SOME_FAIL_VAL")
+		);
 	}
 
 	@Test
@@ -97,12 +110,18 @@ class ReflectiveUtilTest {
 
 	@Test
 	void isMutableInstanceVar() throws NoSuchFieldException {
-		assertTrue(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField("privateMutable")));
-		assertTrue(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField("publicMutable")));
-		assertFalse(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField("privateFinal")));
-		assertFalse(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField("publicFinal")));
-		assertFalse(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField("staticMutable")));
-		assertFalse(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField("staticFinal")));
+		assertTrue(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField(
+				"privateMutable")));
+		assertTrue(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField(
+				"publicMutable")));
+		assertFalse(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField(
+				"privateFinal")));
+		assertFalse(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField(
+				"publicFinal")));
+		assertFalse(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField(
+				"staticMutable")));
+		assertFalse(ReflectiveUtil.isMutableInstanceVar(FieldClass.class.getDeclaredField(
+				"staticFinal")));
 	}
 
 	@Test

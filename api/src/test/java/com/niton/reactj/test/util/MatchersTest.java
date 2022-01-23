@@ -5,8 +5,7 @@ import net.bytebuddy.description.method.MethodDescription.ForLoadedMethod;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Matchers")
 class MatchersTest {
@@ -38,6 +37,7 @@ class MatchersTest {
 		);
 		var overridden    = Extender.class.getDeclaredMethod("foo");
 		var nonOverridden = Extender.class.getMethod("bar");
+		assertTrue(Matchers.from(Base.class).matches(new ForLoadedMethod(overridden)));
 		assertTrue(matcher.matches(new ForLoadedMethod(overridden)));
 		assertFalse(
 				matcher.matches(new ForLoadedMethod(nonOverridden)),

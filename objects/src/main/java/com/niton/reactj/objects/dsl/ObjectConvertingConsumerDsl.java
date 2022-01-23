@@ -14,4 +14,6 @@ public interface ObjectConvertingConsumerDsl<T, O> extends ConvertingConsumerDsl
 
 	@Override
 	<S> ObjectConvertingConsumerDsl<S, O> from(Function<S, ? extends T> converter);
+
+	ObjectBindingDsl<O> fromObject(Function<O, T> converter);
 }

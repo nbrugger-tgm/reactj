@@ -4,7 +4,7 @@ import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.api.exceptions.ReflectiveCallException;
 import com.niton.reactj.api.proxy.AbstractProxyCreator;
 import com.niton.reactj.api.proxy.ProxyException;
-import com.niton.reactj.api.proxy.infusion.StaticInfuserWithLookup;
+import com.niton.reactj.api.proxy.infusion.StaticInfuser;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.UsingLookup;
 
 import java.lang.invoke.MethodHandles;
@@ -47,8 +47,8 @@ public class ListProxyCreator extends AbstractProxyCreator {
 		}
 	}
 
-	public ListProxyCreator() {
-		super(new StaticInfuserWithLookup(ListProxyCreator.class, MethodHandles.lookup()));
+	public ListProxyCreator(MethodHandles.Lookup proxyAnchor) {
+		super(new StaticInfuser(proxyAnchor.lookupClass(), proxyAnchor));
 	}
 
 	public <L extends List<T>, T> L create(L list) {

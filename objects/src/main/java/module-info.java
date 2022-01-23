@@ -2,6 +2,8 @@ module reactj.objects {
 	requires transitive reactj.api;
 	requires org.objenesis;
 	requires org.apache.commons.lang3;
+	requires jdk.unsupported;
+	requires org.slf4j;
 
 	exports com.niton.reactj.objects;
 	exports com.niton.reactj.objects.dsl;

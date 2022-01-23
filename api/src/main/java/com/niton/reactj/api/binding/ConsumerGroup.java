@@ -1,8 +1,8 @@
 package com.niton.reactj.api.binding;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  * @param <T> the type of the consumers
  */
 public class ConsumerGroup<T> implements Consumer<T> {
-	private final Set<Consumer<? super T>> targets = new HashSet<>();
+	private final List<Consumer<? super T>> targets = new ArrayList<>();
 
 	/**
 	 * @param targets the initial consumers

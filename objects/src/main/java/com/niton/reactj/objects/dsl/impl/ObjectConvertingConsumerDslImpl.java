@@ -12,13 +12,16 @@ import java.util.function.Supplier;
 public class ObjectConvertingConsumerDslImpl<F, O> implements ObjectConvertingConsumerDsl<F, O> {
 	private final ConvertingConsumerDsl<F> impl;
 	private final EventEmitter<O>          objectChangeEvent;
+	private final Supplier<O>              objectSupplier;
 
 	public ObjectConvertingConsumerDslImpl(
 			ConvertingConsumerDsl<F> impl,
-			EventEmitter<O> objectChangeEvent
+			EventEmitter<O> objectChangeEvent,
+			Supplier<O> objectSupplier
 	) {
 		this.impl              = impl;
 		this.objectChangeEvent = objectChangeEvent;
+		this.objectSupplier    = objectSupplier;
 	}
 
 	@Override
@@ -38,6 +41,14 @@ public class ObjectConvertingConsumerDslImpl<F, O> implements ObjectConvertingCo
 
 	@Override
 	public <S> ObjectConvertingConsumerDsl<S, O> from(Function<S, ? extends F> converter) {
-		return new ObjectConvertingConsumerDslImpl<>(impl.from(converter), objectChangeEvent);
+		return new ObjectConvertingConsumerDslImpl<>(
+				impl.from(converter),
+				objectChangeEvent,
+				objectSupplier
+		);
+	}
+
+	public ObjectBindingDsl<O> fromObject(Function<O, F> converter) {
+		return from(converter).from(objectSupplier);
 	}
 }

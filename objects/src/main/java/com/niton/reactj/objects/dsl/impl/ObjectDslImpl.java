@@ -21,17 +21,17 @@ public class ObjectDslImpl<T> implements ObjectDsl<T> {
 	}
 
 	@Override
-	public <P> ObjectConsumerDsl<P, T> call(BiConsumer<T, P> setter) {
-		return call(v -> setter.accept(model.get(), v));
-	}
-
-	@Override
 	public ObjectRunnableDsl call(Runnable runnable) {
 		return new ObjectRunnableDslImpl(impl.call(runnable), objectChangeEvent);
 	}
 
 	@Override
 	public <N> ObjectConsumerDsl<N, T> call(Consumer<N> runnable) {
-		return new ObjectConsumerDslImpl<>(impl.call(runnable), objectChangeEvent);
+		return new ObjectConsumerDslImpl<>(impl.call(runnable), objectChangeEvent, model);
+	}
+
+	@Override
+	public <P> ObjectConsumerDsl<P, T> call(BiConsumer<T, P> setter) {
+		return call(v -> setter.accept(model.get(), v));
 	}
 }

@@ -19,7 +19,7 @@ public abstract class ReactiveComponentImplTest<C extends ReactiveComponent<M, O
 	@BeforeEach
 	void prepare() {
 		component = getComponent();
-		changed = false;
+		changed   = false;
 	}
 
 	/**
@@ -50,7 +50,7 @@ public abstract class ReactiveComponentImplTest<C extends ReactiveComponent<M, O
 		assertTrue(
 				changed,
 				"If the model changes 'uiUpdate' should be fired," +
-				"even if the update didn't cause any changes"
+						"even if the update didn't cause any changes"
 		);
 	}
 
@@ -71,8 +71,8 @@ public abstract class ReactiveComponentImplTest<C extends ReactiveComponent<M, O
 		M   m1     = generateObservable();
 		int m1Hash = m1.hashCode();
 		M   m2     = generateObservable();
-		int m2Hash = m2.hashCode();
 		modify(m2);
+		int m2Hash = m2.hashCode();
 		component.setModel(m1);
 		assertEquals(m1, component.getModel());
 		component.setModel(m2);

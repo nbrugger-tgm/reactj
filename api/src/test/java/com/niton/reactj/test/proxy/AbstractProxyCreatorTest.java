@@ -43,8 +43,12 @@ class AbstractProxyCreatorTest {
 		}
 
 		@Override
+		public Class<?> getProxyClass(Class<?> originClass) {
+			return super.getProxyClass(originClass);
+		}
+
+		@Override
 		protected <T> Class<? extends T> createProxyClass(Class<? extends T> aClass) {
-			assertNotProxy(aClass);
 			return aClass;
 		}
 
@@ -81,6 +85,17 @@ class AbstractProxyCreatorTest {
 	}
 
 	@Test
+	void createProxy() {
+		var creator = new ProxyCreatorTestImpl();
+		assertThrows(
+				ProxyException.class,
+				() -> creator.getProxyClass(FakeProxy_PROXY$12.class),
+				"Creating a proxy class for a proxy should throw an exception"
+		);
+		assertEquals(ValidBase.class, creator.getProxyClass(ValidBase.class));
+	}
+
+	@Test
 	void testErrorOnGetField() {
 		assertDoesNotThrow(() -> ProxyCreatorTestImpl.getField(FakeProxy.class, "PROXY_WRAPPER"));
 		assertThrows(
@@ -114,16 +129,6 @@ class AbstractProxyCreatorTest {
 	}
 
 	@Test
-	void proxyFromProxy() {
-		var creator = new ProxyCreatorTestImpl();
-		assertThrows(
-				ProxyException.class,
-				() -> creator.createProxyClass(FakeProxy_PROXY$12.class),
-				"Creating a proxy for a proxy should throw an exception"
-		);
-	}
-
-	@Test
 	void hasDefaultBuilder() {
 		var creator = new ProxyCreatorTestImpl();
 		assertNotNull(creator.getBuilder(), "A Proxy creator should contain a builder by default");
@@ -134,7 +139,7 @@ class AbstractProxyCreatorTest {
 		var creator = new ProxyCreatorTestImpl();
 		var origin  = new UnsafeProxy_PROXY$12(null);
 		var proxy   = new UnsafeProxy_PROXY$12(origin);
-		proxy.prop = "794123";
+		proxy.prop  = "794123";
 		origin.prop = 66123;
 		var toCopy = proxy.prop;
 		creator.sync(proxy);
@@ -146,7 +151,17 @@ class AbstractProxyCreatorTest {
 				toCopy, origin.prop,
 				"The values should be copied from proxy to origin not the other way around"
 		);
+	}
 
+	@Test
+	void noProxySync() {
+		var creator = new ProxyCreatorTestImpl();
+		var proxy   = new ValidBase("test");
+		assertThrows(
+				IllegalArgumentException.class,
+				() -> creator.sync(proxy),
+				"Syncing a non-proxy should throw an exception"
+		);
 	}
 
 	@Test

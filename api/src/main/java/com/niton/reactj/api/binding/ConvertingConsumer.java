@@ -24,7 +24,9 @@ public class ConvertingConsumer<F, T> implements Consumer<F> {
 	 * @param converter {@link #converter}
 	 */
 	public ConvertingConsumer(Consumer<T> target, Function<F, T> converter) {
-		this.target    = target;
+		this.target = target;
+		if (converter == null)
+			throw new IllegalArgumentException("converter cannot be null");
 		this.converter = converter;
 	}
 

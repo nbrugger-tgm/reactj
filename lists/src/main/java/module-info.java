@@ -5,4 +5,6 @@ module reactj.lists {
 	exports com.niton.reactj.lists.observer;
 	exports com.niton.reactj.lists.proxy;
 	exports com.niton.reactj.lists.mvc;
+
+	opens com.niton.reactj.lists.proxy to reactj.api;
 }

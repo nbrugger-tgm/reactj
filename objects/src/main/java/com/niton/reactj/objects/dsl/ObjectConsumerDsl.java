@@ -20,13 +20,15 @@ public interface ObjectConsumerDsl<T, O> extends ConsumerDsl<T> {
 	<N extends T> ObjectConsumerDsl<N, O> andCall(Consumer<N> consumer);
 
 	@Override
-	<F> ObjectConvertingConsumerDsl<F, O> with(Function<F, T> converter);
-
-	@Override
 	ObjectBindingDsl<T> withValue(T constant);
 
 	@Override
 	ObjectBindingDsl<T> with(Supplier<? extends T> source);
+
+	@Override
+	<F> ObjectConvertingConsumerDsl<F, O> with(Function<F, T> converter);
+
+	ObjectBindingDsl<O> withModel(Function<O, T> converter);
 
 	PredicatableDsl<O> onObjectChange(Function<O, T> getter);
 }

@@ -5,8 +5,11 @@ import com.niton.reactj.api.binding.dsl.BinderDsl;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.lists.diff.ListChange;
 import com.niton.reactj.lists.mvc.ReactiveListComponent;
+import com.niton.reactj.lists.proxy.ListProxyCreator;
 import com.niton.reactj.testing.mvc.ReactiveComponentImplTest;
 
+import java.lang.invoke.MethodHandles;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ReactiveListComponentTest
@@ -39,11 +42,16 @@ public class ReactiveListComponentTest
 
 	@Override
 	protected List<String> generateObservable() {
-		return null;
+		var          creator = new ListProxyCreator(MethodHandles.lookup());
+		List<String> strings = creator.create(new LinkedList<>());
+		strings.add("1");
+		strings.add("2");
+		strings.add("3");
+		return strings;
 	}
 
 	@Override
 	protected void modify(List<String> strings) {
-
+		strings.add("4");
 	}
 }

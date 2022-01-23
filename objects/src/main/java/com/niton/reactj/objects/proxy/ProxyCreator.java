@@ -20,6 +20,8 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 import org.objenesis.instantiator.ObjectInstantiator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -34,6 +36,7 @@ import java.util.Map;
 public class ProxyCreator extends AbstractProxyCreator {
 	public static final  ProxyCreator INSTANCE = besideOrigin();
 	private static final Method       getReflectiveTargetMethod;
+	private static final Logger       LOG      = LoggerFactory.getLogger(ProxyCreator.class);
 
 	static {
 		try {
@@ -129,16 +132,25 @@ public class ProxyCreator extends AbstractProxyCreator {
 	 * Copies the values of public final fields from origin to proxy
 	 */
 	public <T> void copyFinalFields(T proxy, T origin) {
-		Arrays.stream(proxy.getClass().getFields())//just public ones
-		      .filter(f -> Modifier.isFinal(f.getModifiers()))//just final ones
-		      .forEach(f -> copyFinalField(f, proxy, origin));
+		try {
+			Arrays.stream(proxy.getClass().getFields())//just public ones
+			      .filter(f -> Modifier.isFinal(f.getModifiers()))//just final ones
+			      .filter(f -> !copyFinalField(f, proxy, origin))//filter uncopiable ones
+			      .forEach(b -> LOG.warn(
+					      "Cannot copy public final field {} to proxy, accessing " +
+							      "it on the proxy will return null!",
+					      b.getName()
+			      ));
+		} catch (ReactiveException ex) {
+			LOG.warn("Final field copy failed!", ex);
+		}
 	}
 
-	public <T> void copyFinalField(Field f, T proxy, T origin) {
+	public <T> boolean copyFinalField(Field f, T proxy, T origin) {
 		try {
-			ReflectiveUtil.setFinal(f, proxy, f.get(origin));
-		} catch (IllegalAccessException | NoSuchFieldException e) {
-			throw new ReactiveException("Couldn't copy final field", e);
+			return ReflectiveUtil.setFinal(f, proxy, f.get(origin));
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			throw new ReactiveException("Couldn't copy field", e);
 		}
 	}
 

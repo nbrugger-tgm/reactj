@@ -1,7 +1,9 @@
 dependencies {
-    api project(":api")// https://mvnrepository.com/artifact/org.objenesis/objenesis
+    api project(":api")
     implementation 'org.objenesis:objenesis:3.2'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+    implementation 'org.slf4j:slf4j-simple:1.7.33'
 
-    testRuntimeOnly project(":core:impl")
+
+    testImplementation project(":core:impl")
 }

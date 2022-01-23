@@ -2,7 +2,6 @@ package com.niton.reactj.api.util;
 
 import com.niton.reactj.api.exceptions.ReflectiveCallException;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -133,20 +132,20 @@ public final class ReflectiveUtil {
 		return Modifier.isFinal(f.getModifiers());
 	}
 
-	public static MethodHandles.Lookup getLookup(Module module) {
-		ReflectiveUtil.class.getModule().addReads(module);
-		return MethodHandles.lookup();
-	}
 
 	/**
 	 * THIS IS PURE EVIL ... but necessary
+	 *
+	 * @return true if it the magic worked
 	 */
-	public static void setFinal(Field field, Object target, Object newValue)
+	public static boolean setFinal(Field field, Object target, Object newValue)
 			throws NoSuchFieldException, IllegalAccessException {
 		Field modifiersField = Field.class.getDeclaredField("modifiers");
-		modifiersField.setAccessible(true);
+		if (!modifiersField.trySetAccessible())
+			return false;
 		modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
 		field.set(target, newValue);
+		return false;
 	}
 }

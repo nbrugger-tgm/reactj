@@ -35,7 +35,7 @@ public abstract class ReactiveObjectComponent<M extends Reactable & Reflective, 
 	) {
 		observerEvent.listen(obs -> onModelChange.fire(obs.observed));
 
-		ObjectDsl<M> binder = ObjectDsl.create(getModel(), onModelChange);
+		ObjectDsl<M> binder = ObjectDsl.create(this::getModel, onModelChange);
 
 		createBindings(binder, onModelChange, observerEvent);
 		registerAnnotatedBindings(binder, observerEvent);

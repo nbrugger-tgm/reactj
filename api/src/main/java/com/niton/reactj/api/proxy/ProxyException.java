@@ -29,12 +29,15 @@ public class ProxyException extends RuntimeException {
 	}
 
 	public static ProxyException constructorAccessException(Class<?> proxyClass) {
-		return new ProxyException("Couldn't access parameterless constructor of " + proxyClass.getSuperclass()
-		                                                                                      .getName());
+		return new ProxyException(
+				"Couldn't access parameterless constructor of " + proxyClass.getSuperclass()
+				                                                            .getName()
+		);
 	}
 
 	public static ProxyException noParameterlessConstructor(Class<?> proxyClass) {
-		return new ProxyException("Unable to find parameterless constructor of " + proxyClass.getSuperclass()
-		                                                                                     .getName());
+		return new ProxyException(
+				"Unable to find parameterless constructor of " + proxyClass.getSuperclass()
+				                                                           .getName());
 	}
 }
