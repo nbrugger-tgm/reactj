@@ -9,46 +9,46 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConditionalRunnableTest {
-	@Test
-	void invalidParams() {
-		assertThrows(
-				IllegalArgumentException.class,
-				() -> new ConditionalRunnable(Condition.YES, null)
-		);
-		assertThrows(
-				IllegalArgumentException.class,
-				() -> new ConditionalRunnable(null, () -> {
-				})
-		);
+    @Test
+    void invalidParams() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new ConditionalRunnable(Condition.YES, null)
+        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new ConditionalRunnable(null, () -> {
+                })
+        );
 
-		assertThrows(
-				IllegalArgumentException.class,
-				() -> new ConditionalRunnable(Condition.YES, () -> {
-				}).setCondition(null)
-		);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new ConditionalRunnable(Condition.YES, () -> {
+                }).setCondition(null)
+        );
 
-	}
+    }
 
-	@Test
-	void flow() {
-		AtomicBoolean called = new AtomicBoolean(false);
+    @Test
+    void flow() {
+        AtomicBoolean called = new AtomicBoolean(false);
 
-		var runnable = new ConditionalRunnable(Condition.YES, () -> called.set(true));
-		runnable.run();
-		assertTrue(called.get());
-		runnable.setCondition(Condition.NO);
-		called.set(false);
-		runnable.run();
-		assertFalse(
-				called.get(),
-				"Runnable should not be called when condition is overwritten to NO"
-		);
-		runnable = new ConditionalRunnable(Condition.NO, () -> called.set(true));
-		called.set(false);
-		runnable.run();
-		assertFalse(
-				called.get(),
-				"Runnable should not be called when condition is initially NO"
-		);
-	}
+        var runnable = new ConditionalRunnable(Condition.YES, () -> called.set(true));
+        runnable.run();
+        assertTrue(called.get());
+        runnable.setCondition(Condition.NO);
+        called.set(false);
+        runnable.run();
+        assertFalse(
+                called.get(),
+                "Runnable should not be called when condition is overwritten to NO"
+        );
+        runnable = new ConditionalRunnable(Condition.NO, () -> called.set(true));
+        called.set(false);
+        runnable.run();
+        assertFalse(
+                called.get(),
+                "Runnable should not be called when condition is initially NO"
+        );
+    }
 }

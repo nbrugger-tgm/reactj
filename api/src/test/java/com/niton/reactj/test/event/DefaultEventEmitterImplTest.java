@@ -9,18 +9,18 @@ import org.junit.jupiter.api.DisplayName;
 @DisplayName("DefaultEventEmitter")
 class DefaultEventEmitterImplTest extends EventEmitterImplTest<Object, Listener<Object>> {
 
-	@Override
-	protected CustomEventEmitter<Object, Listener<Object>> createManager() {
-		return new EventEmitter<>();
-	}
+    @Override
+    protected CustomEventEmitter<Object, Listener<Object>> createManager() {
+        return new EventEmitter<>();
+    }
 
-	@Override
-	protected Listener<Object> createListener(Runnable testCallback) {
-		return ev -> testCallback.run();
-	}
+    @Override
+    protected Listener<Object> createListener(Runnable testCallback) {
+        return ev -> testCallback.run();
+    }
 
-	@Override
-	protected Object getDummyEvent() {
-		return new Object();
-	}
+    @Override
+    protected Object getDummyEvent() {
+        return new Object();
+    }
 }

@@ -6,13 +6,13 @@ import static com.niton.reactj.objects.annotations.ReactiveResolution.ReactiveRe
 
 @ReactiveResolution(DEEP)
 public class DeepBase extends Base {
-	private int c;
+    private int c;
 
-	public int getC() {
-		return c;
-	}
+    public int getC() {
+        return c;
+    }
 
-	public void setC(int c) {
-		this.c = c;
-	}
+    public void setC(int c) {
+        this.c = c;
+    }
 }

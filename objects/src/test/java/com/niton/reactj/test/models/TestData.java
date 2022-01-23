@@ -2,32 +2,32 @@ package com.niton.reactj.test.models;
 
 
 public class TestData {
-	public int      id;
-	public TestEnum c = TestEnum.RED;
+    public int      id;
+    public TestEnum c = TestEnum.RED;
 
-	public enum TestEnum {
-		RED,
-		BLUE,
-		GREEN
-	}
+    public enum TestEnum {
+        RED,
+        BLUE,
+        GREEN
+    }
 
-	public TestEnum getC() {
-		return c;
-	}
+    public TestEnum getC() {
+        return c;
+    }
 
-	public void setC(TestEnum c) {
-		this.c = c;
-	}
+    public void setC(TestEnum c) {
+        this.c = c;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setColor(TestEnum c) {
-		this.c = c;
-	}
+    public void setColor(TestEnum c) {
+        this.c = c;
+    }
 }

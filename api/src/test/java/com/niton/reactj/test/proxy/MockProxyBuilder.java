@@ -7,15 +7,17 @@ import net.bytebuddy.dynamic.DynamicType.Builder.MethodDefinition.ReceiverTypeDe
 import net.bytebuddy.matcher.ElementMatcher.Junction;
 
 public class MockProxyBuilder implements ProxyBuilder {
-	@Override
-	public <T> ReceiverTypeDefinition<T> buildProxy(
-			Class<T> originClass, Junction<MethodDescription> reactive, Junction<MethodDescription> unreactive
-	) {
-		return null;
-	}
+    @Override
+    public void useInfusion(InfusionAccessProvider accessor) {
+        //NOPE
+    }
 
-	@Override
-	public void useInfusion(InfusionAccessProvider accessor) {
-		//NOPE
-	}
+    @Override
+    public <T> ReceiverTypeDefinition<T> buildProxy(
+            Class<T> originClass,
+            Junction<MethodDescription> reactive,
+            Junction<MethodDescription> unreactive
+    ) {
+        return null;
+    }
 }

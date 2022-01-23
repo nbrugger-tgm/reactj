@@ -5,8 +5,8 @@ import com.niton.reactj.core.impl.dsl.CoreDsl;
 import com.niton.reactj.testing.binding.RunnableBindingTest;
 
 public class CoreRunnableDslTest extends RunnableBindingTest {
-	@Override
-	protected BinderDsl createBinder() {
-		return new CoreDsl();
-	}
+    @Override
+    protected BinderDsl createBinder() {
+        return new CoreDsl();
+    }
 }
