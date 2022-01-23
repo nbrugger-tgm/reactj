@@ -98,7 +98,7 @@ class ModulePlugin implements Plugin<Project> {
             }
         }
         p.tasks.check {
-            finalizedBy p.tasks.jacocoTestCoverageVerification
+            //finalizedBy p.tasks.jacocoTestCoverageVerification
         }
         p.jacoco {
             toolVersion = "0.8.5"

@@ -23,7 +23,7 @@ public abstract class AbstractProxyCreator {
 
 	protected AbstractProxyCreator(InfusionAccessProvider accessor) {
 		this.accessor = accessor;
-		builder = ProxyBuilder.load(accessor);
+		builder       = ProxyBuilder.load(accessor);
 	}
 
 
@@ -135,7 +135,8 @@ public abstract class AbstractProxyCreator {
 			getField(proxyClass, originFields, ProxyBuilder.ORIGIN_FIELD).set(proxy, object);
 		} catch (IllegalAccessException e) {
 			//not going to happen
-			e.printStackTrace();
+			System.err.println("[reactj-api] This code should never be reached and is a bug in " +
+					                   "reactj. Please report it to the reactj developers.");
 		}
 	}
 
