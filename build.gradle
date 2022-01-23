@@ -5,9 +5,23 @@ allprojects {
     version = '4.0.0b8'
     group = 'com.niton.reactj'
 }
-subprojects { sub ->
+subprojects(this::configureModule)
+sonarqube {
+    properties {
+        // Insert other SonarQube properties here
+        property 'sonar.projectName', 'ReactJ'
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.projectKey", "nbrugger-tgm_reactj"
+        property "sonar.organization", "nbrugger-tgm"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
+}
+
+void configureModule(Project sub) {
     sub.apply plugin: 'org.sonarqube'
     sub.apply plugin: 'java-library-module'
+
+    println "Configure Module : ${sub.name} -> ${sub.path}"
 
     sub.sonarqube {
         properties {
@@ -18,14 +32,8 @@ subprojects { sub ->
         repo = "https://niton.jfrog.io/artifactory/java-libs"
         username = "nbrugger@student.tgm.ac.at"
     }
-}
-sonarqube {
-    properties {
-        // Insert other SonarQube properties here
-        property 'sonar.projectName', 'ReactJ'
-        property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.projectKey", "nbrugger-tgm_reactj"
-        property "sonar.organization", "nbrugger-tgm"
-        property "sonar.host.url", "https://sonarcloud.io"
+    sub.repositories {
+        mavenCentral()
     }
+    sub.subprojects(this::configureModule)
 }

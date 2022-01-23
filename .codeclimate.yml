@@ -1,8 +1,5 @@
 engines:
   checkstyle:
-    exclude_patterns:
-      - "module-info.java"
-      - "**/module-info.java"
     enabled: true
     exclude_patterns:
       - "**/module-info.java"
