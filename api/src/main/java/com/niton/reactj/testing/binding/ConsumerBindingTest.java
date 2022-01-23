@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("ConsumerBindings")
 public abstract class ConsumerBindingTest {
-	private static String               VAL1        = "SOME123";
-	private final  int                  VAL2        = 321;
+	private static String               val1        = "SOME123";
+	private final  int                  val2        = 321;
 	private final  GenericEventEmitter  coolEvent   = new GenericEventEmitter();
 	private final  EventEmitter<String> stringEvent = new EventEmitter<>();
 	private        String               source;
@@ -103,18 +103,18 @@ public abstract class ConsumerBindingTest {
 	void convertedSource() {
 		builder.call(this::setReceived)
 		       .with(Integer::toHexString)
-		       .from(this::getVAL2)
+		       .from(this::getVal2)
 		       .on(coolEvent);
 		coolEvent.fire();
 		assertEquals(
-				Integer.toHexString(VAL2),
+				Integer.toHexString(val2),
 				received,
 				"call(a).with(converter).from(source) should call method a with the converted source return value"
 		);
 	}
 
-	public int getVAL2() {
-		return VAL2;
+	public int getVal2() {
+		return val2;
 	}
 
 	@Test
@@ -263,14 +263,14 @@ public abstract class ConsumerBindingTest {
 	@DisplayName("call(consumer1).and(consumer2).with(source)")
 	void multipleConsumersSameSource() {
 		builder.call(this::setReceived)
-		       .and(v -> VAL1 = v)
+		       .and(v -> val1 = v)
 		       .with(this::getSomeValue)
 		       .on(coolEvent);
 		source = "KH9757";
 		coolEvent.fire();
 		assertEquals(received, source);
 		assertEquals(
-				VAL1,
+				val1,
 				source,
 				"When '.call(a).and(b).with(source)' is used, a and b should be called with the same source"
 		);

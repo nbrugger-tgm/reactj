@@ -6,6 +6,10 @@ engines:
       - "module-info.java"
       - "**/examples/**/*.java"
     checks:
+      com.puppycrawl.tools.checkstyle.checks.coding.VariableDeclarationUsageDistanceCheck:
+        allowedDistance: 8
+      com.puppycrawl.tools.checkstyle.checks.blocks.NeedBracesCheck:
+        enabled: false
       com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck:
         enabled: false
       com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck:

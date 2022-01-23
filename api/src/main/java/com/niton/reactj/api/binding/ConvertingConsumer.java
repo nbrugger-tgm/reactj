@@ -31,7 +31,7 @@ public class ConvertingConsumer<F, T> implements Consumer<F> {
 	}
 
 	@Override
-	public void accept(F t) {
-		target.accept(converter.apply(t));
+	public void accept(F value) {
+		target.accept(converter.apply(value));
 	}
 }

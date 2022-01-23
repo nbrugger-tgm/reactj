@@ -22,8 +22,8 @@ public class RunnableGroup implements Runnable {
 	/**
 	 * Adds a runnable to be executed on {@link #run()}
 	 */
-	public void add(Runnable r) {
-		runnables.add(r);
+	public void add(Runnable runnable) {
+		runnables.add(runnable);
 	}
 
 	/**
@@ -38,8 +38,8 @@ public class RunnableGroup implements Runnable {
 		return runnables.toArray(Runnable[]::new);
 	}
 
-	public void remove(Runnable binding) {
-		runnables.remove(binding);
+	public void remove(Runnable runnable) {
+		runnables.remove(runnable);
 	}
 
 	public int size() {

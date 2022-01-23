@@ -77,8 +77,8 @@ public class ProxyCreator extends AbstractProxyCreator {
 	 * Only one instance should be used per module!
 	 * </b></p>
 	 *
-	 * @return an ProxyCreator that will have no issues with permissions
-	 * if you open your module (to reactj)
+	 * @return an ProxyCreator that will have no issues with permissions if you open your module
+	 * (to reactj)
 	 */
 	public static ProxyCreator besideOrigin() {
 		return new ProxyCreator(new BesideOriginInfuser(MethodHandles.lookup()));
@@ -97,6 +97,29 @@ public class ProxyCreator extends AbstractProxyCreator {
 
 	public static ProxyCreator custom(Class<?> anchor, Lookup access) {
 		return new ProxyCreator(new StaticInfuserWithLookup(anchor, access));
+	}
+
+	protected <T> Class<? extends T> createProxyClass(Class<? extends T> originClass)
+			throws ProxyException {
+
+		Module module = originClass.getModule();
+		getClass().getModule().addReads(module);
+
+		var unreactive = Matchers.from(Reflective.class)
+		                         .or(Matchers.from(ReflectiveWrapper.class));
+
+		var proxy = getBuilder().buildProxy(originClass, strategy.matcher, unreactive)
+		                        .implement(ReflectiveWrapper.class)
+
+		                        .method(Matchers.from(Reflective.class))
+		                        .intercept(DefaultMethodCall.prioritize(ReflectiveWrapper.class))
+
+		                        .method(ElementMatchers.is(getReflectiveTargetMethod))
+		                        .intercept(FieldAccessor.ofField(ProxyBuilder.ORIGIN_FIELD))
+
+		                        .make();
+		var lookup = getLookup(originClass);
+		return proxy.load(module.getClassLoader(), UsingLookup.of(lookup)).getLoaded();
 	}
 
 	/**
@@ -146,9 +169,9 @@ public class ProxyCreator extends AbstractProxyCreator {
 		}
 	}
 
-	public <T> boolean copyFinalField(Field f, T proxy, T origin) {
+	public <T> boolean copyFinalField(Field field, T proxy, T origin) {
 		try {
-			return ReflectiveUtil.setFinal(f, proxy, f.get(origin));
+			return ReflectiveUtil.setFinal(field, proxy, field.get(origin));
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			throw new ReactiveException("Couldn't copy field", e);
 		}
@@ -156,28 +179,5 @@ public class ProxyCreator extends AbstractProxyCreator {
 
 	public <T> ReactiveProxy<T> create(T object) {
 		return new ReactiveProxy<>(createProxy(object));
-	}
-
-	protected <T> Class<? extends T> createProxyClass(Class<? extends T> originClass)
-			throws ProxyException {
-
-		Module module = originClass.getModule();
-		getClass().getModule().addReads(module);
-
-		var unreactive = Matchers.from(Reflective.class)
-		                         .or(Matchers.from(ReflectiveWrapper.class));
-
-		var proxy = getBuilder().buildProxy(originClass, strategy.matcher, unreactive)
-		                        .implement(ReflectiveWrapper.class)
-
-		                        .method(Matchers.from(Reflective.class))
-		                        .intercept(DefaultMethodCall.prioritize(ReflectiveWrapper.class))
-
-		                        .method(ElementMatchers.is(getReflectiveTargetMethod))
-		                        .intercept(FieldAccessor.ofField(ProxyBuilder.ORIGIN_FIELD))
-
-		                        .make();
-		var lookup = getLookup(originClass);
-		return proxy.load(module.getClassLoader(), UsingLookup.of(lookup)).getLoaded();
 	}
 }

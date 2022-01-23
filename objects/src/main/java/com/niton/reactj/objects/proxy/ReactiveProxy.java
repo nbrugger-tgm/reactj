@@ -12,7 +12,7 @@ import com.niton.reactj.objects.reflect.ReflectiveForwarder;
  * Should only be instantiated by {@link ProxyCreator#create(Object)}
  * </p>
  *
- * @param <T>
+ * @param <T> the proxied type
  */
 public class ReactiveProxy<T> implements ReactiveForwarder, ReflectiveForwarder {
 	private final T proxy;

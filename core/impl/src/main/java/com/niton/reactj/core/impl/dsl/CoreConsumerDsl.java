@@ -18,12 +18,14 @@ public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl
 		private Predicate<N> predicate = o -> true;
 
 		@Override
-		public void accept(N n) {
-			if (predicate.test(n)) consumer.accept(n);
+		public void accept(N value) {
+			if (predicate.test(value)) consumer.accept(value);
 		}
 	}
 
-	public CoreConsumerDsl(Consumer<N> consumer) {this.consumer = consumer;}
+	public CoreConsumerDsl(Consumer<N> consumer) {
+		this.consumer = consumer;
+	}
 
 	@Override
 	public ConsumerDsl<N> and(Consumer<? super N> consumer) {
@@ -46,31 +48,6 @@ public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl
 	}
 
 	@Override
-	public <F> ConvertingConsumerDsl<F> with(Function<F, N> converter) {
-		return from(converter);
-	}
-
-	@Override
-	public BindingDsl<N> withValue(N constant) {
-		return with(new ConstantSupplier<>(constant));
-	}
-
-	@Override
-	public BindingDsl<N> with(Supplier<? extends N> source) {
-		return from(source);
-	}
-
-	@Override
-	public BindingDsl<N> from(Supplier<? extends N> source) {
-		return new CoreBindingDsl<>(new Binding<>(consumer, source));
-	}
-
-	@Override
-	public <S> ConvertingConsumerDsl<S> from(Function<S, ? extends N> converter) {
-		return new CoreConsumerDsl<>(v -> consumer.accept(converter.apply(v)));
-	}
-
-	@Override
 	public PredicatableDsl<N> from(EventEmitter<? extends N> event) {
 		var conditional = new ConditionalConsumer();
 		event.listen(conditional::accept);
@@ -90,5 +67,30 @@ public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl
 				}
 			};
 		};
+	}
+
+	@Override
+	public <F> ConvertingConsumerDsl<F> with(Function<F, N> converter) {
+		return from(converter);
+	}
+
+	@Override
+	public <S> ConvertingConsumerDsl<S> from(Function<S, ? extends N> converter) {
+		return new CoreConsumerDsl<>(v -> consumer.accept(converter.apply(v)));
+	}
+
+	@Override
+	public BindingDsl<N> withValue(N constant) {
+		return with(new ConstantSupplier<>(constant));
+	}
+
+	@Override
+	public BindingDsl<N> with(Supplier<? extends N> source) {
+		return from(source);
+	}
+
+	@Override
+	public BindingDsl<N> from(Supplier<? extends N> source) {
+		return new CoreBindingDsl<>(new Binding<>(consumer, source));
 	}
 }

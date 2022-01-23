@@ -43,10 +43,9 @@ public abstract class Observer<T, O> {
 	 * <p>
 	 * As one observer can just observe one object, the last object will not be observed anymore
 	 *
-	 * @param observable the object to observe. Should implement {@link Reactable}, if not {@link
-	 *                   #update()} has to be
-	 *                   called manually.
-	 *                   <br>Hint:</bt><i>all proxies extend {@link Reactable}</i>
+	 * @param observable the object to observe. Should implement {@link Reactable},
+	 *                   if not {@link #update()} has to be called manually.
+	 *                   <b>Hint:</b><i>all proxies extend {@link Reactable}</i>
 	 */
 	public void observe(O observable) {
 		if (observable == null)

@@ -51,7 +51,7 @@ public class ReactiveListComponentTest
 	}
 
 	@Override
-	protected void modify(List<String> strings) {
-		strings.add("4");
+	protected void modify(List<String> model) {
+		model.add("4");
 	}
 }

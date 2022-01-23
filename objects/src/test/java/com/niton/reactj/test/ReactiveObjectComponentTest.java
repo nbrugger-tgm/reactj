@@ -77,8 +77,8 @@ class ReactiveObjectComponentTest
 	}
 
 	@Override
-	protected void modify(Person person) {
-		person.celebrateBirthday();
+	protected void modify(Person model) {
+		model.celebrateBirthday();
 	}
 
 	@Test

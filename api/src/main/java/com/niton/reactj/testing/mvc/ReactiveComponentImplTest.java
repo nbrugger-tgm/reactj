@@ -62,17 +62,17 @@ public abstract class ReactiveComponentImplTest<C extends ReactiveComponent<M, O
 	/**
 	 * Modifies the object so that the internal observer fires an observation
 	 *
-	 * @param m the model to modify
+	 * @param model the model to modify
 	 */
-	protected abstract void modify(M m);
+	protected abstract void modify(M model);
 
 	@Test
 	void modelReassignment() {
-		M   m1     = generateObservable();
-		int m1Hash = m1.hashCode();
-		M   m2     = generateObservable();
+		M         m1     = generateObservable();
+		final int m1Hash = m1.hashCode();
+		M         m2     = generateObservable();
 		modify(m2);
-		int m2Hash = m2.hashCode();
+		final int m2Hash = m2.hashCode();
 		component.setModel(m1);
 		assertEquals(m1, component.getModel());
 		component.setModel(m2);

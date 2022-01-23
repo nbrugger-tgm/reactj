@@ -30,7 +30,7 @@ public class ConsumerGroup<T> implements Consumer<T> {
 	}
 
 	@Override
-	public void accept(T t) {
-		targets.forEach(consumer -> consumer.accept(t));
+	public void accept(T value) {
+		targets.forEach(consumer -> consumer.accept(value));
 	}
 }
