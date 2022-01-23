@@ -11,8 +11,14 @@ import com.niton.reactj.api.react.Reactable;
  * @param <O> the type to be observed (should implement {@link Reactable})
  */
 public abstract class Observer<T, O> {
+    /**
+     * This event emitter will fire if the observed object is changed.
+     */
     public final  EventEmitter<T> onObservation    = new EventEmitter<>();
     private final Runnable        onChangeListener = this::update;
+    /**
+     * The object that is being observed. Null is only possible as initial value.
+     */
     protected     O               observedObject;
     /**
      * If this property is true, calling {@link #observe(Object)} will report all changes to
@@ -21,10 +27,16 @@ public abstract class Observer<T, O> {
      */
     private       boolean         observeOnRebind  = true;
 
+    /**
+     * {@link EventEmitter#listen(Listener)} on {@link #onObservation}
+     */
     public void addListener(Listener<T> listener) {
         onObservation.addListener(listener);
     }
 
+    /**
+     * {@link EventEmitter#stopListening(Listener)} on {@link #onObservation}
+     */
     public void removeListener(Listener<T> listener) {
         onObservation.stopListening(listener);
     }

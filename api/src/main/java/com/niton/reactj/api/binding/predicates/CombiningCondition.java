@@ -10,6 +10,13 @@ public abstract class CombiningCondition implements Condition {
     private final Condition condition1;
     private final Condition condition2;
 
+    /**
+     * Create a new CombiningCondition that combines the given conditions. How they are combined is
+     * defined by the implementing class.
+     *
+     * @param condition1 The first condition
+     * @param condition2 The second condition
+     */
     protected CombiningCondition(Condition condition1, Condition condition2) {
         this.condition1 = condition1;
         this.condition2 = condition2;

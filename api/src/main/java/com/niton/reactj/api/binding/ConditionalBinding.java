@@ -4,8 +4,15 @@ import com.niton.reactj.api.binding.runnable.PredicatedRunnable;
 
 import java.util.function.Predicate;
 
+/**
+ * A {@link Binding} that is only executed if a given {@link Predicate} is true.
+ *
+ * @param <T> The type of binding and predicate
+ */
 public class ConditionalBinding<T> extends Binding<T> implements PredicatedRunnable<T> {
-
+    /**
+     * The predicate to check if the binding should be executed
+     */
     private Predicate<T> predicate;
 
     public ConditionalBinding(Binding<T> binding, Predicate<? super T> predicate) {

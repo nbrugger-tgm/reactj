@@ -26,6 +26,14 @@ public final class ReflectiveUtil {
         return new ClassCastException(message);
     }
 
+    /**
+     * Returns the signature of the given method parameters in the form:<br>
+     * {@code Object.equals(java.lang.Object)}
+     *
+     * @param method the method to get the signature from
+     *
+     * @return the signature of the given method
+     */
     public static String getMethodSignature(Method method) {
         return format(
                 "%s.%s(%s)",
@@ -35,6 +43,14 @@ public final class ReflectiveUtil {
         );
     }
 
+    /**
+     * Reurns the signature of the given method parameters in the form:<br>
+     * {@code java.lang.String, org.example.SomeClass, ...}
+     *
+     * @param method the method to get the signature from
+     *
+     * @return the signature of the given method
+     */
     public static String getMethodParamSignature(Method method) {
         return Arrays
                 .stream(method.getParameterTypes())
@@ -121,6 +137,15 @@ public final class ReflectiveUtil {
     }
 
 
+    /**
+     * Returns
+     * {@code [String, Integer] -> [String, int]}
+     *
+     * @param paramTypes the types to unbox
+     *
+     * @return the unboxed variants if existing. If there is no unboxed variant, the original
+     * type is returned.
+     */
     public static Class<?>[] unboxTypes(Class<?>... paramTypes) {
         return Arrays
                 .stream(paramTypes)
@@ -128,6 +153,9 @@ public final class ReflectiveUtil {
                 .toArray(Class[]::new);
     }
 
+    /**
+     * @return true if the field is not final nor static
+     */
     public static boolean isMutableInstanceVar(Field field) {
         return !isStatic(field) && !isFinal(field);
     }

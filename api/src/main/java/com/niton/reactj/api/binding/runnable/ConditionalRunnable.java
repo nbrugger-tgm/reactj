@@ -7,12 +7,19 @@ import com.niton.reactj.api.binding.predicates.HasCondition;
  * A runnable that is only executed in specific circumstances
  */
 public class ConditionalRunnable implements Runnable, HasCondition {
+    /**
+     * The actual runnable to run if the condition is met
+     */
     private final Runnable  target;
     /**
      * A condition that has to result with true in order for the runnable to run
      */
     private       Condition condition;
 
+    /**
+     * @param condition The condition to check
+     * @param target    The runnable to run if the condition is true
+     */
     public ConditionalRunnable(Condition condition, Runnable target) {
         if (condition == null)
             throw new IllegalArgumentException("Condition can't be null");

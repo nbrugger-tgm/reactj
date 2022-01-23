@@ -5,6 +5,7 @@ package com.niton.reactj.api.event;
  *
  * @param <E> the type of event this listener will react to
  */
+@FunctionalInterface
 public interface Listener<E> {
     /**
      * The method called when the event occurs

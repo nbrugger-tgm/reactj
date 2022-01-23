@@ -24,5 +24,8 @@ public interface ReactiveForwarder extends Reactable {
         return getReactableTarget().reactEvent();
     }
 
+    /**
+     * @return the target that will actually handle the reactable calls
+     */
     Reactable getReactableTarget();
 }

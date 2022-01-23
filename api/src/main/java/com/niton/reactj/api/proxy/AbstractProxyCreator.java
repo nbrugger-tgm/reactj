@@ -12,12 +12,23 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.niton.reactj.api.proxy.ProxyBuilder.*;
 
-
+/**
+ * A Proxy create is an intermediate layer used for creating proxies. When you invent a new type
+ * of proxy you can use this class to offer a creation mechanism. If you for example want to
+ * create a MapProxy that can observe changes in a map you should create a {@code MapProxyCreator
+ * extends AbstractProxyCreator}
+ */
 public abstract class AbstractProxyCreator {
+    /**
+     * The underlying proxy builder implementation to use for the actual proxy creation.
+     */
     private final ProxyBuilder            builder;
     private final Map<Class<?>, Class<?>> proxyClasses       = new ConcurrentHashMap<>();
     private final Map<Class<?>, Field>    wrapperFields      = new ConcurrentHashMap<>();
     private final Map<Class<?>, Field>    originFields       = new ConcurrentHashMap<>();
+    /**
+     * The Infusion type to use, describes the type of the injection for the proxy.
+     */
     private final InfusionAccessProvider  accessor;
     private       boolean                 allowUnsafeProxies = false;
 
