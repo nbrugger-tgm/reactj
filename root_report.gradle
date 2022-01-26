@@ -20,9 +20,6 @@ allprojects {
             .collect(Collectors.toSet())
 }
 
-println("JavaProjects : ${ext.javaProjects}")
-println("TestProjects : ${ext.testProjects}")
-
 task jacocoRootReport(type: JacocoReport) {
     dependsOn = testProjects.test
     dependsOn javaProjects.classes
@@ -50,4 +47,5 @@ task jacocoCoverageVerification(type: JacocoCoverageVerification) {
     }
 }
 
+tasks.sonarqube.dependsOn jacocoRootReport
 javaProjects.tasks.jacocoTestReport.forEach { it -> it.finalizedBy jacocoRootReport }
