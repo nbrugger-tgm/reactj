@@ -1,5 +1,6 @@
 plugins {
     id 'org.sonarqube' version '3.3'
+    id 'jacoco'
 }
 allprojects {
     version = '4.0.0b8'
@@ -15,20 +16,15 @@ sonarqube {
         property "sonar.organization", "nbrugger-tgm"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.exclusions", "examples/**/*.java"
+        property 'sonar.coverage.jacoco.xmlReportPaths', "${rootProject.projectDir}/build/reports/jacoco/coverage.xml"
     }
 }
 
 void configureModule(Project sub) {
-    sub.apply plugin: 'org.sonarqube'
     sub.apply plugin: 'java-library-module'
 
     println "Configure Module : ${sub.name} -> ${sub.path}"
 
-    sub.sonarqube {
-        properties {
-            property 'sonar.coverage.jacoco.xmlReportPaths', "build/reports/jacoco/coverage.xml"
-        }
-    }
     sub.module.publishing {
         repo = "https://niton.jfrog.io/artifactory/java-libs"
         username = "nbrugger@student.tgm.ac.at"
@@ -37,4 +33,19 @@ void configureModule(Project sub) {
         mavenCentral()
     }
     sub.subprojects(this::configureModule)
+
+    sub.afterEvaluate {
+        sub.jacocoTestReport {
+            additionalSourceDirs files(sub.sourceSets.main.allSource.srcDirs)
+            classDirectories.from files(sub.sourceSets.main.output)
+        }
+    }
 }
+
+repositories {
+    mavenCentral()
+}
+jacoco {
+    toolVersion = "0.8.5"
+}
+apply from: "$rootProject.projectDir/root_report.gradle"

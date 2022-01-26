@@ -1,0 +1,53 @@
+import java.util.stream.Collectors
+import java.util.stream.Stream
+
+def excludedModules = ["examples"]
+
+allprojects {
+    ext.javaProjects = allprojects.stream()
+            .filter { it.plugins.hasPlugin('java') }
+            .filter { !(excludedModules.contains(it.name)) }
+            .collect(Collectors.toSet())
+    ext.testProjects = ((Stream<Project>) ext.javaProjects.stream())
+            .filter {
+                it.sourceSets.test
+                        .allJava
+                        .asFileTree
+                        .matching { include '**/*.java' }
+                        .files
+                        .size() > 0
+            }
+            .collect(Collectors.toSet())
+}
+
+println("JavaProjects : ${ext.javaProjects}")
+println("TestProjects : ${ext.testProjects}")
+
+task jacocoRootReport(type: JacocoReport) {
+    dependsOn = testProjects.test
+    dependsOn javaProjects.classes
+    additionalSourceDirs files(javaProjects.sourceSets.main.allSource.srcDirs)
+    classDirectories.from files(javaProjects.sourceSets.main.output)
+    executionData files(testProjects.jacocoTestReport.executionData)
+    reports {
+        xml.enabled true
+        xml.destination layout.buildDirectory.file("reports/jacoco/coverage.xml").get().asFile
+        csv.enabled false
+        html.destination layout.buildDirectory.dir("reports/jacoco/html").get().asFile
+    }
+}
+task jacocoCoverageVerification(type: JacocoCoverageVerification) {
+    dependsOn jacocoRootReport
+    additionalSourceDirs files(javaProjects.sourceSets.main.allSource.srcDirs)
+    classDirectories.from files(javaProjects.sourceSets.main.output)
+    executionData files(testProjects.jacocoTestReport.executionData)
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.8
+            }
+        }
+    }
+}
+
+javaProjects.tasks.jacocoTestReport.forEach { it -> it.finalizedBy jacocoRootReport }

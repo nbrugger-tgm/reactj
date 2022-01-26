@@ -6,13 +6,14 @@ import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.event.GenericEventEmitter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static java.util.function.Predicate.not;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("ConsumerBindings")
-public abstract class ConsumerBindingTest {
+public abstract class DslTest {
     private static String               val1        = "SOME123";
     private final  int                  val2        = 321;
     private final  GenericEventEmitter  coolEvent   = new GenericEventEmitter();
@@ -22,7 +23,6 @@ public abstract class ConsumerBindingTest {
 
     //use the "exposed" to hide unneeded methods
     private BinderDsl builder;
-
 
     @BeforeEach
     void init() {
@@ -259,7 +259,6 @@ public abstract class ConsumerBindingTest {
         );
     }
 
-
     @Test
     @DisplayName("call(consumer1).and(consumer2).with(source)")
     void multipleConsumersSameSource() {
@@ -275,5 +274,14 @@ public abstract class ConsumerBindingTest {
                 source,
                 "When '.call(a).and(b).with(source)' is used, a and b should be called with the same source"
         );
+    }
+
+    @Nested
+    @DisplayName("RunnableBindings")
+    class RunnableBindingTest extends com.niton.reactj.testing.binding.RunnableBindingTest {
+        @Override
+        protected BinderDsl createBinder() {
+            return DslTest.this.createBinder();
+        }
     }
 }

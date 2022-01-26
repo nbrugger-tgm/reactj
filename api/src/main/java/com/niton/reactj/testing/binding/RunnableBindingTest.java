@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("RunnableBindings")
-public abstract class RunnableBindingTest {
+abstract class RunnableBindingTest {
 
     private final GenericEventEmitter coolEvent  = new GenericEventEmitter();
     private final GenericEventEmitter coolEvent2 = new GenericEventEmitter();
