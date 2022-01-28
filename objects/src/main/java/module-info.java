@@ -11,4 +11,6 @@ module reactj.objects {
     exports com.niton.reactj.objects.annotations;
     exports com.niton.reactj.objects.observer;
     exports com.niton.reactj.objects.reflect;
+
+    opens com.niton.reactj.objects.proxy to reactj.api;
 }

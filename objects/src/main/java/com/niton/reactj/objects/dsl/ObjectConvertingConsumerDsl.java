@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public interface ObjectConvertingConsumerDsl<T, O> extends ConvertingConsumerDsl<T> {
     /**
-     * {@link ObjectConsumerDsl#onObjectChange(Function)}
+     * {@link ObjectConsumerDsl#onModelChange(Function)}
      */
     PredicatableDsl<O> onModelChange(Function<O, T> getter);
 

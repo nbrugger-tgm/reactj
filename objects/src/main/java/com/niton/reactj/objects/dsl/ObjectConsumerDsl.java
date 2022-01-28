@@ -38,5 +38,5 @@ public interface ObjectConsumerDsl<T, O> extends ConsumerDsl<T> {
      * Call the previous consumer with the getter applied to the model when the model changes
      * @param getter the getter to apply to the model
      */
-    PredicatableDsl<O> onObjectChange(Function<O, T> getter);
+    PredicatableDsl<O> onModelChange(Function<O, T> getter);
 }

@@ -2,12 +2,15 @@ package com.niton.reactj.testing.binding;
 
 import com.niton.reactj.api.binding.dsl.BinderDsl;
 import com.niton.reactj.api.binding.predicates.Condition;
+import com.niton.reactj.api.binding.runnable.NonCyclicRunnable;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.event.GenericEventEmitter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.function.Predicate.not;
 import static org.junit.jupiter.api.Assertions.*;
@@ -273,6 +276,91 @@ public abstract class DslTest {
                 val1,
                 source,
                 "When '.call(a).and(b).with(source)' is used, a and b should be called with the same source"
+        );
+    }
+
+    @Test
+    @DisplayName("call(consumer1).andCall(consumer2).with(source)")
+    void differentTypeConsumers(){
+        var toPass = new B();
+        AtomicReference<A> ra = new AtomicReference<>();
+        AtomicReference<B> rb = new AtomicReference<>();
+        var binding = builder.call(ra::set)
+                .andCall(rb::set)
+                .withValue(toPass)
+                .build();
+
+        binding.run();
+        assertSame(toPass, ra.get());
+        assertSame(toPass, rb.get());
+    }
+
+    @Test
+    @DisplayName("call(consumer).with(source).and(runnable)")
+    void callConsumerAndRunnable(){
+        var toPass = new A();
+        AtomicReference<A> ra = new AtomicReference<>();
+        AtomicReference<B> rb = new AtomicReference<>();
+        var binding = builder.call(ra::set)
+                .withValue(toPass)
+                .and(()-> rb.set(new B()))
+                .build();
+
+        binding.run();
+        assertSame(toPass, ra.get());
+        assertNotNull(rb.get());
+    }
+
+    @Test
+    @DisplayName("call(consumer).with(source).when(NO).build()")
+    void callConditionalConsumerBuild(){
+        var toPass = new A();
+        AtomicReference<A> ra = new AtomicReference<>();
+        var binding = builder.call(ra::set)
+                .withValue(toPass)
+                .when(Condition.NO)
+                .build();
+
+        binding.run();
+        assertNull(ra.get());
+    }
+
+    @Test
+    @DisplayName("call(consumer).with(source).when(YES).build()")
+    void callConditionalConsumerBuildYES(){
+        var toPass = new A();
+        AtomicReference<A> ra = new AtomicReference<>();
+        var binding = builder.call(ra::set)
+                .withValue(toPass)
+                .when(Condition.YES)
+                .build();
+
+        binding.run();
+        assertSame(toPass,ra.get());
+    }
+
+    private static class A{
+        private final String a = "a";
+
+        public String getA() {
+            return a;
+        }
+    }
+    private static class B extends A {
+        private final String b = "b";
+
+        public String getB() {
+            return b;
+        }
+    }
+
+    @Test
+    @DisplayName("setRecursionPrevention(false)")
+    void setRecursionPreventionFalse() {
+        builder.setRecursionPrevention(false);
+        assertFalse(
+                builder.call(()->{}).build() instanceof NonCyclicRunnable,
+                "setRecursionPrevention(false) should not prevent recursion"
         );
     }
 

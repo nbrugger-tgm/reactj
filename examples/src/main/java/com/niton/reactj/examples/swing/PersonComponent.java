@@ -65,14 +65,14 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
         ageInput.addActionListener(ageChange::fire);
 
         binder.call(surnameInput::setText)
-                .onObjectChange(Person::getName);
+                .onModelChange(Person::getName);
 
         binder.call(iqField::setText)
                 .with(String::valueOf)
                 .onModelChange(Person::getIq);
 
         binder.call(genderJComboBox::setSelectedItem)
-                .onObjectChange(Person::getGender);
+                .onModelChange(Person::getGender);
 
         binder.call(Person::setName)
                 .with(surnameInput::getText)
@@ -88,7 +88,7 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
 
         //react to changes in many and different ways
         binder.call(this::adaptColorToGender)
-              .onObjectChange(Person::getGender);
+              .onModelChange(Person::getGender);
 
         binder.call(Person::setAge)
                 .with(parseInt)

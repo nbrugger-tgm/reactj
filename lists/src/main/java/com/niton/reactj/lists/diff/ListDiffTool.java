@@ -200,27 +200,27 @@ public class ListDiffTool<T> implements DiffTool<List<T>, ListChange<T>> {
             List<T> newList,
             int offset
     ) {
-        int iPos = costs.length - 1;
-        int jPos = costs[0].length - 1;
-        while (jPos > 0 && iPos > 0) {
-            int take    = costs[iPos - 1][jPos - 1];
-            int remove  = costs[iPos][jPos - 1];
-            int add     = costs[iPos - 1][jPos];
-            int current = costs[iPos][jPos];
+        int row = costs.length - 1;
+        int col = costs[0].length - 1;
+        while (col > 0 && row > 0) {
+            int take    = costs[row - 1][col - 1];
+            int remove  = costs[row][col - 1];
+            int add     = costs[row - 1][col];
+            int current = costs[row][col];
             if (take < add && take < remove && current == take) {
-                iPos--;
-                jPos--;
+                row--;
+                col--;
             } else if (remove < add) {
-                changes.add(new ListChange<>(REMOVE, offset + (--jPos), oldList.get(jPos)));
+                changes.add(new ListChange<>(REMOVE, offset + (row), oldList.get(--col)));
             } else {
-                changes.add(new ListChange<>(ADD, offset + (--iPos), newList.get(iPos)));
+                changes.add(new ListChange<>(ADD, offset + (--row), newList.get(row)));
             }
         }
-        while (jPos > 0) {
-            changes.add(new ListChange<>(REMOVE, offset + (--jPos), oldList.get(jPos)));
+        while (col > 0) {
+            changes.add(new ListChange<>(REMOVE, offset + (--col), oldList.get(col)));
         }
-        while (iPos > 0) {
-            changes.add(new ListChange<>(ADD, offset + (--iPos), newList.get(iPos)));
+        while (row > 0) {
+            changes.add(new ListChange<>(ADD, offset + (--row), newList.get(row)));
         }
     }
 

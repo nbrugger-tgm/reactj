@@ -1,6 +1,7 @@
 package com.niton.reactj.test.dsl;
 
 import com.niton.reactj.api.binding.dsl.BinderDsl;
+import com.niton.reactj.api.binding.predicates.Condition;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.event.GenericEventEmitter;
 import com.niton.reactj.objects.dsl.ObjectDsl;
@@ -168,13 +169,71 @@ class ObjectDslTest extends DslTest {
                           .withModel(Function.identity())
                           .build();
         runnable.run();
-        assertEquals(
+        assertSame(
                 base,
                 baseStore.get(),
                 "withModel should use the model given to the factory method"
         );
     }
 
+    @Test
+    void onModelChange(){
+        AtomicInteger store = new AtomicInteger(999);
+        dsl.call(store::set)
+           .onModelChange(Base::getA);
+        assertEquals(999, store.get(), "The binding itself should not have changed the value");
+        base.setA(1234);
+        emitter.fire(base);
+        assertEquals(
+                base.getA(), store.get(),
+                "The binding should be executed with the model given to the factory method. when the event givent to the factory method 'create' is fired"
+        );
+    }
+
+    @Test
+    void conditionalRunnableOnModelChange(){
+        AtomicInteger store = new AtomicInteger(999);
+        dsl.call(()->store.set(1234))
+                .when(Condition.YES)
+                .onModelChange();
+        assertEquals(999, store.get(), "The binding itself should not have changed the value");
+        emitter.fire(base);
+        assertEquals(
+                1234, store.get(),
+                "The binding should be executed with the model given to the factory method." +
+                        "When the event given to the factory method 'create' is fired"
+        );
+    }
+
+    @Test
+    void conditionalBindingOnModelChange(){
+        AtomicInteger store = new AtomicInteger(999);
+        dsl.call(store::set)
+                .withValue(123)
+                .when(Condition.YES)
+                .onModelChange();
+        assertEquals(999, store.get(), "The binding itself should not have changed the value");
+        emitter.fire(base);
+        assertEquals(
+                123, store.get(),
+                "The binding should be executed with the model given to the factory method." +
+                        "When the event given to the factory method 'create' is fired"
+        );
+    }
+
+    @Test
+    void runnableOnModelChange(){
+        AtomicInteger store = new AtomicInteger(999);
+        dsl.call(()->store.set(1234))
+                .onModelChange();
+        assertEquals(999, store.get(), "The binding itself should not have changed the value");
+        emitter.fire(base);
+        assertEquals(
+                1234, store.get(),
+                "The binding should be executed with the model given to the factory method." +
+                        "When the event given to the factory method 'create' is fired"
+        );
+    }
     @Override
     protected BinderDsl createBinder() {
         return ObjectDsl.create(() -> base, emitter);

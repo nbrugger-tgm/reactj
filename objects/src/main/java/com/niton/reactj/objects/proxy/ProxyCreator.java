@@ -31,6 +31,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class ProxyCreator extends AbstractProxyCreator {
@@ -95,6 +96,14 @@ public class ProxyCreator extends AbstractProxyCreator {
         return new ProxyCreator(new StaticInfuser(anchor, MethodHandles.lookup()));
     }
 
+    /**
+     * Use at own risk. We recommend to use besideOrigin() or withinDependency()
+     * @param accessProvider the access provider that will inject the proxy into the runtime
+     * @return a proxy creator that can be used to create proxies
+     */
+    public static ProxyCreator custom(InfusionAccessProvider accessProvider) {
+        return new ProxyCreator(accessProvider);
+    }
 
     /**
      * Creates proxies that will reside beside the given class.
@@ -164,19 +173,26 @@ public class ProxyCreator extends AbstractProxyCreator {
 
     /**
      * Copies the values of public final fields from origin to proxy
+     * @return
      */
-    public <T> void copyFinalFields(T proxy, T origin) {
+    public <T> boolean copyFinalFields(T proxy, T origin) {
         try {
+            AtomicBoolean error = new AtomicBoolean();
             Arrays.stream(proxy.getClass().getFields())//just public ones
                   .filter(f -> Modifier.isFinal(f.getModifiers()))//just final ones
                   .filter(f -> !copyFinalField(f, proxy, origin))//filter uncopiable ones
-                  .forEach(b -> LOG.warn(
-                          "Cannot copy public final field {} to proxy, accessing " +
-                                  "it on the proxy will return null!",
-                          b.getName()
-                  ));
+                  .forEach(b -> {
+                      LOG.warn(
+                              "Cannot copy public final field {} to proxy, accessing " +
+                                      "it on the proxy will return null!",
+                              b.getName()
+                      );
+                      error.set(true);
+                  });
+            return error.get();
         } catch (ReactiveException ex) {
             LOG.warn("Final field copy failed!", ex);
+            return false;
         }
     }
 

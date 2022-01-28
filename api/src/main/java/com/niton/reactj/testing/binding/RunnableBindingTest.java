@@ -131,4 +131,55 @@ abstract class RunnableBindingTest {
         }
     }
 
+    @Test
+    @DisplayName(".call(runnable).when(NO).build()")
+    void testConditionalBuild(){
+        var notRunnable = builder.call(this::increment)
+               .when(Condition.NO)
+               .build();
+        notRunnable.run();
+        assertEquals(
+                0, counter,
+                "When using call().when(NO).build() the returned runnable should never run," +
+                        " since it shall include the condition"
+        );
+    }
+    @Test
+    @DisplayName(".call(runnable).when(NO).or(YES).build()")
+    void testConditionalBuildYes(){
+        var runnable = builder.call(this::increment)
+                .when(Condition.NO)
+                .or(Condition.YES)
+                .build();
+        runnable.run();
+        assertEquals(
+                1, counter,
+                "When using call().when(NO).or(YES).build() the returned runnable should always run," +
+                        " since it shall include the condition"
+        );
+    }
+    @Test
+    @DisplayName(".call(runnable).build()")
+    void simpleRunnableBuild(){
+        var runnable = builder.call(this::increment)
+                .build();
+        runnable.run();
+        assertEquals(
+                1, counter,
+                "When using call().build() the returned runnable should always run"
+        );
+    }
+
+    @Test
+    @DisplayName(".call(runnable).and(runnable2).build()")
+    void groupRunnableBuild(){
+        var runnable = builder.call(this::increment)
+                .and(this::increment)
+                .build();
+        runnable.run();
+        assertEquals(
+                2, counter,
+                "When using call(r1).and(r2).build() the returned runnable should always run r1 and r2"
+        );
+    }
 }

@@ -73,7 +73,7 @@ public class ObjectConsumerDslImpl<N, O> implements ObjectConsumerDsl<N, O> {
     }
 
     @Override
-    public PredicatableDsl<O> onObjectChange(Function<O, N> getter) {
+    public PredicatableDsl<O> onModelChange(Function<O, N> getter) {
         return with(getter).from(objectChangeEvent);
     }
 }
