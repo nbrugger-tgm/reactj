@@ -15,8 +15,11 @@ public class CliApp {
         CliApp    app    = new CliApp();
         BinderDsl binder = BinderDsl.create();
 
-        binder.call(app::renderProgress).with(progress::getProgress);
-        binder.call(app::displayDone).when(progress::isDone)
+        binder.call(app::renderProgress)
+              .with(progress::getProgress)
+              .on(proxy.reactEvent());
+        binder.call(app::displayDone)
+              .when(progress::isDone)
               .on(proxy.reactEvent());
 
 
@@ -32,19 +35,25 @@ public class CliApp {
     private void renderProgress(double percent) {
         int    width    = 50;
         double done     = (percent * width);
-        double port     = done % 1.0;
+        double port     = (done % 1.0);
         int    fullDone = (int) (done - port);
         System.out.print("\r");
         System.out.print('[');
         for (int i = 0; i < width; i++) {
-            System.out.print(i < fullDone ? "█" : (i == fullDone ? '>' : ' '));
+            if (i < fullDone) {
+                System.out.print("█");
+            } else if (port >= 0.5 && i == fullDone) {
+                System.out.print("▌");
+            } else {
+                System.out.print(" ");
+            }
         }
         System.out.print(']');
         System.out.print((int) (percent * 100) + "%");
     }
 
     private void displayDone() {
-        System.out.print("✔");
+        System.out.print(" ✔");
     }
 
 }
