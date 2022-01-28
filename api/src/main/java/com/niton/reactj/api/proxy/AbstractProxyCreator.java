@@ -23,8 +23,29 @@ public abstract class AbstractProxyCreator {
      * The underlying proxy builder implementation to use for the actual proxy creation.
      */
     private final ProxyBuilder            builder;
+    /**
+     * A lookup table for reusable proxy classes.
+     * <ul>
+     *     <li>Key: the "base class"</li>
+     *     <li>Value: the proxy class</li>
+     * </ul>
+     */
     private final Map<Class<?>, Class<?>> proxyClasses       = new ConcurrentHashMap<>();
+    /**
+     * A lookup table for the wrapper fields of each proxy class (used as cache).
+     * <ul>
+     *     <li>Key: the proxy class</li>
+     *     <li>Value: the wrapper field</li>
+     *     </ul>
+     */
     private final Map<Class<?>, Field>    wrapperFields      = new ConcurrentHashMap<>();
+    /**
+     * A lookup table for the origin fields of each proxy class (used as cache).
+     * <ul>
+     *     <li>Key: the proxy class</li>
+     *     <li>Value: the origin field</li>
+     * </ul>
+     */
     private final Map<Class<?>, Field>    originFields       = new ConcurrentHashMap<>();
     /**
      * The Infusion type to use, describes the type of the injection for the proxy.
