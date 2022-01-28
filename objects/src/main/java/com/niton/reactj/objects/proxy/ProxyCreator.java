@@ -50,7 +50,7 @@ public class ProxyCreator extends AbstractProxyCreator {
 
     private final Objenesis                            objenesis       = new ObjenesisStd();
     private final Map<Class<?>, ObjectInstantiator<?>> proxyInitiators = new HashMap<>();
-    private       ReactiveStrategy                     strategy        = ReactiveStrategy.ALL;
+    private       ReactiveStrategy                     strategy        = ReactiveStrategy.SETTERS;
 
     protected ProxyCreator(InfusionAccessProvider accessor) {
         super(accessor);
