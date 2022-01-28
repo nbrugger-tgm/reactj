@@ -37,13 +37,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: "./gradlew sonarqube --info"
-      - name: commit-code-coverage
-        if: always()
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_RUNNER_TOKEN }}
-        run: |
-          ./cc-test-reporter format-coverage build/reports/jacoco/coverage.xml --input-type jacoco
-          ./cc-test-reporter upload-coverage  --owner ${{ github.owner }} --repo ${{ github.repository }} --pr ${{ github.pull_request }} --token ${{ secrets.CC_RUNNER_TOKEN }}
       - name: "Stop Gradle deamon"
         if: always()
         run: "./gradlew --stop"
