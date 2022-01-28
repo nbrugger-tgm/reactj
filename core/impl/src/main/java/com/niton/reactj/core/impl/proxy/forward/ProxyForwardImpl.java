@@ -1,4 +1,4 @@
-package com.niton.reactj.core.impl.proxy;
+package com.niton.reactj.core.impl.proxy.forward;
 
 import com.niton.reactj.api.exceptions.ReactiveAccessException;
 import com.niton.reactj.api.exceptions.ReactiveException;

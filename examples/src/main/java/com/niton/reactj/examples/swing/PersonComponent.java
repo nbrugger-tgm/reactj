@@ -9,8 +9,8 @@ import com.niton.reactj.objects.observer.PropertyObservation;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Objects;
-import java.util.function.Function;
+
+import static com.niton.reactj.api.binding.Converters.parseInt;
 
 //For swing components we recommend the com.niton.reactj:swing implementation
 public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
@@ -24,7 +24,7 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
     private       JTextField           ageInput;
     private       JTextField           iqField;
     private       JComboBox<Gender>    genderJComboBox;
-    private       JButton              selectButton;
+    private JButton resetButton;
 
 
     @Override
@@ -34,7 +34,7 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
         ageInput        = new JTextField();
         iqField         = new JTextField();
         genderJComboBox = new JComboBox<>(Gender.values());
-        selectButton    = new JButton("Reset");
+        resetButton = new JButton("Reset");
 
 
         panel.add(surnameInput);
@@ -48,7 +48,7 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
 
         panel.add(genderJComboBox);
 
-        panel.add(selectButton);
+        panel.add(resetButton);
 
         return panel;
     }
@@ -59,49 +59,42 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
             EventEmitter<Person> onModelChange,
             EventEmitter<PropertyObservation<Person>> onPropertyChange
     ) {
+        surnameInput.getDocument().addUndoableEditListener(surnameFieldChange::fire);
+        //surnameInput.addActionListener(bindings::react); This one requires enter to be pressed
+        genderJComboBox.addActionListener(changeGender::fire);
+        ageInput.addActionListener(ageChange::fire);
 
-        Function<String, Integer> parseInt = Integer::parseInt;
         binder.call(surnameInput::setText)
-              .with(Person::getName)
-              .from(onModelChange);
-        binder.call(iqField::setText)
-              .with(String::valueOf)
-              .from(Person::getIq)
-              .from(onModelChange)
-              .when(Objects::nonNull);
-        binder.call(genderJComboBox::setSelectedItem)
-              .with(Person::getGender)
-              .from(onModelChange);
+                .onObjectChange(Person::getName);
 
+        binder.call(iqField::setText)
+                .with(String::valueOf)
+                .onModelChange(Person::getIq);
+
+        binder.call(genderJComboBox::setSelectedItem)
+                .onObjectChange(Person::getGender);
 
         binder.call(Person::setName)
-              .with(surnameInput::getText)
-              .on(surnameFieldChange);
-        surnameInput.getDocument().addUndoableEditListener(surnameFieldChange::fire);
-        //surnameInput.addActionListener(bindings::react);
+                .with(surnameInput::getText)
+                .on(surnameFieldChange);
+
+        binder.call(ageInput::setText)
+                .with(Object::toString)
+                .onModelChange(Person::getAge);
 
         binder.call(Person::setGender)
               .withCasted(genderJComboBox::getSelectedItem)
               .on(changeGender);
-        genderJComboBox.addActionListener(changeGender::fire);
 
         //react to changes in many and different ways
         binder.call(this::adaptColorToGender)
-              .with(Person::getGender)
-              .from(onModelChange);
-
-        //bidirectional binding (With value conversion)
-        binder.call(ageInput::setText)
-              .with(Object::toString)
-              .from(Person::getAge)
-              .from(onModelChange);
+              .onObjectChange(Person::getGender);
 
         binder.call(Person::setAge)
-              .with(parseInt)
-              .from(ageInput::getText)
-              .on(ageChange);
+                .with(parseInt)
+                .from(ageInput::getText)
+                .on(ageChange);
 
-        ageInput.addActionListener(ageChange::fire);
     }
 
     public void adaptColorToGender(Gender g) {

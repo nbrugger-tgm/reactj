@@ -1,7 +1,5 @@
 package com.niton.reactj.api.event;
 
-import com.niton.reactj.api.binding.Listenable;
-
 /**
  * An easy and fast to use implementation of {@link CustomEventEmitter}.
  *

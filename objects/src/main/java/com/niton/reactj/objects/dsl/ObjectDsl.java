@@ -60,7 +60,7 @@ public interface ObjectDsl<T> extends BinderDsl {
     default <P, F> ObjectBindingDsl<T> bind(
             Consumer<F> setter, Function<T, P> getter, Function<P, F> converter
     ) {
-        return call(setter).with(converter).fromObject(getter);
+        return call(setter).with(converter).fromModel(getter);
     }
 
     /**
@@ -106,5 +106,6 @@ public interface ObjectDsl<T> extends BinderDsl {
     default <C> ObjectBindingDsl<T> bind(Consumer<C> setter, Function<T, C> getter) {
         return call(setter).withModel(getter);
     }
+
 
 }

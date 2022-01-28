@@ -1,6 +1,6 @@
 package com.niton.reactj.api.binding.dsl;
 
-import com.niton.reactj.api.binding.Listenable;
+import com.niton.reactj.api.event.Listenable;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.exceptions.Exceptions;
 
@@ -97,5 +97,15 @@ public interface BinderDsl {
     ) {
         return call(setter).with(converter).from(getter);
     }
+
+
+    /**
+     * If recursion prevention is enabled (default), this method will prevent a binding to trigger calling itself.<br>
+     * This is usefull in a scenario where you have a UI binding that changes the object and vice versa. This can lead to a stack overflow
+     * {@code UI event -> update model -> Observer calls binding -> binding updates UI -> Ui fires event -> updates the model ...}
+     *
+     * @param preventRecursion if true, recursion prevention is enabled
+     */
+    void setRecursionPrevention(boolean preventRecursion);
 
 }

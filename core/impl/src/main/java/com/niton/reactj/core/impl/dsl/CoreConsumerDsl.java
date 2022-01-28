@@ -1,8 +1,8 @@
 package com.niton.reactj.core.impl.dsl;
 
-import com.niton.reactj.api.binding.Binding;
-import com.niton.reactj.api.binding.ConstantSupplier;
-import com.niton.reactj.api.binding.ConsumerGroup;
+import com.niton.reactj.api.binding.*;
+import com.niton.reactj.api.binding.consumer.ConsumerGroup;
+import com.niton.reactj.api.binding.consumer.NonCyclicConsumer;
 import com.niton.reactj.api.binding.dsl.*;
 import com.niton.reactj.api.event.EventEmitter;
 
@@ -13,9 +13,11 @@ import java.util.function.Supplier;
 
 public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl<N> {
     private Consumer<N> consumer;
+    private final boolean recursionPrevention;
 
-    public CoreConsumerDsl(Consumer<N> consumer) {
+    public CoreConsumerDsl(Consumer<N> consumer, boolean recursionPrevention) {
         this.consumer = consumer;
+        this.recursionPrevention = recursionPrevention;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl
 
     @Override
     public <T extends N> ConsumerDsl<T> andCall(Consumer<T> consumer) {
-        return new CoreConsumerDsl<>(new ConsumerGroup<>(consumer, this.consumer));
+        return new CoreConsumerDsl<>(new ConsumerGroup<>(consumer, this.consumer), recursionPrevention);
     }
 
     @Override
@@ -55,18 +57,22 @@ public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl
 
     @Override
     public BindingDsl<N> from(Supplier<? extends N> source) {
-        return new CoreBindingDsl<>(new Binding<>(consumer, source));
+        return new CoreBindingDsl<>(new BaseBinding<>(consumer, source), recursionPrevention);
     }
 
     @Override
     public <S> ConvertingConsumerDsl<S> from(Function<S, ? extends N> converter) {
-        return new CoreConsumerDsl<>(v -> consumer.accept(converter.apply(v)));
+        return new CoreConsumerDsl<>(v -> consumer.accept(converter.apply(v)), recursionPrevention);
     }
 
     @Override
     public PredicatableDsl<N> from(EventEmitter<? extends N> event) {
         var conditional = new ConditionalConsumer();
-        event.listen(conditional::accept);
+        Consumer<N> listener = conditional;
+        if(recursionPrevention)
+            listener = new NonCyclicConsumer<>(conditional);
+
+        event.listen(listener::accept);
         return predicate -> {
             conditional.predicate = conditional.predicate.and(predicate);
             return new PredicateDsl<>() {
@@ -85,6 +91,9 @@ public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl
         };
     }
 
+    /**
+     * A conditional wrapper around {@link #consumer}
+     */
     private class ConditionalConsumer implements Consumer<N> {
         private Predicate<N> predicate = o -> true;
 

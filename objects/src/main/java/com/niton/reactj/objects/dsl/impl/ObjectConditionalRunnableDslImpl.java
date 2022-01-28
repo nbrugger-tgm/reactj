@@ -1,6 +1,6 @@
 package com.niton.reactj.objects.dsl.impl;
 
-import com.niton.reactj.api.binding.Listenable;
+import com.niton.reactj.api.event.Listenable;
 import com.niton.reactj.api.binding.dsl.ConditionalRunnableDsl;
 import com.niton.reactj.api.binding.dsl.MultiListenerDsl;
 import com.niton.reactj.api.binding.predicates.Condition;

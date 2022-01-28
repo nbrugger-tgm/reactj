@@ -1,6 +1,6 @@
 package com.niton.reactj.test.binding;
 
-import com.niton.reactj.api.binding.Binding;
+import com.niton.reactj.api.binding.BaseBinding;
 import com.niton.reactj.api.binding.ConditionalBinding;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,7 @@ class ConditionalBindingTest {
     void testConditionalBinding() {
         AtomicReference<String> ref     = new AtomicReference<>();
         AtomicReference<String> ref2    = new AtomicReference<>();
-        var                     base    = new Binding<>(ref2::set, ref::get);
+        var                     base    = new BaseBinding<>(ref2::set, ref::get);
         var                     binding = new ConditionalBinding<>(base, e -> true);
         ref.set("test");
         binding.run();

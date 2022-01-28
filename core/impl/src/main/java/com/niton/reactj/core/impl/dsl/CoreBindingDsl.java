@@ -1,20 +1,24 @@
 package com.niton.reactj.core.impl.dsl;
 
+import com.niton.reactj.api.binding.BaseBinding;
 import com.niton.reactj.api.binding.Binding;
 import com.niton.reactj.api.binding.ConditionalBinding;
+import com.niton.reactj.api.binding.NonCyclicBinding;
 import com.niton.reactj.api.binding.dsl.BindingDsl;
 import com.niton.reactj.api.binding.dsl.ConditionalBindingDsl;
 import com.niton.reactj.api.binding.predicates.Condition;
-import com.niton.reactj.api.binding.runnable.RunnableGroup;
+import com.niton.reactj.api.binding.runnable.NonCyclicRunnable;
 
 import java.util.function.Predicate;
 
 public class CoreBindingDsl<T> extends CoreRunnableDsl implements BindingDsl<T> {
     private final Binding<T> binding;
+    private final boolean recursionPrevention;
 
-    public CoreBindingDsl(Binding<T> binding) {
-        super(binding);
+    public CoreBindingDsl(Binding<T> binding, boolean recursionPrevention) {
+        super(binding, recursionPrevention);
         this.binding = binding;
+        this.recursionPrevention = recursionPrevention;
     }
 
     @Override
@@ -26,21 +30,40 @@ public class CoreBindingDsl<T> extends CoreRunnableDsl implements BindingDsl<T> 
     public ConditionalBindingDsl<T> when(Predicate<? super T> predicate) {
         //prevent double execution of binding (from within the group & by itself)
         group.remove(binding);
-        //This bundle is to execute the added Runnables together with the binding
-        var bundled            = new BundleBinding<>(binding, group);
-        var conditionalBinding = new ConditionalBinding<>(bundled, predicate);
+        //This bundle is to execute the added runnables together with the binding
+        var bundled = new BundleBinding<>(binding, build());
+        var wrapped = recursionPrevention ? new NonCyclicBinding<>(bundled) : bundled;
+        var conditionalBinding = new ConditionalBinding<>(wrapped, predicate);
         return new CoreConditionalBindingDsl<>(conditionalBinding);
     }
 
-    private static class BundleBinding<T> extends Binding<T> {
+    /**
+     * A bundle is a group of runnables that are executed together with a binding
+     *
+     * @param <T> the type of the binding
+     */
+    private static class BundleBinding<T> implements Binding<T> {
+        private final Binding<T> binding;
+        private final Runnable runnable;
+
         public BundleBinding(
                 Binding<T> binding,
-                RunnableGroup group
+                Runnable group
         ) {
-            super(v -> {
-                binding.getConsumer().accept(v);
-                group.run();
-            }, binding.getSource());
+            this.binding = binding;
+            this.runnable = group;
+        }
+
+        @Override
+        public void accept(T t) {
+            runnable.run();
+            binding.accept(t);
+        }
+
+        @Override
+        public T get() {
+            return binding.get();
         }
     }
+
 }

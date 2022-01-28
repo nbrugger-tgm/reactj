@@ -1,16 +1,14 @@
 package com.niton.reactj.core.impl.dsl;
 
-import com.niton.reactj.api.binding.Listenable;
+import com.niton.reactj.api.event.Listenable;
 import com.niton.reactj.api.binding.dsl.ConditionalBindingDsl;
 import com.niton.reactj.api.binding.dsl.MultiListenerDsl;
 import com.niton.reactj.api.binding.runnable.PredicatedRunnable;
 
 import java.util.function.Predicate;
 
-public class CoreConditionalBindingDsl<T>
-        implements ConditionalBindingDsl<T> {
+public class CoreConditionalBindingDsl<T> implements ConditionalBindingDsl<T> {
     private final PredicatedRunnable<T> binding;
-
 
     public CoreConditionalBindingDsl(PredicatedRunnable<T> binding) {
         this.binding = binding;

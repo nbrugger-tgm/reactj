@@ -1,6 +1,6 @@
 package com.niton.reactj.api.binding.dsl;
 
-import com.niton.reactj.api.binding.Listenable;
+import com.niton.reactj.api.event.Listenable;
 
 /**
  * The very last part of the default DSL. Used to execute the runnable on multiple

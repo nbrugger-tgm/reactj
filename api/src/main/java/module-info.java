@@ -32,5 +32,6 @@ module reactj.api {
     opens com.niton.reactj.testing.mvc to org.junit.platform.commons;
     opens com.niton.reactj.testing.observer to org.junit.platform.commons;
     opens com.niton.reactj.testing.binding to org.junit.platform.commons;
+    exports com.niton.reactj.api.binding.consumer;
 
 }

@@ -1,6 +1,6 @@
 package com.niton.reactj.test.binding;
 
-import com.niton.reactj.api.binding.ConsumerGroup;
+import com.niton.reactj.api.binding.consumer.ConsumerGroup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

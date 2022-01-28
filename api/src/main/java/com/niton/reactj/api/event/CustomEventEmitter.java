@@ -1,7 +1,5 @@
 package com.niton.reactj.api.event;
 
-import com.niton.reactj.api.binding.Listenable;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;

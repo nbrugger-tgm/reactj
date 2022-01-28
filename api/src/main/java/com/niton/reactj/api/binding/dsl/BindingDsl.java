@@ -1,11 +1,12 @@
 package com.niton.reactj.api.binding.dsl;
 
+import com.niton.reactj.api.binding.BaseBinding;
 import com.niton.reactj.api.binding.predicates.Condition;
 
 import java.util.function.Predicate;
 
 /**
- * Used to modify a {@link com.niton.reactj.api.binding.Binding} and build something different or
+ * Used to modify a {@link BaseBinding} and build something different or
  * more complex.
  *
  * @param <T>

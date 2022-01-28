@@ -1,4 +1,4 @@
-package com.niton.reactj.api.binding;
+package com.niton.reactj.api.binding.consumer;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,7 +1,7 @@
 package com.niton.reactj.test.binding;
 
 import com.niton.reactj.api.binding.Converters;
-import com.niton.reactj.api.binding.ConvertingConsumer;
+import com.niton.reactj.api.binding.consumer.ConvertingConsumer;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Consumer;

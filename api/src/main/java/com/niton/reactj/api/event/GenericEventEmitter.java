@@ -1,8 +1,6 @@
 package com.niton.reactj.api.event;
 
 
-import com.niton.reactj.api.binding.Listenable;
-
 /**
  * An event emitter that emits events without data
  */

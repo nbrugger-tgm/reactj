@@ -1,4 +1,4 @@
-package com.niton.reactj.api.binding;
+package com.niton.reactj.api.event;
 
 /**
  * Implementing this interface makes it possible to listen to instances of the class

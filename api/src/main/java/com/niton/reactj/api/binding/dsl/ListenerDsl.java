@@ -1,6 +1,6 @@
 package com.niton.reactj.api.binding.dsl;
 
-import com.niton.reactj.api.binding.Listenable;
+import com.niton.reactj.api.event.Listenable;
 
 /**
  * A DSL node that can be used as is or used as extension.

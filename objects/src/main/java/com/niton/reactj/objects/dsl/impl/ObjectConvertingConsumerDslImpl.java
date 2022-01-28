@@ -30,7 +30,7 @@ public class ObjectConvertingConsumerDslImpl<F, O> implements ObjectConvertingCo
     }
 
     @Override
-    public PredicatableDsl<O> onObjectChange(Function<O, F> getter) {
+    public PredicatableDsl<O> onModelChange(Function<O, F> getter) {
         return from(getter).from(objectChangeEvent);
     }
 
@@ -48,7 +48,7 @@ public class ObjectConvertingConsumerDslImpl<F, O> implements ObjectConvertingCo
         );
     }
 
-    public ObjectBindingDsl<O> fromObject(Function<O, F> converter) {
+    public ObjectBindingDsl<O> fromModel(Function<O, F> converter) {
         return from(converter).from(objectSupplier);
     }
 }

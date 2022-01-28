@@ -1,6 +1,6 @@
 package com.niton.reactj.test.binding;
 
-import com.niton.reactj.api.binding.Binding;
+import com.niton.reactj.api.binding.BaseBinding;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ class BindingTest {
         List<String> list2 = new ArrayList<>();
         var          iter = list.iterator();
 
-        var bind = new Binding<>(list2::add, iter::next);
+        var bind = new BaseBinding<>(list2::add, iter::next);
         bind.run();
         assertEquals(1, list2.size(), "One 'run' should execute the binding one");
         assertDoesNotThrow(

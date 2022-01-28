@@ -1,4 +1,4 @@
-package com.niton.reactj.api.binding;
+package com.niton.reactj.api.binding.consumer;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

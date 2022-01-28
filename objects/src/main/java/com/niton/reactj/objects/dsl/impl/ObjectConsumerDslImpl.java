@@ -65,9 +65,9 @@ public class ObjectConsumerDslImpl<N, O> implements ObjectConsumerDsl<N, O> {
     }
 
     @Override
-    public ObjectBindingDsl<O> withModel(Function<O, N> converter) {
+    public ObjectBindingDsl<O> withModel(Function<O, N> getter) {
         return new ObjectBindingDslImpl<>(
-                impl.with(converter).from(objectSupplier),
+                impl.with(getter).from(objectSupplier),
                 objectChangeEvent
         );
     }

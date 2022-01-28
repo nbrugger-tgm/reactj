@@ -3,5 +3,5 @@ dependencies {
     api project(":lists")
     api project(":objects")
 
-    implementation project(":core:impl")
+    api project(":core:impl")
 }

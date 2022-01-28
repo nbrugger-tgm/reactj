@@ -1,7 +1,7 @@
 package com.niton.reactj.api.binding.dsl;
 
-import com.niton.reactj.api.binding.ConsumerGroup;
-import com.niton.reactj.api.binding.ConvertingConsumer;
+import com.niton.reactj.api.binding.consumer.ConsumerGroup;
+import com.niton.reactj.api.binding.consumer.ConvertingConsumer;
 import com.niton.reactj.api.event.EventEmitter;
 
 import java.util.function.Consumer;

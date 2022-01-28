@@ -1,4 +1,4 @@
-module reactj.examples {
+open module reactj.examples {
     requires reactj.core;
     requires java.desktop;
 }

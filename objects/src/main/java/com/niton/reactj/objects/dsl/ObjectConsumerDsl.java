@@ -28,7 +28,15 @@ public interface ObjectConsumerDsl<T, O> extends ConsumerDsl<T> {
     @Override
     ObjectBindingDsl<T> with(Supplier<? extends T> source);
 
-    ObjectBindingDsl<O> withModel(Function<O, T> converter);
+    /**
+     * Call the previous consumer with the getter applied to the model.
+     * @param getter the getter to apply to the model
+     */
+    ObjectBindingDsl<O> withModel(Function<O, T> getter);
 
+    /**
+     * Call the previous consumer with the getter applied to the model when the model changes
+     * @param getter the getter to apply to the model
+     */
     PredicatableDsl<O> onObjectChange(Function<O, T> getter);
 }
