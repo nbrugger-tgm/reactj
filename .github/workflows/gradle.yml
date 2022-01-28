@@ -9,37 +9,9 @@ on:
   pull_request:
     types: [ opened, synchronize, reopened ]
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: "Setup"
-        uses: "./.github/setup"
-      - name: "Gradle Build"
-        run: "./gradlew assemble"
-  testing:
-    runs-on: ubuntu-latest
-    name: Testing
-    needs:
-      - build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: "Setup"
-        uses: "./.github/setup"
-      - name: "Run Unit tests"
-        run: "./gradlew test"
   verify:
-    name: "Verify"
+    name: "build & test"
     runs-on: ubuntu-latest
-    needs:
-      - build
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -47,26 +19,24 @@ jobs:
           fetch-depth: 0
       - name: "Setup"
         uses: "./.github/setup"
-      - name: "Run verification"
-        run: "./gradlew check"
+      - name: "Build"
+        run: "./gradlew classes"
+      - name: "Test"
+        run: "./gradlew test"
+      - name: "Test coverage"
+        run: "./gradlew jacocoRootReport jacocoCoverageVerification"
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report
+          path: build/reports/jacoco/html/
+          retention-days: 2
       - name: "Sonar Qube"
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: "./gradlew sonarqube --info"
-      - name: commit-code-coverage
-        if: always()
-        env:
-          MODULES: "core lists observer utils"
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_RUNNER_TOKEN }}
-        run: |
-          for i in $MODULES; do
-            echo "$i"
-            export JACOCO_SOURCE_PATH=$(pwd)/$i/src/main/java/
-            ./cc-test-reporter format-coverage $(pwd)/$i/build/reports/jacoco/coverage.xml --input-type jacoco
-            ./cc-test-reporter upload-coverage
-          done
       - name: "Stop Gradle deamon"
         if: always()
         run: "./gradlew --stop"

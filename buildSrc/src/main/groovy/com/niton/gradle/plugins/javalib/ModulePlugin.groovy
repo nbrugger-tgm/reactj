@@ -70,16 +70,7 @@ class ModulePlugin implements Plugin<Project> {
         p.tasks.create("testJar", Jar.class) {
             from p.sourceSets.test.output
         }
-        p.jacocoTestCoverageVerification {
-            dependsOn p.jacocoTestReport
-            violationRules {
-                rule {
-                    limit {
-                        minimum = 0.5
-                    }
-                }
-            }
-        }
+
 
         p.tasks.jacocoTestReport {
             dependsOn p.test // tests are required to run before generating the report
@@ -96,9 +87,6 @@ class ModulePlugin implements Plugin<Project> {
                     ])
                 }))
             }
-        }
-        p.tasks.check {
-            finalizedBy p.tasks.jacocoTestCoverageVerification
         }
         p.jacoco {
             toolVersion = "0.8.5"

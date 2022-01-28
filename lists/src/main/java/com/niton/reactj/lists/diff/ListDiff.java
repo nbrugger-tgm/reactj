@@ -9,12 +9,12 @@ import java.util.TreeSet;
  * @param <T> the element type of the lists
  */
 public class ListDiff<T> extends TreeSet<ListChange<T>> {
-	/**
-	 * Applies all changes to the given list
-	 *
-	 * @param list the list to modify
-	 */
-	public void applyChanges(List<T> list) {
-		forEach(ch -> ch.applyTo(list));
-	}
+    /**
+     * Applies all changes to the given list
+     *
+     * @param list the list to modify
+     */
+    public void applyChanges(List<T> list) {
+        forEach(ch -> ch.applyTo(list));
+    }
 }

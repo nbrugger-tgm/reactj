@@ -16,6 +16,4 @@ abstract class ModuleSettings implements ExtensionAware {
     ModuleSettings() {
         javaVersion.convention(JavaVersion.VERSION_11)
     }
-
-
 }

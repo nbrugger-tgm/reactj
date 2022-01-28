@@ -31,7 +31,8 @@ Documentation:
 
 > Feel free to contribute custom implementations (they are not hard to create)
 
-*Note* : You can use ReactJ with any UI framework without doing the implementation, its just a little more code
+*Note* : You can use ReactJ with any UI framework without doing the implementation, its just a
+little more code
 
 ## Usage
 
