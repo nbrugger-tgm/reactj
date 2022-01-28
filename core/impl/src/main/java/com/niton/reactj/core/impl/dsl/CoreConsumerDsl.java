@@ -1,6 +1,7 @@
 package com.niton.reactj.core.impl.dsl;
 
-import com.niton.reactj.api.binding.*;
+import com.niton.reactj.api.binding.BaseBinding;
+import com.niton.reactj.api.binding.ConstantSupplier;
 import com.niton.reactj.api.binding.consumer.ConsumerGroup;
 import com.niton.reactj.api.binding.consumer.NonCyclicConsumer;
 import com.niton.reactj.api.binding.dsl.*;
@@ -12,11 +13,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl<N> {
-    private Consumer<N> consumer;
-    private final boolean recursionPrevention;
+    private final boolean     recursionPrevention;
+    private       Consumer<N> consumer;
 
     public CoreConsumerDsl(Consumer<N> consumer, boolean recursionPrevention) {
-        this.consumer = consumer;
+        this.consumer            = consumer;
         this.recursionPrevention = recursionPrevention;
     }
 
@@ -32,7 +33,10 @@ public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl
 
     @Override
     public <T extends N> ConsumerDsl<T> andCall(Consumer<T> consumer) {
-        return new CoreConsumerDsl<>(new ConsumerGroup<>(consumer, this.consumer), recursionPrevention);
+        return new CoreConsumerDsl<>(
+                new ConsumerGroup<>(consumer, this.consumer),
+                recursionPrevention
+        );
     }
 
     @Override
@@ -67,9 +71,9 @@ public class CoreConsumerDsl<N> implements ConvertingConsumerDsl<N>, ConsumerDsl
 
     @Override
     public PredicatableDsl<N> from(EventEmitter<? extends N> event) {
-        var conditional = new ConditionalConsumer();
-        Consumer<N> listener = conditional;
-        if(recursionPrevention)
+        var         conditional = new ConditionalConsumer();
+        Consumer<N> listener    = conditional;
+        if (recursionPrevention)
             listener = new NonCyclicConsumer<>(conditional);
 
         event.listen(listener::accept);

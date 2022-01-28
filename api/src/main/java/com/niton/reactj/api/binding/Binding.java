@@ -13,7 +13,7 @@ public interface Binding<T> extends Runnable, Consumer<T>, Supplier<T> {
      * calls {@link #accept(Object)} with the value of {@link #get()}
      */
     @Override
-    default void run(){
+    default void run() {
         accept(get());
     }
 }

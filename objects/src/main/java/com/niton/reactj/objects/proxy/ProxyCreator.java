@@ -98,7 +98,9 @@ public class ProxyCreator extends AbstractProxyCreator {
 
     /**
      * Use at own risk. We recommend to use besideOrigin() or withinDependency()
+     *
      * @param accessProvider the access provider that will inject the proxy into the runtime
+     *
      * @return a proxy creator that can be used to create proxies
      */
     public static ProxyCreator custom(InfusionAccessProvider accessProvider) {
@@ -173,6 +175,7 @@ public class ProxyCreator extends AbstractProxyCreator {
 
     /**
      * Copies the values of public final fields from origin to proxy
+     *
      * @return
      */
     public <T> boolean copyFinalFields(T proxy, T origin) {

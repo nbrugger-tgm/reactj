@@ -10,20 +10,21 @@ import java.util.function.Predicate;
  *
  * @param <T> The type of binding and predicate
  */
-public class ConditionalBinding<T> extends ConditionalConsumer<T> implements Binding<T>, PredicatedRunnable<T> {
-    /**
-     * The predicate to check if the binding should be executed
-     */
-    private Predicate<? super T> predicate;
+public class ConditionalBinding<T> extends ConditionalConsumer<T>
+        implements Binding<T>, PredicatedRunnable<T> {
     /**
      * The binding to execute if the predicate is true
      */
-    private final Binding<T> binding;
+    private final Binding<T>           binding;
+    /**
+     * The predicate to check if the binding should be executed
+     */
+    private       Predicate<? super T> predicate;
 
     public ConditionalBinding(Binding<T> binding, Predicate<? super T> predicate) {
-        super(binding,predicate);
+        super(binding, predicate);
         this.predicate = predicate;
-        this.binding = binding;
+        this.binding   = binding;
     }
 
     @Override

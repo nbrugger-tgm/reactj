@@ -24,7 +24,7 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
     private       JTextField           ageInput;
     private       JTextField           iqField;
     private       JComboBox<Gender>    genderJComboBox;
-    private JButton resetButton;
+    private       JButton              resetButton;
 
 
     @Override
@@ -34,7 +34,7 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
         ageInput        = new JTextField();
         iqField         = new JTextField();
         genderJComboBox = new JComboBox<>(Gender.values());
-        resetButton = new JButton("Reset");
+        resetButton     = new JButton("Reset");
 
 
         panel.add(surnameInput);
@@ -65,24 +65,25 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
         ageInput.addActionListener(ageChange::fire);
 
         binder.call(surnameInput::setText)
-                .onModelChange(Person::getName);
+              .onModelChange(Person::getName);
 
         binder.call(iqField::setText)
-                .with(String::valueOf)
-                .onModelChange(Person::getIq);
+              .with(String::valueOf)
+              .onModelChange(Person::getIq);
 
         binder.call(genderJComboBox::setSelectedItem)
-                .onModelChange(Person::getGender);
+              .onModelChange(Person::getGender);
 
         binder.call(Person::setName)
-                .with(surnameInput::getText)
-                .on(surnameFieldChange);
+              .with(surnameInput::getText)
+              .on(surnameFieldChange);
 
         binder.call(ageInput::setText)
-                .with(Object::toString)
-                .onModelChange(Person::getAge);
+              .with(Object::toString)
+              .onModelChange(Person::getAge);
 
         binder.call(Person::setGender)
+              .and(this::adaptColorToGender)
               .withCasted(genderJComboBox::getSelectedItem)
               .on(changeGender);
 
@@ -91,9 +92,9 @@ public class PersonComponent extends ReactiveObjectComponent<Person, JPanel> {
               .onModelChange(Person::getGender);
 
         binder.call(Person::setAge)
-                .with(parseInt)
-                .from(ageInput::getText)
-                .on(ageChange);
+              .with(parseInt)
+              .from(ageInput::getText)
+              .on(ageChange);
 
     }
 

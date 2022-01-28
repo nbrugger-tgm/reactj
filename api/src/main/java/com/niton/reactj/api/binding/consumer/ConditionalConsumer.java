@@ -6,11 +6,11 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class ConditionalConsumer<T> implements Consumer<T>, HasPredicate<T> {
-    private final Consumer<? super T> consumer;
-    private Predicate<? super T> condition;
+    private final Consumer<? super T>  consumer;
+    private       Predicate<? super T> condition;
 
     public ConditionalConsumer(Consumer<? super T> consumer, Predicate<? super T> condition) {
-        this.consumer = consumer;
+        this.consumer  = consumer;
         this.condition = condition;
     }
 

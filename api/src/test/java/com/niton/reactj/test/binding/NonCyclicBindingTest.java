@@ -5,13 +5,17 @@ import com.niton.reactj.api.binding.Binding;
 import com.niton.reactj.api.binding.NonCyclicBinding;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class NonCyclicBindingTest {
     Runnable runnable;
+
     @Test
-    void run(){
-        Binding<String> b = new NonCyclicBinding<>(new BaseBinding<>(this::consume,()->"Hello World"));
+    void run() {
+        Binding<String> b = new NonCyclicBinding<>(new BaseBinding<>(
+                this::consume,
+                () -> "Hello World"
+        ));
         runnable = b;
         assertDoesNotThrow(b::run);
     }

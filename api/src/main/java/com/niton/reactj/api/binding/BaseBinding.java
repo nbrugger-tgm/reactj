@@ -2,6 +2,7 @@ package com.niton.reactj.api.binding;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
 /**
  * Binds a consumer to a supplier on {@link #run()} the value from the source is passed to the
  * consumer.

@@ -1,7 +1,6 @@
 package com.niton.reactj.objects.dsl.impl;
 
 import com.niton.reactj.api.binding.dsl.BinderDsl;
-import com.niton.reactj.api.binding.runnable.NonCyclicRunnable;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.objects.dsl.ObjectConsumerDsl;
 import com.niton.reactj.objects.dsl.ObjectDsl;
@@ -32,12 +31,12 @@ public class ObjectDslImpl<T> implements ObjectDsl<T> {
     }
 
     @Override
-    public void setRecursionPrevention(boolean preventRecursion) {
-        impl.setRecursionPrevention(preventRecursion);
+    public <P> ObjectConsumerDsl<P, T> call(BiConsumer<T, P> setter) {
+        return call(v -> setter.accept(model.get(), v));
     }
 
     @Override
-    public <P> ObjectConsumerDsl<P, T> call(BiConsumer<T, P> setter) {
-        return call(v -> setter.accept(model.get(), v));
+    public void setRecursionPrevention(boolean preventRecursion) {
+        impl.setRecursionPrevention(preventRecursion);
     }
 }

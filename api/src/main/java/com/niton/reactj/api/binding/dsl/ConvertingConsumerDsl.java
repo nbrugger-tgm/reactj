@@ -29,4 +29,5 @@ public interface ConvertingConsumerDsl<N> {
      * @see ConsumerDsl#on(EventEmitter)
      */
     PredicatableDsl<N> from(EventEmitter<? extends N> event);
+
 }

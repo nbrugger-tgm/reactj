@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("RunnableBindings")
 abstract class RunnableBindingTest {
 
-    private final GenericEventEmitter coolEvent  = new GenericEventEmitter();
+    private final GenericEventEmitter coolEvent = new GenericEventEmitter();
     private final GenericEventEmitter coolEvent2 = new GenericEventEmitter();
     private       int                 counter;
     //use the "exposed" to hide unneeded methods
@@ -133,10 +133,10 @@ abstract class RunnableBindingTest {
 
     @Test
     @DisplayName(".call(runnable).when(NO).build()")
-    void testConditionalBuild(){
+    void testConditionalBuild() {
         var notRunnable = builder.call(this::increment)
-               .when(Condition.NO)
-               .build();
+                                 .when(Condition.NO)
+                                 .build();
         notRunnable.run();
         assertEquals(
                 0, counter,
@@ -144,25 +144,28 @@ abstract class RunnableBindingTest {
                         " since it shall include the condition"
         );
     }
+
     @Test
     @DisplayName(".call(runnable).when(NO).or(YES).build()")
-    void testConditionalBuildYes(){
+    void testConditionalBuildYes() {
         var runnable = builder.call(this::increment)
-                .when(Condition.NO)
-                .or(Condition.YES)
-                .build();
+                              .when(Condition.NO)
+                              .or(Condition.YES)
+                              .build();
         runnable.run();
         assertEquals(
-                1, counter,
+                1,
+                counter,
                 "When using call().when(NO).or(YES).build() the returned runnable should always run," +
                         " since it shall include the condition"
         );
     }
+
     @Test
     @DisplayName(".call(runnable).build()")
-    void simpleRunnableBuild(){
+    void simpleRunnableBuild() {
         var runnable = builder.call(this::increment)
-                .build();
+                              .build();
         runnable.run();
         assertEquals(
                 1, counter,
@@ -172,13 +175,14 @@ abstract class RunnableBindingTest {
 
     @Test
     @DisplayName(".call(runnable).and(runnable2).build()")
-    void groupRunnableBuild(){
+    void groupRunnableBuild() {
         var runnable = builder.call(this::increment)
-                .and(this::increment)
-                .build();
+                              .and(this::increment)
+                              .build();
         runnable.run();
         assertEquals(
-                2, counter,
+                2,
+                counter,
                 "When using call(r1).and(r2).build() the returned runnable should always run r1 and r2"
         );
     }

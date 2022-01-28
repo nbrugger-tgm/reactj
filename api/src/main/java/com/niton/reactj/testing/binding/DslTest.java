@@ -281,14 +281,14 @@ public abstract class DslTest {
 
     @Test
     @DisplayName("call(consumer1).andCall(consumer2).with(source)")
-    void differentTypeConsumers(){
-        var toPass = new B();
-        AtomicReference<A> ra = new AtomicReference<>();
-        AtomicReference<B> rb = new AtomicReference<>();
+    void differentTypeConsumers() {
+        var                toPass = new B();
+        AtomicReference<A> ra     = new AtomicReference<>();
+        AtomicReference<B> rb     = new AtomicReference<>();
         var binding = builder.call(ra::set)
-                .andCall(rb::set)
-                .withValue(toPass)
-                .build();
+                             .andCall(rb::set)
+                             .withValue(toPass)
+                             .build();
 
         binding.run();
         assertSame(toPass, ra.get());
@@ -297,14 +297,14 @@ public abstract class DslTest {
 
     @Test
     @DisplayName("call(consumer).with(source).and(runnable)")
-    void callConsumerAndRunnable(){
-        var toPass = new A();
-        AtomicReference<A> ra = new AtomicReference<>();
-        AtomicReference<B> rb = new AtomicReference<>();
+    void callConsumerAndRunnable() {
+        var                toPass = new A();
+        AtomicReference<A> ra     = new AtomicReference<>();
+        AtomicReference<B> rb     = new AtomicReference<>();
         var binding = builder.call(ra::set)
-                .withValue(toPass)
-                .and(()-> rb.set(new B()))
-                .build();
+                             .withValue(toPass)
+                             .and(() -> rb.set(new B()))
+                             .build();
 
         binding.run();
         assertSame(toPass, ra.get());
@@ -313,13 +313,13 @@ public abstract class DslTest {
 
     @Test
     @DisplayName("call(consumer).with(source).when(NO).build()")
-    void callConditionalConsumerBuild(){
-        var toPass = new A();
-        AtomicReference<A> ra = new AtomicReference<>();
+    void callConditionalConsumerBuild() {
+        var                toPass = new A();
+        AtomicReference<A> ra     = new AtomicReference<>();
         var binding = builder.call(ra::set)
-                .withValue(toPass)
-                .when(Condition.NO)
-                .build();
+                             .withValue(toPass)
+                             .when(Condition.NO)
+                             .build();
 
         binding.run();
         assertNull(ra.get());
@@ -327,31 +327,16 @@ public abstract class DslTest {
 
     @Test
     @DisplayName("call(consumer).with(source).when(YES).build()")
-    void callConditionalConsumerBuildYES(){
-        var toPass = new A();
-        AtomicReference<A> ra = new AtomicReference<>();
+    void callConditionalConsumerBuildYES() {
+        var                toPass = new A();
+        AtomicReference<A> ra     = new AtomicReference<>();
         var binding = builder.call(ra::set)
-                .withValue(toPass)
-                .when(Condition.YES)
-                .build();
+                             .withValue(toPass)
+                             .when(Condition.YES)
+                             .build();
 
         binding.run();
-        assertSame(toPass,ra.get());
-    }
-
-    private static class A{
-        private final String a = "a";
-
-        public String getA() {
-            return a;
-        }
-    }
-    private static class B extends A {
-        private final String b = "b";
-
-        public String getB() {
-            return b;
-        }
+        assertSame(toPass, ra.get());
     }
 
     @Test
@@ -359,7 +344,8 @@ public abstract class DslTest {
     void setRecursionPreventionFalse() {
         builder.setRecursionPrevention(false);
         assertFalse(
-                builder.call(()->{}).build() instanceof NonCyclicRunnable,
+                builder.call(() -> {
+                }).build() instanceof NonCyclicRunnable,
                 "setRecursionPrevention(false) should not prevent recursion"
         );
     }
@@ -370,6 +356,22 @@ public abstract class DslTest {
         @Override
         protected BinderDsl createBinder() {
             return DslTest.this.createBinder();
+        }
+    }
+
+    private static class A {
+        private final String a = "a";
+
+        public String getA() {
+            return a;
+        }
+    }
+
+    private static class B extends A {
+        private final String b = "b";
+
+        public String getB() {
+            return b;
         }
     }
 }

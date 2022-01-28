@@ -1,10 +1,10 @@
 package com.niton.reactj.objects.dsl.impl;
 
-import com.niton.reactj.api.event.Listenable;
 import com.niton.reactj.api.binding.dsl.ConditionalRunnableDsl;
 import com.niton.reactj.api.binding.dsl.MultiListenerDsl;
 import com.niton.reactj.api.binding.predicates.Condition;
 import com.niton.reactj.api.event.EventEmitter;
+import com.niton.reactj.api.event.Listenable;
 import com.niton.reactj.objects.dsl.ObjectConditionalRunnableDsl;
 
 public class ObjectConditionalRunnableDslImpl implements ObjectConditionalRunnableDsl {

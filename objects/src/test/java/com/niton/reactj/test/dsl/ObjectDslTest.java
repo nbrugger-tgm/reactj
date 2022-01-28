@@ -177,7 +177,7 @@ class ObjectDslTest extends DslTest {
     }
 
     @Test
-    void onModelChange(){
+    void onModelChange() {
         AtomicInteger store = new AtomicInteger(999);
         dsl.call(store::set)
            .onModelChange(Base::getA);
@@ -185,17 +185,18 @@ class ObjectDslTest extends DslTest {
         base.setA(1234);
         emitter.fire(base);
         assertEquals(
-                base.getA(), store.get(),
+                base.getA(),
+                store.get(),
                 "The binding should be executed with the model given to the factory method. when the event givent to the factory method 'create' is fired"
         );
     }
 
     @Test
-    void conditionalRunnableOnModelChange(){
+    void conditionalRunnableOnModelChange() {
         AtomicInteger store = new AtomicInteger(999);
-        dsl.call(()->store.set(1234))
-                .when(Condition.YES)
-                .onModelChange();
+        dsl.call(() -> store.set(1234))
+           .when(Condition.YES)
+           .onModelChange();
         assertEquals(999, store.get(), "The binding itself should not have changed the value");
         emitter.fire(base);
         assertEquals(
@@ -206,12 +207,12 @@ class ObjectDslTest extends DslTest {
     }
 
     @Test
-    void conditionalBindingOnModelChange(){
+    void conditionalBindingOnModelChange() {
         AtomicInteger store = new AtomicInteger(999);
         dsl.call(store::set)
-                .withValue(123)
-                .when(Condition.YES)
-                .onModelChange();
+           .withValue(123)
+           .when(Condition.YES)
+           .onModelChange();
         assertEquals(999, store.get(), "The binding itself should not have changed the value");
         emitter.fire(base);
         assertEquals(
@@ -222,10 +223,10 @@ class ObjectDslTest extends DslTest {
     }
 
     @Test
-    void runnableOnModelChange(){
+    void runnableOnModelChange() {
         AtomicInteger store = new AtomicInteger(999);
-        dsl.call(()->store.set(1234))
-                .onModelChange();
+        dsl.call(() -> store.set(1234))
+           .onModelChange();
         assertEquals(999, store.get(), "The binding itself should not have changed the value");
         emitter.fire(base);
         assertEquals(
@@ -234,6 +235,7 @@ class ObjectDslTest extends DslTest {
                         "When the event given to the factory method 'create' is fired"
         );
     }
+
     @Override
     protected BinderDsl createBinder() {
         return ObjectDsl.create(() -> base, emitter);
