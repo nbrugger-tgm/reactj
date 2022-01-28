@@ -49,7 +49,7 @@ public abstract class ReactiveComponentImplTest<C extends ReactiveComponent<M, O
         modify(model);
         assertTrue(
                 changed,
-                "If the model changes 'uiUpdate' should be fired," +
+                "If the model changes, 'uiUpdate' should be fired," +
                         "even if the update didn't cause any changes"
         );
     }

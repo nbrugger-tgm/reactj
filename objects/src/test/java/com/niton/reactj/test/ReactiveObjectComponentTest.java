@@ -3,6 +3,7 @@ package com.niton.reactj.test;
 import com.niton.reactj.api.event.EventEmitter;
 import com.niton.reactj.api.exceptions.ReactiveException;
 import com.niton.reactj.objects.ReactiveObjectComponent;
+import com.niton.reactj.objects.ReactiveStrategy;
 import com.niton.reactj.objects.annotations.ReactiveListener;
 import com.niton.reactj.objects.dsl.ObjectDsl;
 import com.niton.reactj.objects.observer.PropertyObservation;
@@ -31,6 +32,7 @@ class ReactiveObjectComponentTest
     @BeforeAll
     static void createCreator() {
         creator = ProxyCreator.besideOrigin();
+        creator.setStrategy(ReactiveStrategy.ALL);
         //only for testing purposes- plz don't do this <3
         creator.setAllowUnsafeProxies(true);
     }
