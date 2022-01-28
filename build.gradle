@@ -3,7 +3,7 @@ plugins {
     id 'jacoco'
 }
 allprojects {
-    version = '4.0.0b8'
+    version = '4.0.0b9'
     group = 'com.niton.reactj'
 }
 subprojects(this::configureModule)

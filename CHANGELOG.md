@@ -1,3 +1,18 @@
+## v4.0.0b9 (2022-01-28)
+
+### Feat
+
+- binding DSL (#49)
+
+### Fix
+
+- mayor "law of demeter"
+- merge conflict
+
+### Refactor
+
+- move Diff interfaces to `api` package
+
 ## v4.0.0b8 (2021-10-11)
 
 ### Fix
@@ -134,6 +149,8 @@
 - adapt isFitting method to behave as expected
 - replaced fori by for each
 - add mvc package
+
+## v2.3.0-SNAPSHOT (2020-11-30)
 
 ## v2.2.2-SNAPSHOT (2020-11-24)
 
