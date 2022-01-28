@@ -2,6 +2,9 @@ package com.niton.reactj.api.proxy;
 
 import com.niton.reactj.api.exceptions.ReactiveException;
 
+/**
+ * A proxy exception is thrown when a problem arises during the use or creation of a proxy.
+ */
 public class ProxyException extends RuntimeException {
     public ProxyException(String message) {
         super(message);
